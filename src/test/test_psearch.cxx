@@ -10,9 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "pulsarDb/GlastTime.h"
 #include "pulsarDb/PulsarDb.h"
-
-#include "pulsePhase/TimingModel.h"
+#include "pulsarDb/PulsarEph.h"
+#include "pulsarDb/TimingModel.h"
 
 #include "st_app/StApp.h"
 #include "st_app/StAppFactory.h"
@@ -81,7 +82,7 @@ void PSearchTestApp::run() {
   std::string unit = "(/s)";
 
   // Test process of picking the ephemeris.
-  testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v3.fits"), "crab", 23078385.922);
+  testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", 23078385.922);
 
   if (m_failed) throw std::runtime_error("UNIT TEST FAILED");
 
@@ -107,6 +108,12 @@ void PSearchTestApp::run() {
   duration = 0.;
   gti_table->getHeader()["TELAPSE"].get(duration);
 
+  double valid_since;
+  double valid_until;
+
+  gti_table->getHeader()["TSTART"].get(valid_since);
+  gti_table->getHeader()["TSTOP"].get(valid_until);
+
   // Make the array big enough to hold these events.
   fake_evts.resize(evt_table->getNumRecords());
 
@@ -122,18 +129,28 @@ void PSearchTestApp::run() {
   double phi0 = 0.; // Ignored for these purposes anyway.
   double pdot = 4.7967744e-13;
   double p2dot = 0.; // Not available.
-  using pulsePhase::TimingModel;
-  TimingModel timing_model(epoch, phi0, TimingModel::PeriodCoeff(1. / central, pdot, p2dot));
+
+  using namespace pulsarDb;
+
+  // The following declarator looks like a function prototype.
+  // PeriodEph eph(GlastTdbTime(valid_since), GlastTdbTime(valid_until), GlastTdbTime(epoch), phi0, 1. / central, pdot, p2dot);
+  // Resolve the misunderstanding by using a temporary variable for the first argument.
+  GlastTdbTime vs(valid_since);
+  PeriodEph eph(vs, GlastTdbTime(valid_until), GlastTdbTime(epoch), phi0, 1. / central, pdot, p2dot);
+  TimingModel timing_model;
 
   // Correct the data.
-  for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor)
-    *itor = timing_model.calcPdotCorr(*itor);
+  for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
+    GlastTdbTime tdb(*itor);
+    timing_model.correctPdot(eph, tdb);
+    *itor = tdb.elapsed();
+  }
 
   // Repeat test with the pdot corrected data.
   testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit);
 
   // Test process of picking the ephemeris.
-  testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v3.fits"), "crab", epoch);
+  testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", epoch);
 }
 
 void PSearchTestApp::testAllStats(double center, double step, long num_trials, double epoch, int num_bins,
@@ -199,7 +216,6 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
 void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string pulsar_name,
   double epoch) {
-  using namespace pulsePhase;
   using namespace pulsarDb;
   using namespace tip;
 
@@ -221,32 +237,35 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
   // Limit database to this pulsar only.
   db.filterName(pulsar_name);
 
+  PulsarEphCont ephemerides;
+  db.getEph(ephemerides);
+
   // Select the best ephemeris for this time.
-  PulsarEph chosen_eph(db.chooseEph(mjdref + (long double)(epoch) / s_sec_per_day, true));
+  const PulsarEph & chosen_eph(ephemerides.chooseEph(GlastTdbTime(epoch), false));
 
   // Create a timing model object from which to compute the frequency.
-  TimingModel model((chosen_eph.m_t0 - mjdref) * s_sec_per_day, 0., chosen_eph.m_f0, chosen_eph.m_f1, chosen_eph.m_f2);
+  TimingModel model;
 
-  TimingModel::FrequencyCoeff freq = model.calcFreq(epoch);
+  FrequencyEph freq = model.calcEphemeris(chosen_eph, GlastTdbTime(epoch));
 
   const double epsilon = 1.e-8;
 
   double correct_f0 = 29.93633350069171;
-  if (fabs(correct_f0/freq.m_term[0] - 1.) > epsilon) {
+  if (fabs(correct_f0/freq.f0() - 1.) > epsilon) {
     m_failed = true;
-    m_os.err() << "f0 was computed to be " << freq.m_term[0] << ", not " << correct_f0 << std::endl;
+    m_os.err() << "f0 was computed to be " << freq.f0() << ", not " << correct_f0 << std::endl;
   }
 
   double correct_f1 = -3.772519499263467e-10;
-  if (fabs(correct_f1/freq.m_term[1] - 1.) > epsilon) {
+  if (fabs(correct_f1/freq.f1() - 1.) > epsilon) {
     m_failed = true;
-    m_os.err() << "f1 was computed to be " << freq.m_term[1] << ", not " << correct_f1 << std::endl;
+    m_os.err() << "f1 was computed to be " << freq.f1() << ", not " << correct_f1 << std::endl;
   }
 
-  double correct_f2 = chosen_eph.m_f2;
-  if (fabs(correct_f2/freq.m_term[2] - 1.) > epsilon) {
+  double correct_f2 = chosen_eph.f2();
+  if (fabs(correct_f2/freq.f2() - 1.) > epsilon) {
     m_failed = true;
-    m_os.err() << "ERROR: in testChooseEph, f2 was computed to be " << freq.m_term[2] << ", not " << correct_f2 << std::endl;
+    m_os.err() << "ERROR: in testChooseEph, f2 was computed to be " << freq.f2() << ", not " << correct_f2 << std::endl;
   }
 }
 
