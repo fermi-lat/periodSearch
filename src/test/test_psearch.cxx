@@ -34,10 +34,14 @@
 #include "Z2nTest.h"
 
 static const double s_sec_per_day = 86400.;
+static const std::string s_cvs_id = "$Name$";
 
 class PSearchTestApp : public st_app::StApp {
   public:
-    PSearchTestApp(): m_os("PSearchTestApp", "", 2), m_data_dir(), m_failed(false) {}
+    PSearchTestApp(): m_os("PSearchTestApp", "", 2), m_data_dir(), m_failed(false) {
+      setName("test_stpsearch");
+      setVersion(s_cvs_id);
+    }
 
     virtual ~PSearchTestApp() throw() {}
     virtual void run();
