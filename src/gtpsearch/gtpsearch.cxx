@@ -262,7 +262,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
 }
 
 const std::string & PSearchApp::getDataDir() {
-  m_data_dir = st_facilities::Env::getDataDir("gtpsearch");
+  m_data_dir = st_facilities::Env::getDataDir("periodSearch");
   return m_data_dir;
 }
 

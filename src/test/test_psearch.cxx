@@ -270,7 +270,7 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
 }
 
 const std::string & PSearchTestApp::getDataDir() {
-  m_data_dir = st_facilities::Env::getDataDir("gtpsearch");
+  m_data_dir = st_facilities::Env::getDataDir("periodSearch");
   return m_data_dir;
 }
 
