@@ -1,0 +1,10 @@
+/** \file release.notes
+    \brief periodSearch package
+    \authors Masaharu Hirayama, GSSC,
+            James Peachey, HEASARC/GSSC
+$Id$
+
+\verbatim
+24-jan-2005        v0 JP Initial version, converted from stpsearch v0r2p2
+\endverbatim
+*/
