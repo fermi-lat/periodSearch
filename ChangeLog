@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Fri Jan 28 13:04:00 PST 2005
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Name of package is periodSearch, not gtpsearch.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jan 26 12:06:51 PST 2005
 periodSearch/src/gtpsearch
 
