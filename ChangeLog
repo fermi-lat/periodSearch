@@ -1,0 +1,37 @@
+------------------------------------------------------------
+User: peachey  Tue Jan 25 18:33:53 PST 2005
+periodSearch
+
+Log Message:
+Migrated from stpsearch v0r2p2.
+
+Status:
+
+Vendor Tag:	GLAST
+Release Tags:	v0
+		
+N periodSearch/cmt/requirements
+N periodSearch/src/ChiSquaredTest.cxx
+N periodSearch/src/ChiSquaredTest.h
+N periodSearch/src/HTest.cxx
+N periodSearch/src/HTest.h
+N periodSearch/src/PeriodTest.cxx
+N periodSearch/src/RayleighTest.h
+N periodSearch/src/Z2nTest.cxx
+N periodSearch/src/Z2nTest.h
+N periodSearch/src/mainpage.h
+N periodSearch/src/ChiSquaredProb.cxx
+N periodSearch/src/ChiSquaredProb.h
+N periodSearch/src/test/test_psearch.cxx
+N periodSearch/src/gtpsearch/gtpsearch.cxx
+N periodSearch/data/groD4-dc2v4.fits
+N periodSearch/data/step-01.fits
+N periodSearch/data/ft1tiny.fits
+N periodSearch/data/groD4-dc2v3.fits
+N periodSearch/doc/release.notes
+N periodSearch/periodSearch/PeriodTest.h
+N periodSearch/pfiles/gtpsearch.par
+
+No conflicts created by this import
+
+    *
