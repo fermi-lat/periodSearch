@@ -3,6 +3,7 @@
     \author Masaharu Hirayama, GSSC
             James Peachey, HEASARC/GSSC
 */
+#include <cctype>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -35,6 +36,8 @@
 
 using namespace periodSearch;
 
+static const std::string s_cvs_id = "$Name$";
+
 class PSearchApp : public st_app::StApp {
   public:
     PSearchApp();
@@ -56,6 +59,9 @@ class PSearchApp : public st_app::StApp {
 
 PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
   st_app::AppParGroup & pars(getParGroup("gtpsearch"));
+
+  setName("gtpsearch");
+  setVersion(s_cvs_id);
 
   pars.setSwitch("ephstyle");
   pars.setSwitch("correctpdot");
@@ -185,12 +191,14 @@ void PSearchApp::run() {
   // Choose which kind of test to create.
   std::string algorithm = pars["algorithm"];
 
+  for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = toupper(*itor);
+
   // Create the proper test.
-  if (algorithm == "Chi2") 
+  if (algorithm == "CHI2") 
     m_test = new ChiSquaredTest(eph->f0(), f_step, num_trials, epoch, num_bins, duration);
   else if (algorithm == "H") 
     m_test = new HTest(eph->f0(), f_step, num_trials, epoch, num_bins, duration);
-  else if (algorithm == "Z2n") 
+  else if (algorithm == "Z2N") 
     m_test = new Z2nTest(eph->f0(), f_step, num_trials, epoch, num_bins, duration);
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
