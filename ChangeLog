@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Fri Mar  4 13:03:43 PST 2005
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add switch/case method calls to tailor appearance of GUI.
+
+    *
+------------------------------------------------------------
 User: peachey  Fri Mar  4 13:03:18 PST 2005
 periodSearch/pfiles
 
