@@ -1,4 +1,4 @@
-algorithm,      s, a, Chi2, , , "Type of statistical test to perform (Chi2 - Chi squared, Z2n - Z2n/Rayleigh test, H - H test)"
+algorithm,      s, a, Chi2, Chi2|Z2n|H, , "Type of statistical test to perform (Chi2 - Chi squared, Z2n - Z2n/Rayleigh test, H - H test)"
 evfile,         f, a, , , , "Name of file containing events"
 evtable,        s, h, "EVENTS", , , "Name of extension containing events"
 correctpdot,    b, h, no, , , "Perform correction for period/frequency change"
