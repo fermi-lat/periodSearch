@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.1.1.1 2005/01/26 02:33:53 peachey Exp $
+$Id: release.notes,v 1.2 2005/03/07 19:41:28 peachey Exp $
 
 \verbatim
+16-mar-2005    v0r1p1 JP  Add enumerated range to algorithm parameter.
 07-mar-2005    v0r1p0 JP  Use utility classes defined in pulsarDb for
                           managing absolute times, and database access.
 24-jan-2005        v0 JP  Initial version, converted from stpsearch v0r2p2
