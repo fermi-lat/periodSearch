@@ -8,10 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "pulsarDb/AbsoluteTime.h"
+#include "pulsarDb/GlastTime.h"
 #include "pulsarDb/PulsarDb.h"
 #include "pulsarDb/PulsarEph.h"
-
-#include "pulsePhase/TimingModel.h"
+#include "pulsarDb/TimingModel.h"
 
 #include "st_app/AppParGroup.h"
 #include "st_app/StApp.h"
@@ -42,7 +43,7 @@ class PSearchApp : public st_app::StApp {
 
     virtual void prompt(st_app::AppParGroup & pars);
 
-    pulsePhase::TimingModel::FrequencyCoeff estimateFrequency(const std::string & psrdb_file, const std::string & psr_name,
+    pulsarDb::FrequencyEph estimateFrequency(const std::string & psrdb_file, const std::string & psr_name,
       double epoch, double mjdref);
 
     const std::string & getDataDir();
@@ -79,10 +80,10 @@ void PSearchApp::run() {
   std::string title = pars["title"];
   bool correct_pdot = pars["correctpdot"];
 
-  using namespace pulsePhase;
+  using namespace pulsarDb;
 
   // Store frequency info in a timing model
-  std::auto_ptr<TimingModel> timing_model(0);
+  std::auto_ptr<PulsarEph> eph(0);
 
   // Ignored but needed for timing model.
   double phi0 = 0.;
@@ -96,13 +97,41 @@ void PSearchApp::run() {
   // Get necessary keywords.
   double mjdref = 0.;
   double duration = 0.;
+  double valid_since = 0.;
+  double valid_until = 0.;
+  std::string telescope;
+  std::string time_sys;
   const tip::Header & header(gti_table->getHeader());
   header["MJDREF"].get(mjdref);
   header["TELAPSE"].get(duration);
+  header["TSTART"].get(valid_since);
+  header["TSTOP"].get(valid_until);
+  header["TELESCOP"].get(telescope);
+  header["TIMESYS"].get(time_sys);
+
+  if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
+
+  std::auto_ptr<AbsoluteTime> abs_epoch(0);
+  std::auto_ptr<AbsoluteTime> abs_valid_since(0);
+  std::auto_ptr<AbsoluteTime> abs_valid_until(0);
+  if (time_sys == "TDB") {
+    abs_epoch.reset(new GlastTdbTime(epoch));
+    abs_valid_since.reset(new GlastTdbTime(valid_since));
+    abs_valid_until.reset(new GlastTdbTime(valid_until));
+  } else if (time_sys == "TT") {
+    abs_epoch.reset(new GlastTtTime(epoch));
+    abs_valid_since.reset(new GlastTtTime(valid_since));
+    abs_valid_until.reset(new GlastTtTime(valid_until));
+  } else {
+    throw std::runtime_error("Only TDB or TT time systems are supported for now");
+  }
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration.
   if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
   double f_step = scan_step / duration;
+
+  // A TimingModel will be needed for several steps below.
+  TimingModel model;
 
   // Handle either period or frequency-style input.
   std::string eph_style = pars["ephstyle"];
@@ -110,16 +139,31 @@ void PSearchApp::run() {
     double f0 = pars["f0"];
     double f1 = pars["f1"];
     double f2 = pars["f2"];
-    timing_model.reset(new TimingModel(epoch, phi0, TimingModel::FrequencyCoeff(f0, f1, f2)));
+    eph.reset(new FrequencyEph(*abs_valid_since, *abs_valid_until, *abs_epoch, phi0, f0, f1, f2));
   } else if (eph_style == "PER") {
     double p0 = pars["p0"];
     double p1 = pars["p1"];
     double p2 = pars["p2"];
-    timing_model.reset(new TimingModel(epoch, phi0, TimingModel::PeriodCoeff(p0, p1, p2)));
+    eph.reset(new PeriodEph(*abs_valid_since, *abs_valid_until, *abs_epoch, phi0, p0, p1, p2));
   } else if (eph_style == "FILE") {
     std::string psrdb_file = pars["psrdbfile"];
     std::string psr_name = pars["psrname"];
-    timing_model.reset(new TimingModel(epoch, phi0, estimateFrequency(psrdb_file, psr_name, epoch, mjdref)));
+
+    // Open the database.
+    PulsarDb database(psrdb_file);
+
+    // Select only ephemerides for this pulsar.
+    database.filterName(psr_name);
+
+    // Get candidate ephemerides.
+    PulsarEphCont ephemerides;
+    database.getEph(ephemerides);
+
+    // Choose the best ephemeris.
+    const PulsarEph & chosen_eph(ephemerides.chooseEph(*abs_epoch, false));
+
+    // Extrapolate chosen ephemeris to this epoch, clone the extrapolated ephemeris.
+    eph.reset(model.calcEphemeris(chosen_eph, *abs_epoch).clone());
   }
 
   // Choose which kind of test to create.
@@ -127,11 +171,11 @@ void PSearchApp::run() {
 
   // Create the proper test.
   if (algorithm == "Chi2") 
-    m_test = new ChiSquaredTest(timing_model->getF0(), f_step, num_trials, epoch, num_bins, duration);
+    m_test = new ChiSquaredTest(eph->f0(), f_step, num_trials, epoch, num_bins, duration);
   else if (algorithm == "H") 
-    m_test = new HTest(timing_model->getF0(), f_step, num_trials, epoch, num_bins, duration);
+    m_test = new HTest(eph->f0(), f_step, num_trials, epoch, num_bins, duration);
   else if (algorithm == "Z2n") 
-    m_test = new Z2nTest(timing_model->getF0(), f_step, num_trials, epoch, num_bins, duration);
+    m_test = new Z2nTest(eph->f0(), f_step, num_trials, epoch, num_bins, duration);
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
   // Iterate over table, filling the search/test object with temporal data.
@@ -139,8 +183,17 @@ void PSearchApp::run() {
     // Get value from the table.
     double evt_time = (*itor)[time_col].get();
 
-    // Perform pdot correction if so desired.
-    if (correct_pdot) evt_time = timing_model->calcPdotCorr(evt_time);
+    if (time_sys == "TDB") {
+      GlastTdbTime tdb(evt_time);
+      // Perform pdot correction if so desired.
+      if (correct_pdot) model.correctPdot(*eph, tdb);
+      evt_time = tdb.elapsed();
+    } else {
+      GlastTtTime tt(evt_time);
+      // Perform pdot correction if so desired.
+      if (correct_pdot) model.correctPdot(*eph, tt);
+      evt_time = tt.elapsed();
+    }
 
     // Fill into the test.
     m_test->fill(evt_time);
@@ -206,29 +259,6 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
 
   // Save current values of the parameters.
   pars.Save();
-}
-
-pulsePhase::TimingModel::FrequencyCoeff PSearchApp::estimateFrequency(const std::string & psrdb_file, const std::string & psr_name,
-  double epoch, double mjdref) {
-  using namespace pulsePhase;
-  using namespace pulsarDb;
-  using namespace tip;
-  static const double s_sec_per_day = 86400.;
-
-  // Get database access.
-  PulsarDb db(psrdb_file);
-
-  // Limit database to this pulsar only.
-  db.filterName(psr_name);
-
-  // Select the best ephemeris for this time.
-  PulsarEph chosen_eph(db.chooseEph(mjdref + (long double)(epoch) / s_sec_per_day, true));
-
-  // Create a timing model object from which to compute the frequency.
-  TimingModel model((chosen_eph.m_t0 - mjdref) * s_sec_per_day, 0., chosen_eph.m_f0, chosen_eph.m_f1, chosen_eph.m_f2);
-
-  // Get estimated frequency coefficients.
-  return model.calcFreq(epoch);
 }
 
 const std::string & PSearchApp::getDataDir() {
