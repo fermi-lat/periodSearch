@@ -55,6 +55,22 @@ class PSearchApp : public st_app::StApp {
 };
 
 PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
+  st_app::AppParGroup & pars(getParGroup("gtpsearch"));
+
+  pars.setSwitch("ephstyle");
+  pars.setSwitch("correctpdot");
+  pars.setCase("ephstyle", "FREQ", "f0");
+  pars.setCase("ephstyle", "FREQ", "correctpdot");
+  pars.setCase("ephstyle", "PER", "correctpdot");
+  pars.setCase("correctpdot", "true", "f1");
+  pars.setCase("ephstyle", "FREQ", "f1");
+  pars.setCase("ephstyle", "FREQ", "f2");
+  pars.setCase("ephstyle", "PER", "p0");
+  pars.setCase("ephstyle", "PER", "p1");
+  pars.setCase("correctpdot", "true", "p1");
+  pars.setCase("ephstyle", "PER", "p2");
+  pars.setCase("ephstyle", "FILE", "psrdbfile");
+  pars.setCase("ephstyle", "FILE", "psrname");
 }
 
 PSearchApp::~PSearchApp() throw() {
