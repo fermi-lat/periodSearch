@@ -2,9 +2,11 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id$
+$Id: release.notes,v 1.1.1.1 2005/01/26 02:33:53 peachey Exp $
 
 \verbatim
-24-jan-2005        v0 JP Initial version, converted from stpsearch v0r2p2
+07-mar-2005    v0r1p0 JP  Use utility classes defined in pulsarDb for
+                          managing absolute times, and database access.
+24-jan-2005        v0 JP  Initial version, converted from stpsearch v0r2p2
 \endverbatim
 */
