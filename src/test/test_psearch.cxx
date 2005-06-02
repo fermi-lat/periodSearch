@@ -34,7 +34,7 @@
 #include "Z2nTest.h"
 
 static const double s_sec_per_day = 86400.;
-static const std::string s_cvs_id = "$Name$";
+static const std::string s_cvs_id = "$Name: v0r1p2 $";
 
 class PSearchTestApp : public st_app::StApp {
   public:
@@ -173,7 +173,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Chi Squared Statistic" << std::endl;
   m_os.out() << test << std::endl;
-  test.plotStats("Chi Squared Statistic", unit);
+//  test.plotStats("Chi Squared Statistic", unit);
 
   // Test Z2n case.
   Z2nTest test_z2n(center, step, num_trials, epoch, num_bins, duration);
@@ -187,7 +187,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Z2n Statistic" << std::endl;
   m_os.out() << test_z2n << std::endl;
-  test_z2n.plotStats("Z2n Statistic", unit);
+//  test_z2n.plotStats("Z2n Statistic", unit);
 
   // Test Rayleigh case.
   RayleighTest test_rayleigh(center, step, num_trials, epoch, duration);
@@ -201,7 +201,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Rayleigh Statistic" << std::endl;
   m_os.out() << test_rayleigh << std::endl;
-  test_rayleigh.plotStats("Rayleigh Statistic", unit);
+//  test_rayleigh.plotStats("Rayleigh Statistic", unit);
 
   // Test H case.
   HTest test_h(center, step, num_trials, epoch, num_bins, duration);
@@ -215,7 +215,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "H Statistic" << std::endl;
   m_os.out() << test_h << std::endl;
-  test_h.plotStats("H Statistic", unit);
+//  test_h.plotStats("H Statistic", unit);
 }
 
 void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string pulsar_name,
