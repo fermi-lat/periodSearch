@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Thu Jun  2 13:25:52 PDT 2005
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Disable plotting in test code.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v0r1p2, operation: add
 Package: periodSearch
