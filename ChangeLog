@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Fri Jul  1 14:10:25 PDT 2005
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Make necessary changes to work with latest pulsarDb.
+
+    *
+------------------------------------------------------------
 User: peachey  Fri Jul  1 14:08:49 PDT 2005
 periodSearch/pfiles
 
