@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Fri Jul  1 14:11:15 PDT 2005
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add binary demodulation option, plus necessary changes to work with
+latest pulsarDb.
+
+    *
+------------------------------------------------------------
 User: peachey  Fri Jul  1 14:10:25 PDT 2005
 periodSearch/src/test
 
