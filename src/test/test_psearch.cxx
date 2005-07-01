@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "pulsarDb/EphChooser.h"
+#include "pulsarDb/EphComputer.h"
 #include "pulsarDb/GlastTime.h"
 #include "pulsarDb/PulsarDb.h"
 #include "pulsarDb/PulsarEph.h"
@@ -34,7 +36,7 @@
 #include "Z2nTest.h"
 
 static const double s_sec_per_day = 86400.;
-static const std::string s_cvs_id = "$Name: v0r1p2 $";
+static const std::string s_cvs_id = "$Name:  $";
 
 class PSearchTestApp : public st_app::StApp {
   public:
@@ -173,7 +175,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Chi Squared Statistic" << std::endl;
   m_os.out() << test << std::endl;
-//  test.plotStats("Chi Squared Statistic", unit);
+  test.plotStats("Chi Squared Statistic", unit);
 
   // Test Z2n case.
   Z2nTest test_z2n(center, step, num_trials, epoch, num_bins, duration);
@@ -187,7 +189,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Z2n Statistic" << std::endl;
   m_os.out() << test_z2n << std::endl;
-//  test_z2n.plotStats("Z2n Statistic", unit);
+  test_z2n.plotStats("Z2n Statistic", unit);
 
   // Test Rayleigh case.
   RayleighTest test_rayleigh(center, step, num_trials, epoch, duration);
@@ -201,7 +203,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Rayleigh Statistic" << std::endl;
   m_os.out() << test_rayleigh << std::endl;
-//  test_rayleigh.plotStats("Rayleigh Statistic", unit);
+  test_rayleigh.plotStats("Rayleigh Statistic", unit);
 
   // Test H case.
   HTest test_h(center, step, num_trials, epoch, num_bins, duration);
@@ -215,7 +217,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "H Statistic" << std::endl;
   m_os.out() << test_h << std::endl;
-//  test_h.plotStats("H Statistic", unit);
+  test_h.plotStats("H Statistic", unit);
 }
 
 void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string pulsar_name,
@@ -225,32 +227,31 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
 
   m_os.setMethod("testChooseEph");
 
-  // Get database access.
-  PulsarDb db(eph_file);
-
   // Open event file.
   std::auto_ptr<const Table> ev_table(IFileSvc::instance().readTable(ev_file, "EVENTS"));
 
   // Need some keywords.
   const Header & header(ev_table->getHeader());
-
   double mjdref = 0.L;
-
   header["MJDREF"].get(mjdref);
+
+  // Create a timing model object from which to compute the frequency.
+  TimingModel model;
+  SloppyEphChooser chooser;
+
+  // Create a computer.
+  EphComputer computer(model, chooser);
+
+  // Get database access.
+  PulsarDb db(eph_file);
 
   // Limit database to this pulsar only.
   db.filterName(pulsar_name);
 
-  PulsarEphCont ephemerides;
-  db.getEph(ephemerides);
+  // Load ephemerides into computer.
+  computer.load(db);
 
-  // Select the best ephemeris for this time.
-  const PulsarEph & chosen_eph(ephemerides.chooseEph(GlastTdbTime(epoch), false));
-
-  // Create a timing model object from which to compute the frequency.
-  TimingModel model;
-
-  FrequencyEph freq = model.calcEphemeris(chosen_eph, GlastTdbTime(epoch));
+  FrequencyEph freq = computer.calcPulsarEph(GlastTdbTime(epoch));
 
   const double epsilon = 1.e-8;
 
@@ -265,6 +266,9 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
     m_failed = true;
     m_os.err() << "f1 was computed to be " << freq.f1() << ", not " << correct_f1 << std::endl;
   }
+
+  // Select the best ephemeris for this time.
+  const PulsarEph & chosen_eph(chooser.choose(computer.getPulsarEphCont(), GlastTdbTime(epoch)));
 
   double correct_f2 = chosen_eph.f2();
   if (fabs(correct_f2/freq.f2() - 1.) > epsilon) {
