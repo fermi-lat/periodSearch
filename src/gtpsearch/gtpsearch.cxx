@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "pulsarDb/AbsoluteTime.h"
+#include "pulsarDb/EphChooser.h"
+#include "pulsarDb/EphComputer.h"
 #include "pulsarDb/GlastTime.h"
 #include "pulsarDb/PulsarDb.h"
 #include "pulsarDb/PulsarEph.h"
@@ -36,7 +38,7 @@
 
 using namespace periodSearch;
 
-static const std::string s_cvs_id = "$Name$";
+static const std::string s_cvs_id = "$Name:  $";
 
 class PSearchApp : public st_app::StApp {
   public:
@@ -101,6 +103,7 @@ void PSearchApp::run() {
   bool plot = pars["plot"];
   std::string title = pars["title"];
   bool correct_pdot = pars["correctpdot"];
+  bool binary_corr = pars["binarycorr"];
 
   using namespace pulsarDb;
 
@@ -154,6 +157,8 @@ void PSearchApp::run() {
 
   // A TimingModel will be needed for several steps below.
   TimingModel model;
+  SloppyEphChooser chooser;
+  EphComputer computer(model, chooser);
 
   // Handle either period or frequency-style input.
   std::string eph_style = pars["ephstyle"];
@@ -177,16 +182,14 @@ void PSearchApp::run() {
     // Select only ephemerides for this pulsar.
     database.filterName(psr_name);
 
-    // Get candidate ephemerides.
-    PulsarEphCont ephemerides;
-    database.getEph(ephemerides);
+    // Load ephemerides into computer.
+    computer.load(database);
 
-    // Choose the best ephemeris.
-    const PulsarEph & chosen_eph(ephemerides.chooseEph(*abs_epoch, false));
-
-    // Extrapolate chosen ephemeris to this epoch, clone the extrapolated ephemeris.
-    eph.reset(model.calcEphemeris(chosen_eph, *abs_epoch).clone());
+    // Extrapolate best chosen ephemeris to this epoch, clone the extrapolated ephemeris.
+    eph.reset(computer.calcPulsarEph(*abs_epoch).clone());
   }
+
+  if (computer.getOrbitalEphCont().empty()) binary_corr = false;
 
   // Choose which kind of test to create.
   std::string algorithm = pars["algorithm"];
@@ -209,12 +212,20 @@ void PSearchApp::run() {
 
     if (time_sys == "TDB") {
       GlastTdbTime tdb(evt_time);
+      // Perform binary correction if so desired.
+      if (binary_corr) computer.demodulateBinary(tdb);
+
       // Perform pdot correction if so desired.
+      // For efficiency use the TimingModel directly here, instead of using the EphComputer.
       if (correct_pdot) model.correctPdot(*eph, tdb);
       evt_time = tdb.elapsed();
     } else {
       GlastTtTime tt(evt_time);
+      // Perform binary correction if so desired.
+      if (binary_corr) computer.demodulateBinary(tt);
+
       // Perform pdot correction if so desired.
+      // For efficiency use the TimingModel directly here, instead of using the EphComputer.
       if (correct_pdot) model.correctPdot(*eph, tt);
       evt_time = tt.elapsed();
     }
@@ -277,6 +288,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Prompt("numtrials");
   pars.Prompt("epoch");
   pars.Prompt("numbins");
+  pars.Prompt("binarycorr");
   pars.Prompt("timecol");
   pars.Prompt("plot");
   pars.Prompt("title");
