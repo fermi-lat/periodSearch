@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Jul 13 13:49:51 PDT 2005
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Rationalize parameters.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Jul 13 13:49:51 PDT 2005
 periodSearch/pfiles
 
 Modified Files:
