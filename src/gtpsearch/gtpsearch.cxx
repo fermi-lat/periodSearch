@@ -66,16 +66,16 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
   setVersion(s_cvs_id);
 
   pars.setSwitch("ephstyle");
-  pars.setSwitch("correctpdot");
+  pars.setSwitch("cancelpdot");
   pars.setCase("ephstyle", "FREQ", "f0");
-  pars.setCase("ephstyle", "FREQ", "correctpdot");
-  pars.setCase("ephstyle", "PER", "correctpdot");
-  pars.setCase("correctpdot", "true", "f1");
+  pars.setCase("ephstyle", "FREQ", "cancelpdot");
+  pars.setCase("ephstyle", "PER", "cancelpdot");
+  pars.setCase("cancelpdot", "true", "f1");
   pars.setCase("ephstyle", "FREQ", "f1");
   pars.setCase("ephstyle", "FREQ", "f2");
   pars.setCase("ephstyle", "PER", "p0");
   pars.setCase("ephstyle", "PER", "p1");
-  pars.setCase("correctpdot", "true", "p1");
+  pars.setCase("cancelpdot", "true", "p1");
   pars.setCase("ephstyle", "PER", "p2");
   pars.setCase("ephstyle", "DB", "psrname");
 }
@@ -98,10 +98,10 @@ void PSearchApp::run() {
   long num_trials = pars["numtrials"];
   double epoch = pars["epoch"];
   long num_bins = pars["numbins"];
-  std::string time_col = pars["timecol"];
+  std::string time_field = pars["timefield"];
   bool plot = pars["plot"];
   std::string title = pars["title"];
-  bool correct_pdot = pars["correctpdot"];
+  bool cancel_pdot = pars["cancelpdot"];
   std::string demod_binary_string = pars["demodbin"];
 
   using namespace pulsarDb;
@@ -236,7 +236,7 @@ void PSearchApp::run() {
   // Iterate over table, filling the search/test object with temporal data.
   for (tip::Table::ConstIterator itor = event_table->begin(); itor != event_table->end(); ++itor) {
     // Get value from the table.
-    double evt_time = (*itor)[time_col].get();
+    double evt_time = (*itor)[time_field].get();
 
     if (time_sys == "TDB") {
       GlastTdbTime tdb(evt_time);
@@ -245,7 +245,7 @@ void PSearchApp::run() {
 
       // Perform pdot correction if so desired.
       // For efficiency use the TimingModel directly here, instead of using the EphComputer.
-      if (correct_pdot) computer.cancelPdot(tdb);
+      if (cancel_pdot) computer.cancelPdot(tdb);
       evt_time = tdb.elapsed();
     } else {
       GlastTtTime tt(evt_time);
@@ -254,7 +254,7 @@ void PSearchApp::run() {
 
       // Perform pdot correction if so desired.
       // For efficiency use the TimingModel directly here, instead of using the EphComputer.
-      if (correct_pdot) computer.cancelPdot(tt);
+      if (cancel_pdot) computer.cancelPdot(tt);
       evt_time = tt.elapsed();
     }
 
@@ -275,7 +275,7 @@ void PSearchApp::run() {
   // TODO: When tip supports getting units from a column, replace the following:
   std::string unit = "(/s)";
   // with:
-  // std::string unit = "(/" + event_table->getColumn(time_col)->getUnit() + ")";
+  // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
   if (plot) m_test->plotStats(title, unit);
 }
@@ -303,10 +303,10 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
     throw std::runtime_error("Unknown ephemeris style " + eph_style);
 
   pars.Prompt("scanstep");
-  pars.Prompt("correctpdot");
+  pars.Prompt("cancelpdot");
 
   // Only prompt for f1 & f2 / p1 & p2 if pdot correction is selected.
-  if (true == bool(pars["correctpdot"])) {
+  if (true == bool(pars["cancelpdot"])) {
     if (eph_style == "FREQ") {
       pars.Prompt("f1");
       pars.Prompt("f2");
@@ -319,7 +319,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
 
   pars.Prompt("numtrials");
   pars.Prompt("numbins");
-  pars.Prompt("timecol");
+  pars.Prompt("timefield");
   pars.Prompt("plot");
   pars.Prompt("title");
 
