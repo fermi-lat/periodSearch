@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Jul 13 14:23:31 PDT 2005
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Rename methods: calcPhase->calcPulsePhase and correctPdot->cancelPdot. Use
+new plot parameter to determine whether to display plots during test.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jul 13 14:21:48 PDT 2005
 periodSearch/pfiles
 
