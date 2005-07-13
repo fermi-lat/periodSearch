@@ -17,6 +17,7 @@
 #include "pulsarDb/PulsarEph.h"
 #include "pulsarDb/TimingModel.h"
 
+#include "st_app/AppParGroup.h"
 #include "st_app/StApp.h"
 #include "st_app/StAppFactory.h"
 
@@ -49,7 +50,7 @@ class PSearchTestApp : public st_app::StApp {
     virtual void run();
 
     void testAllStats(double center, double step, long num_trials, double epoch, int num_bins, const std::vector<double> & events,
-      double duration, const std::string & unit);
+      double duration, const std::string & unit, bool plot);
 
     void testFindMax(const periodSearch::PeriodTest & test);
 
@@ -92,8 +93,10 @@ void PSearchTestApp::run() {
 
   if (m_failed) throw std::runtime_error("UNIT TEST FAILED");
 
+  bool plot = getParGroup()["plot"];
+
   // First do simple test with this highly artificial data.
-  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit);
+  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
 
   // Data taken from M. Hirayama's work with modified ASCA data.
   // http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/existing.html#tryout003
@@ -129,7 +132,7 @@ void PSearchTestApp::run() {
   }
 
   // Repeat simple test with this somewhat less artificial data.
-  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit);
+  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
 
   // Now test pdot correction.
   double phi0 = 0.; // Ignored for these purposes anyway.
@@ -148,19 +151,19 @@ void PSearchTestApp::run() {
   // Correct the data.
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
     GlastTdbTime tdb(*itor);
-    timing_model.correctPdot(eph, tdb);
+    timing_model.cancelPdot(eph, tdb);
     *itor = tdb.elapsed();
   }
 
   // Repeat test with the pdot corrected data.
-  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit);
+  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
 
   // Test process of picking the ephemeris.
   testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", epoch);
 }
 
 void PSearchTestApp::testAllStats(double center, double step, long num_trials, double epoch, int num_bins,
-  const std::vector<double> & events, double duration, const std::string & unit) {
+  const std::vector<double> & events, double duration, const std::string & unit, bool plot) {
   m_os.setMethod("testAllStats");
 
   // Test ChiSquared case.
@@ -175,7 +178,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Chi Squared Statistic" << std::endl;
   m_os.out() << test << std::endl;
-  test.plotStats("Chi Squared Statistic", unit);
+  if (plot) test.plotStats("Chi Squared Statistic", unit);
 
   // Test Z2n case.
   Z2nTest test_z2n(center, step, num_trials, epoch, num_bins, duration);
@@ -189,7 +192,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Z2n Statistic" << std::endl;
   m_os.out() << test_z2n << std::endl;
-  test_z2n.plotStats("Z2n Statistic", unit);
+  if (plot) test_z2n.plotStats("Z2n Statistic", unit);
 
   // Test Rayleigh case.
   RayleighTest test_rayleigh(center, step, num_trials, epoch, duration);
@@ -203,7 +206,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Rayleigh Statistic" << std::endl;
   m_os.out() << test_rayleigh << std::endl;
-  test_rayleigh.plotStats("Rayleigh Statistic", unit);
+  if (plot) test_rayleigh.plotStats("Rayleigh Statistic", unit);
 
   // Test H case.
   HTest test_h(center, step, num_trials, epoch, num_bins, duration);
@@ -217,7 +220,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "H Statistic" << std::endl;
   m_os.out() << test_h << std::endl;
-  test_h.plotStats("H Statistic", unit);
+  if (plot) test_h.plotStats("H Statistic", unit);
 }
 
 void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string pulsar_name,
@@ -304,4 +307,4 @@ std::string PSearchTestApp::makeTitle(const periodSearch::PeriodTest & test, con
   return os.str();
 }
 
-st_app::StAppFactory<PSearchTestApp> g_factory("gtpsearch");
+st_app::StAppFactory<PSearchTestApp> g_factory("test_periodSearch");
