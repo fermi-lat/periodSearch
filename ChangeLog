@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Jul 13 13:28:14 PDT 2005
+periodSearch/data
+
+Added Files:
+	master_pulsardb.fits 
+Log Message:
+New pulsar database file.
+
+    *
+------------------------------------------------------------
 User: peachey  Fri Jul  1 14:11:15 PDT 2005
 periodSearch/src/gtpsearch
 
