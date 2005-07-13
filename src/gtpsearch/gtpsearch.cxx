@@ -77,8 +77,7 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
   pars.setCase("ephstyle", "PER", "p1");
   pars.setCase("correctpdot", "true", "p1");
   pars.setCase("ephstyle", "PER", "p2");
-  pars.setCase("ephstyle", "FILE", "psrdbfile");
-  pars.setCase("ephstyle", "FILE", "psrname");
+  pars.setCase("ephstyle", "DB", "psrname");
 }
 
 PSearchApp::~PSearchApp() throw() {
@@ -103,16 +102,25 @@ void PSearchApp::run() {
   bool plot = pars["plot"];
   std::string title = pars["title"];
   bool correct_pdot = pars["correctpdot"];
-  bool binary_corr = pars["binarycorr"];
+  std::string demod_binary_string = pars["demodbin"];
 
   using namespace pulsarDb;
-
-  // Store frequency info in a timing model
-  std::auto_ptr<PulsarEph> eph(0);
 
   // Ignored but needed for timing model.
   double phi0 = 0.;
 
+  // Find the pulsar database.
+  std::string psrdb_file = pars["psrdbfile"];
+  std::string psrdb_file_uc = psrdb_file;
+  for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = toupper(*itor);
+  if ("DEFAULT" == psrdb_file_uc) {
+    using namespace st_facilities;
+    psrdb_file = Env::appendFileName(Env::getDataDir("pulsePhase"), "master_pulsardb.fits");
+  }
+  std::string psr_name = pars["psrname"];
+  std::string demod_bin_string = pars["demodbin"];
+  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = toupper(*itor);
+  
   // Open the test file.
   std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
 
@@ -160,41 +168,61 @@ void PSearchApp::run() {
   SloppyEphChooser chooser;
   EphComputer computer(model, chooser);
 
+  // Open the database.
+  PulsarDb database(psrdb_file);
+
+  // Select only ephemerides for this pulsar.
+  database.filterName(psr_name);
+
+  // Load the selected ephemerides.
+  computer.load(database);
+
+  // Determine whether to perform binary demodulation.
+  bool demod_bin = false;
+  if (demod_bin_string != "NO") {
+    // User selected not "no", so attempt to perform demodulation
+    if (!computer.getOrbitalEphCont().empty()) {
+      demod_bin = true;
+    } else if (demod_bin_string == "YES") {
+      throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
+    }
+  }
+
   // Handle either period or frequency-style input.
   std::string eph_style = pars["ephstyle"];
   if (eph_style == "FREQ") {
     double f0 = pars["f0"];
     double f1 = pars["f1"];
     double f2 = pars["f2"];
-    eph.reset(new FrequencyEph(*abs_valid_since, *abs_valid_until, *abs_epoch, phi0, f0, f1, f2));
+
+    if (0. >= f0) throw std::runtime_error("Frequency must be positive.");
+
+    // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
+    PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+    ephemerides.clear();
+    ephemerides.push_back(FrequencyEph(*abs_valid_since, *abs_valid_until, *abs_epoch, phi0, f0, f1, f2).clone());
   } else if (eph_style == "PER") {
     double p0 = pars["p0"];
     double p1 = pars["p1"];
     double p2 = pars["p2"];
-    eph.reset(new PeriodEph(*abs_valid_since, *abs_valid_until, *abs_epoch, phi0, p0, p1, p2));
-  } else if (eph_style == "FILE") {
-    std::string psrdb_file = pars["psrdbfile"];
-    std::string psr_name = pars["psrname"];
 
-    // Open the database.
-    PulsarDb database(psrdb_file);
+    if (0. >= p0) throw std::runtime_error("Period must be positive.");
 
-    // Select only ephemerides for this pulsar.
-    database.filterName(psr_name);
-
-    // Load ephemerides into computer.
-    computer.load(database);
-
-    // Extrapolate best chosen ephemeris to this epoch, clone the extrapolated ephemeris.
-    eph.reset(computer.calcPulsarEph(*abs_epoch).clone());
+    // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
+    PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+    ephemerides.clear();
+    ephemerides.push_back(PeriodEph(*abs_valid_since, *abs_valid_until, *abs_epoch, phi0, p0, p1, p2).clone());
+  } else if (eph_style == "DB") {
+    // No action needed.
   }
-
-  if (computer.getOrbitalEphCont().empty()) binary_corr = false;
 
   // Choose which kind of test to create.
   std::string algorithm = pars["algorithm"];
 
   for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = toupper(*itor);
+
+  // Compute an ephemeris at abs_epoch to use for the test.
+  std::auto_ptr<PulsarEph> eph(computer.calcPulsarEph(*abs_epoch).clone());
 
   // Create the proper test.
   if (algorithm == "CHI2") 
@@ -213,20 +241,20 @@ void PSearchApp::run() {
     if (time_sys == "TDB") {
       GlastTdbTime tdb(evt_time);
       // Perform binary correction if so desired.
-      if (binary_corr) computer.demodulateBinary(tdb);
+      if (demod_bin) computer.demodulateBinary(tdb);
 
       // Perform pdot correction if so desired.
       // For efficiency use the TimingModel directly here, instead of using the EphComputer.
-      if (correct_pdot) model.correctPdot(*eph, tdb);
+      if (correct_pdot) computer.cancelPdot(tdb);
       evt_time = tdb.elapsed();
     } else {
       GlastTtTime tt(evt_time);
       // Perform binary correction if so desired.
-      if (binary_corr) computer.demodulateBinary(tt);
+      if (demod_bin) computer.demodulateBinary(tt);
 
       // Perform pdot correction if so desired.
       // For efficiency use the TimingModel directly here, instead of using the EphComputer.
-      if (correct_pdot) model.correctPdot(*eph, tt);
+      if (correct_pdot) computer.cancelPdot(tt);
       evt_time = tt.elapsed();
     }
 
@@ -257,16 +285,20 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Prompt("algorithm");
   pars.Prompt("evfile");
   pars.Prompt("evtable");
+  pars.Prompt("psrdbfile");
+  pars.Prompt("psrname");
   pars.Prompt("ephstyle");
+  pars.Prompt("demodbin");
 
   std::string eph_style = pars["ephstyle"];
-  if (eph_style == "FREQ")
+  if (eph_style == "FREQ") {
+    pars.Prompt("epoch");
     pars.Prompt("f0");
-  else if (eph_style == "PER")
+  } else if (eph_style == "PER") {
+    pars.Prompt("epoch");
     pars.Prompt("p0");
-  else if (eph_style == "FILE") {
-    pars.Prompt("psrdbfile");
-    pars.Prompt("psrname");
+  } else if (eph_style == "DB") {
+    // No action needed.
   } else
     throw std::runtime_error("Unknown ephemeris style " + eph_style);
 
@@ -282,13 +314,11 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
       pars.Prompt("p1");
       pars.Prompt("p2");
     }
-    // if eph_style == "FILE", coeffs will be determined.
+    // if eph_style == "DB", coeffs will be determined.
   }
 
   pars.Prompt("numtrials");
-  pars.Prompt("epoch");
   pars.Prompt("numbins");
-  pars.Prompt("binarycorr");
   pars.Prompt("timecol");
   pars.Prompt("plot");
   pars.Prompt("title");
