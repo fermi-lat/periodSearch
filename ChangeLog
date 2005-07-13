@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Jul 13 13:29:02 PDT 2005
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Add support for binary demodulation, and in the process decouple
+spin and orbital corrections (database is always used for orbital, optional for spin.)
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jul 13 13:28:14 PDT 2005
 periodSearch/data
 
