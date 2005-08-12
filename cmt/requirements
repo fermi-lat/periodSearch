@@ -2,9 +2,9 @@ package periodSearch
 
 version v0
 
-author James Peachey <peachey@lheamail.gsfc.nasa.gov>
+author James Peachey <peachey@milkyway.gsfc.nasa.gov>
 
-# $Id: requirements,v 1.1.1.1 2005/01/26 02:33:46 peachey Exp $
+# $Id: requirements,v 1.2 2005/02/02 17:53:32 peachey Exp $
 
 use STpolicy *
 use pulsarDb *

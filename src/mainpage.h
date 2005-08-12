@@ -1,8 +1,8 @@
 /**
     \mainpage periodSearch package
 
-    \author  Masaharu Hirayama hirayama@lheamail.gsfc.nasa.gov
-    \author  James Peachey peachey@lheamail.gsfc.nasa.gov
+    \author  Masaharu Hirayama hirayama@jca.umbc.edu
+    \author  James Peachey peachey@milkyway.gsfc.nasa.gov
 
     \section intro Introduction
     This package contains code which searches for pulsation frequencies
