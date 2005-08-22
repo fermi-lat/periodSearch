@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Mon Aug 22 06:46:27 PDT 2005
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Correct cut-and-paste error; seek data in periodSearch directory.
+
+    *
+------------------------------------------------------------
 User: peachey  Fri Aug 12 12:36:20 PDT 2005
 periodSearch/cmt
 
