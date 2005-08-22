@@ -115,7 +115,7 @@ void PSearchApp::run() {
   for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = toupper(*itor);
   if ("DEFAULT" == psrdb_file_uc) {
     using namespace st_facilities;
-    psrdb_file = Env::appendFileName(Env::getDataDir("pulsePhase"), "master_pulsardb.fits");
+    psrdb_file = Env::appendFileName(Env::getDataDir("periodSearch"), "master_pulsardb.fits");
   }
   std::string psr_name = pars["psrname"];
   std::string demod_bin_string = pars["demodbin"];
