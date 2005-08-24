@@ -68,6 +68,7 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
   pars.setSwitch("ephstyle");
   pars.setSwitch("cancelpdot");
   pars.setCase("ephstyle", "FREQ", "f0");
+  pars.setCase("ephstyle", "DB", "cancelpdot");
   pars.setCase("ephstyle", "FREQ", "cancelpdot");
   pars.setCase("ephstyle", "PER", "cancelpdot");
   pars.setCase("cancelpdot", "true", "f1");
