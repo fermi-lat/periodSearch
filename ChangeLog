@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug 24 13:57:40 PDT 2005
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Display cancelpdot button on DB tab of ephstyle.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v1, operation: add
 Package: periodSearch
