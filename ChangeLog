@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug 24 13:58:22 PDT 2005
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Reorder hidden parameters to improve look of GUI.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Aug 24 13:57:40 PDT 2005
 periodSearch/src/gtpsearch
 
