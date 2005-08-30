@@ -11,7 +11,7 @@ p1,             r, a, 0., , , "Value of first time derivative of pulse period (p
 p2,             r, a, 0., , , "Value of second time derivative of pulse period (p2dot) at scan center"
 numtrials,      i, a, 100, , , "Number of trials"
 epoch,          r, a, 0., , , "Epoch (time origin)"
-numbins,        i, a, 10, , , "Number of bins used in the computation of each trial (Rayleigh test is Z2n with 1 bin)"
+numbins,        i, a, 10, , , "Number of bins (Chi2 test), harmonics (Z2n test), or maximum harmonics (H test)"
 psrdbfile,      f, h, DEFAULT, , , "Name of input pulsar ephemerides database file"
 cancelpdot,     b, h, no, , , "Perform correction for period/frequency change"
 demodbin,       s, h, "AUTO", "YES|NO|AUTO", ,"Perform binary demodulation if orbital parameters are available"
