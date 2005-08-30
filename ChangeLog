@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Tue Aug 30 06:39:34 PDT 2005
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Reword prompt for numbins.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v1r0p2, operation: add
 Package: periodSearch
