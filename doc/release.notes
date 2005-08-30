@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.7 2005/08/25 14:44:49 peachey Exp $
+$Id: release.notes,v 1.8 2005/08/25 20:43:53 peachey Exp $
 
 \verbatim
+30-aug-2005    v1r0p3 JP  Reword prompt for numbins parameter.
 25-aug-2005    v1r0p2 JP  Update documentation to match current parameter
                           file content.
 25-aug-2005    v1r0p1 JP  Re-order parameters to improve look of GUI.
