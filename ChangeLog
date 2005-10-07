@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Fri Oct  7 13:17:18 PDT 2005
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Change unit test to work correctly with new MJDREF in pulsarDb v1r1.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v1r0p3, operation: add
 Package: periodSearch
