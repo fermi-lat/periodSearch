@@ -2,9 +2,11 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.8 2005/08/25 20:43:53 peachey Exp $
+$Id: release.notes,v 1.9 2005/08/30 13:40:22 peachey Exp $
 
 \verbatim
+07-oct-2005      v1r1 JP  Change unit test to work correctly with new
+                          MJDREF coded in pulsarDb v1r1.
 30-aug-2005    v1r0p3 JP  Reword prompt for numbins parameter.
 25-aug-2005    v1r0p2 JP  Update documentation to match current parameter
                           file content.
