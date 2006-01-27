@@ -2,9 +2,11 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.9 2005/08/30 13:40:22 peachey Exp $
+$Id: release.notes,v 1.10 2005/10/07 20:18:04 peachey Exp $
 
 \verbatim
+27-jan-2006        v2 JP  Handle event times, ephemeris time and origin time for the
+                          search independently, and each with its own time format/system.
 07-oct-2005      v1r1 JP  Change unit test to work correctly with new
                           MJDREF coded in pulsarDb v1r1.
 30-aug-2005    v1r0p3 JP  Reword prompt for numbins parameter.
