@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Fri Jan 27 14:04:02 PST 2006
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+origintime, originformat, originsys.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: ScienceToolsv6r2, operation: add
 Package: periodSearch
