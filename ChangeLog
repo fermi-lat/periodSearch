@@ -1,4 +1,16 @@
 ------------------------------------------------------------
+User: peachey  Fri Jan 27 14:08:48 PST 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change interface to accept independently the ephemeris epoch and origin.
+Change body of the application to use the file keywords to set up event times,
+and the new parameters to set up the eph epoch and the origin time.
+
+    *
+------------------------------------------------------------
 User: peachey  Fri Jan 27 14:04:02 PST 2006
 periodSearch/pfiles
 
