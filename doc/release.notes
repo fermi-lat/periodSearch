@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.10 2005/10/07 20:18:04 peachey Exp $
+$Id: release.notes,v 1.11 2006/01/27 22:10:44 peachey Exp $
 
 \verbatim
+01-feb-2006      v2r1 JP  Improve checks for consistency between time systems.
 27-jan-2006        v2 JP  Handle event times, ephemeris time and origin time for the
                           search independently, and each with its own time format/system.
 07-oct-2005      v1r1 JP  Change unit test to work correctly with new
