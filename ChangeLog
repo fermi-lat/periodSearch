@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Feb  1 14:06:00 PST 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Improve checks for consistency between time systems.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v2, operation: add
 Package: periodSearch
