@@ -109,16 +109,28 @@ void PSearchApp::run() {
   long num_trials = pars["numtrials"];
   double epoch = pars["ephepoch"];
   std::string epoch_time_format = pars["timeformat"];
-  std::string epoch_time_sys = pars["timesys"];
   long num_bins = pars["numbins"];
   std::string time_field = pars["timefield"];
   bool plot = pars["plot"];
   std::string title = pars["title"];
   bool cancel_pdot = pars["cancelpdot"];
   std::string demod_binary_string = pars["demodbin"];
+  std::string eph_style = pars["ephstyle"];
 
+  // Make time formats etc. case insensitive.
   for (std::string::iterator itor = epoch_time_format.begin(); itor != epoch_time_format.end(); ++itor) *itor = toupper(*itor);
-  if (epoch_time_format != "GLAST") throw std::runtime_error("Epoch may only be in GLAST time format");
+  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = toupper(*itor);
+
+  // Determine the time system used for the ephemeris epoch.
+  std::string epoch_time_sys;
+  if (eph_style == "DB") epoch_time_sys = "TDB";
+  else epoch_time_sys = pars["timesys"].Value();
+
+  // Make time formats etc. case insensitive.
+  for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = toupper(*itor);
+
+  if (eph_style != "DB" && epoch_time_format != "GLAST")
+    throw std::runtime_error("Only GLAST time format is supported for manual ephemeris epoch");
 
   using namespace pulsarDb;
 
@@ -167,6 +179,10 @@ void PSearchApp::run() {
   header["TELESCOP"].get(telescope);
   header["TIMESYS"].get(event_time_sys);
 
+  // Make names of time system and mission case insensitive.
+  for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = toupper(*itor);
+  for (std::string::iterator itor = event_time_sys.begin(); itor != event_time_sys.end(); ++itor) *itor = toupper(*itor);
+
   if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
 
   std::auto_ptr<AbsoluteTime> abs_tstart(0);
@@ -214,8 +230,6 @@ void PSearchApp::run() {
   }
 
   // Handle either period or frequency-style input.
-  std::string eph_style = pars["ephstyle"];
-  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = toupper(*itor);
   if (eph_style == "FREQ") {
     double f0 = pars["f0"];
     double f1 = pars["f1"];
@@ -246,24 +260,43 @@ void PSearchApp::run() {
   std::string origin_style = pars["originstyle"];
   for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
   std::auto_ptr<AbsoluteTime> abs_origin(0);
+  std::string origin_time_sys;
   if (origin_style == "AUTO") {
     // If user supplied eph epoch manually, use it. Otherwise, use the center of the observation for the
     // origin of the periodicity test.
-    if (eph_style != "DB") abs_origin.reset(abs_epoch->clone());
-    else abs_origin.reset(abs_middle->clone());
+    if (eph_style != "DB") {
+      abs_origin.reset(abs_epoch->clone());
+      origin_time_sys = epoch_time_sys;
+    } else {
+      abs_origin.reset(abs_middle->clone());
+      origin_time_sys = event_time_sys;
+    }
   } else if (origin_style == "TSTART") {
+    // Get time of origin and its time system from event file.
     abs_origin.reset(abs_tstart->clone());
+    origin_time_sys = event_time_sys;
   } else if (origin_style == "TSTOP") {
+    // Get time of origin and its time system from event file.
     abs_origin.reset(abs_tstop->clone());
+    origin_time_sys = event_time_sys;
   } else if (origin_style == "MIDDLE") {
+    // Get time of origin and its time system from event file.
     abs_origin.reset(abs_middle->clone());
+    origin_time_sys = event_time_sys;
   } else if (origin_style == "USER") {
+    // Get time of origin and its format and system from parameters.
     double origin_time = pars["origintime"];
     std::string origin_time_format = pars["originformat"];
+    origin_time_sys = pars["originsys"].Value();
+
+    // Make case insensitive.
     for (std::string::iterator itor = origin_time_format.begin(); itor != origin_time_format.end(); ++itor) *itor = toupper(*itor);
-    if (origin_time_format != "GLAST") throw std::runtime_error("Time origin may only be in GLAST time format");
-    std::string origin_time_sys = pars["originsys"];
     for (std::string::iterator itor = origin_time_sys.begin(); itor != origin_time_sys.end(); ++itor) *itor = toupper(*itor);
+
+    // Check for unsupported formats.
+    if (origin_time_format != "GLAST") throw std::runtime_error("Time origin may only be in GLAST time format");
+
+    // Set up the origin using the given time system.
     if (origin_time_sys == "TDB") {
       abs_origin.reset(new GlastTdbTime(origin_time));
     } else if (origin_time_sys == "TT") {
@@ -274,6 +307,11 @@ void PSearchApp::run() {
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
+  
+  // Make sure time systems are consistent.
+  if (event_time_sys != origin_time_sys || epoch_time_sys != origin_time_sys)
+    throw std::runtime_error("Event time system: " + event_time_sys + ", ephemeris epoch time system: " + epoch_time_sys +
+      ", and time origin: " + origin_time_sys + " must be the same for now");
 
   // Choose which kind of test to create.
   std::string algorithm = pars["algorithm"];
@@ -392,6 +430,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   }
 
   std::string origin_style = pars["originstyle"];
+  for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
   if (origin_style == "USER") {
     pars.Prompt("origintime");
     pars.Prompt("originformat");
