@@ -1,4 +1,36 @@
 ------------------------------------------------------------
+TAG
+Tag name: v2r1p1, operation: add
+Package: periodSearch
+User: peachey  Fri Feb  3 10:08:55 2006
+Files:
+  periodSearch/ChangeLog  1.58
+  periodSearch/cmt/requirements  1.3
+  periodSearch/data/groD4-dc2v3.fits  1.1.1.1
+  periodSearch/data/groD4-dc2v4.fits  1.1.1.1
+  periodSearch/data/ft1tiny.fits  1.2
+  periodSearch/data/step-01.fits  1.1.1.1
+  periodSearch/data/master_pulsardb.fits  1.1
+  periodSearch/doc/release.notes  1.13
+  periodSearch/periodSearch/PeriodTest.h  1.1.1.1
+  periodSearch/pfiles/gtpsearch.par  1.9
+  periodSearch/pfiles/test_periodSearch.par  1.1
+  periodSearch/src/Z2nTest.h  1.1.1.1
+  periodSearch/src/Z2nTest.cxx  1.1.1.1
+  periodSearch/src/RayleighTest.h  1.1.1.1
+  periodSearch/src/ChiSquaredTest.cxx  1.1.1.1
+  periodSearch/src/mainpage.h  1.3
+  periodSearch/src/PeriodTest.cxx  1.1.1.1
+  periodSearch/src/HTest.cxx  1.1.1.1
+  periodSearch/src/ChiSquaredProb.h  1.1.1.1
+  periodSearch/src/ChiSquaredProb.cxx  1.1.1.1
+  periodSearch/src/HTest.h  1.1.1.1
+  periodSearch/src/ChiSquaredTest.h  1.1.1.1
+  periodSearch/src/gtpsearch/gtpsearch.cxx  1.12
+  periodSearch/src/test/test_psearch.cxx  1.8
+
+    *
+------------------------------------------------------------
 User: peachey  Fri Feb  3 10:08:34 PST 2006
 periodSearch/doc
 
