@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Fri Feb  3 10:06:54 PST 2006
+periodSearch/data
+
+Modified Files:
+	ft1tiny.fits 
+Log Message:
+Synchronizing with evtbin version of data input.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v2r1, operation: add
 Package: periodSearch
