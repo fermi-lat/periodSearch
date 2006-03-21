@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Tue Mar 21 12:44:01 PST 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Correct prompting so that originstyle is prompted for, and in a better order.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v2r1p1, operation: add
 Package: periodSearch
