@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Tue Mar 21 13:34:50 PST 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Do not open database if it is not needed (no binary demodulation and manual ephemeris.)
+
+    *
+------------------------------------------------------------
 User: peachey  Tue Mar 21 13:11:17 PST 2006
 periodSearch/src/gtpsearch
 
