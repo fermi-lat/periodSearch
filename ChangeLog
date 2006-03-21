@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Tue Mar 21 13:11:17 PST 2006
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Remove confusing and complex AUTO option for originstyle.
+
+    *
+------------------------------------------------------------
 User: peachey  Tue Mar 21 12:44:01 PST 2006
 periodSearch/src/gtpsearch
 
