@@ -261,17 +261,7 @@ void PSearchApp::run() {
   for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
   std::auto_ptr<AbsoluteTime> abs_origin(0);
   std::string origin_time_sys;
-  if (origin_style == "AUTO") {
-    // If user supplied eph epoch manually, use it. Otherwise, use the center of the observation for the
-    // origin of the periodicity test.
-    if (eph_style != "DB") {
-      abs_origin.reset(abs_epoch->clone());
-      origin_time_sys = epoch_time_sys;
-    } else {
-      abs_origin.reset(abs_middle->clone());
-      origin_time_sys = event_time_sys;
-    }
-  } else if (origin_style == "TSTART") {
+  if (origin_style == "TSTART") {
     // Get time of origin and its time system from event file.
     abs_origin.reset(abs_tstart->clone());
     origin_time_sys = event_time_sys;
