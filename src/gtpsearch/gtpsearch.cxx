@@ -429,6 +429,10 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
     // if eph_style == "DB", coeffs will be determined.
   }
 
+  pars.Prompt("numtrials");
+  pars.Prompt("numbins");
+
+  pars.Prompt("originstyle");
   std::string origin_style = pars["originstyle"];
   for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
   if (origin_style == "USER") {
@@ -437,8 +441,6 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
     pars.Prompt("originsys");
   }
 
-  pars.Prompt("numtrials");
-  pars.Prompt("numbins");
   pars.Prompt("timefield");
   pars.Prompt("plot");
   pars.Prompt("title");
