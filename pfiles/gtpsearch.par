@@ -14,7 +14,7 @@ timeformat,     s, h, GLAST, "MJD|GLAST", , "Time format for spin ephemeris epoc
 timesys,        s, h, TDB, "TDB|TT", , "Time system for spin ephemeris epoch"
 numtrials,      i, a, 100, , , "Number of trials"
 numbins,        i, a, 10, , , "Number of bins (Chi2 test), harmonics (Z2n test), or maximum harmonics (H test)"
-originstyle,    s, a, AUTO, AUTO|TSTART|TSTOP|MIDDLE|USER, , "How will time origin of periodicity test be specified?"
+originstyle,    s, a, MIDDLE, TSTART|TSTOP|MIDDLE|USER, , "How will time origin of periodicity test be specified?"
 origintime,     r, a, 0., , , "Enter value of time origin of periodicity test"
 originformat,   s, h, GLAST, "MJD|GLAST", , "User time format"
 originsys,      s, h, TDB, "TDB|TT", , "User time system"
