@@ -209,14 +209,16 @@ void PSearchApp::run() {
   SloppyEphChooser chooser;
   EphComputer computer(model, chooser);
 
-  // Open the database.
-  PulsarDb database(psrdb_file);
+  if (eph_style == "DB" || demod_bin_string != "NO") {
+    // Open the database.
+    PulsarDb database(psrdb_file);
 
-  // Select only ephemerides for this pulsar.
-  database.filterName(psr_name);
+    // Select only ephemerides for this pulsar.
+    database.filterName(psr_name);
 
-  // Load the selected ephemerides.
-  computer.load(database);
+    // Load the selected ephemerides.
+    computer.load(database);
+  }
 
   // Determine whether to perform binary demodulation.
   bool demod_bin = false;
