@@ -67,7 +67,7 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
 
   pars.setSwitch("ephstyle");
   pars.setSwitch("cancelpdot");
-  pars.setSwitch("originstyle");
+  pars.setSwitch("timeorigin");
   pars.setCase("ephstyle", "FREQ", "f0");
   pars.setCase("ephstyle", "DB", "cancelpdot");
   pars.setCase("ephstyle", "FREQ", "cancelpdot");
@@ -86,9 +86,9 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
   pars.setCase("cancelpdot", "true", "p1");
   pars.setCase("ephstyle", "PER", "p2");
   pars.setCase("ephstyle", "DB", "psrname");
-  pars.setCase("originstyle", "USER", "origintime");
-  pars.setCase("originstyle", "USER", "originformat");
-  pars.setCase("originstyle", "USER", "originsys");
+  pars.setCase("timeorigin", "USER", "usertime");
+  pars.setCase("timeorigin", "USER", "userformat");
+  pars.setCase("timeorigin", "USER", "usersys");
 }
 
 PSearchApp::~PSearchApp() throw() {
@@ -259,7 +259,7 @@ void PSearchApp::run() {
   }
 
   // Handle styles of origin input.
-  std::string origin_style = pars["originstyle"];
+  std::string origin_style = pars["timeorigin"];
   for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
   std::auto_ptr<AbsoluteTime> abs_origin(0);
   std::string origin_time_sys;
@@ -277,9 +277,9 @@ void PSearchApp::run() {
     origin_time_sys = event_time_sys;
   } else if (origin_style == "USER") {
     // Get time of origin and its format and system from parameters.
-    double origin_time = pars["origintime"];
-    std::string origin_time_format = pars["originformat"];
-    origin_time_sys = pars["originsys"].Value();
+    double origin_time = pars["usertime"];
+    std::string origin_time_format = pars["userformat"];
+    origin_time_sys = pars["usersys"].Value();
 
     // Make case insensitive.
     for (std::string::iterator itor = origin_time_format.begin(); itor != origin_time_format.end(); ++itor) *itor = toupper(*itor);
@@ -429,13 +429,13 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Prompt("numtrials");
   pars.Prompt("numbins");
 
-  pars.Prompt("originstyle");
-  std::string origin_style = pars["originstyle"];
+  pars.Prompt("timeorigin");
+  std::string origin_style = pars["timeorigin"];
   for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
   if (origin_style == "USER") {
-    pars.Prompt("origintime");
-    pars.Prompt("originformat");
-    pars.Prompt("originsys");
+    pars.Prompt("usertime");
+    pars.Prompt("userformat");
+    pars.Prompt("usersys");
   }
 
   pars.Prompt("timefield");
