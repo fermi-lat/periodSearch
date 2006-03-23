@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Thu Mar 23 12:40:57 PST 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Reset computer to use extrapolated ephemeris for downstream corrections.
+(Oh, and use Hz, not /s for the unit on the plot.)
+
+    *
+------------------------------------------------------------
 User: peachey  Tue Mar 21 13:34:50 PST 2006
 periodSearch/src/gtpsearch
 
