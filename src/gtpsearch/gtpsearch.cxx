@@ -313,6 +313,11 @@ void PSearchApp::run() {
   // Compute an ephemeris at abs_origin to use for the test.
   std::auto_ptr<PulsarEph> eph(computer.calcPulsarEph(*abs_origin).clone());
 
+  // Reset computer to contain only the corrected ephemeris which was just computed.
+  PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+  ephemerides.clear();
+  ephemerides.push_back(eph->clone());
+
   // Convert absolute origin to the time system demanded by event file.
   // TODO: Eliminate need for this hideous block.
   double origin = 0.;
@@ -373,7 +378,7 @@ void PSearchApp::run() {
   m_os.out() << *m_test << std::endl;
 
   // TODO: When tip supports getting units from a column, replace the following:
-  std::string unit = "(/s)";
+  std::string unit = "(Hz)";
   // with:
   // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
