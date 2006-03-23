@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Thu Mar 23 12:54:41 PST 2006
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Rename parameters: originstyle -> timeorigin, origintime -> usertime,
+originformat -> userformat, originsys -> usersys.
+
+    *
+------------------------------------------------------------
 User: peachey  Thu Mar 23 12:54:40 PST 2006
 periodSearch/src/gtpsearch
 
