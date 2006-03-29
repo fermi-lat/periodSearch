@@ -2,9 +2,15 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.12 2006/02/01 22:07:12 peachey Exp $
+$Id: release.notes,v 1.13 2006/02/03 18:08:34 peachey Exp $
 
 \verbatim
+29-mar-2006        v3 JP  Rename parameters related to user input origin.
+                          Remove "auto" option from originstyle parameter.
+                          Prompt for originstyle. Reset the EphComputer used by
+                          gtpsearch so that it uses the extrapolated ephemeris for
+                          downstream calculations including pdot cancellation. Do not
+                          open pulsar database unless it's really needed.
 03-feb-2006    v2r1p1 JP  Synchronize ft1tiny.fits with evtbin's version.
 01-feb-2006      v2r1 JP  Improve checks for consistency between time systems.
 27-jan-2006        v2 JP  Handle event times, ephemeris time and origin time for the
