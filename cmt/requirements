@@ -4,7 +4,7 @@ version v0
 
 author James Peachey <peachey@milkyway.gsfc.nasa.gov>
 
-# $Id: requirements,v 1.2 2005/02/02 17:53:32 peachey Exp $
+# $Id: requirements,v 1.3 2005/08/12 19:36:20 peachey Exp $
 
 use STpolicy *
 use pulsarDb *
@@ -12,6 +12,7 @@ use st_app *
 use st_facilities *
 use st_graph *
 use st_stream *
+use timeSystem *
 
 apply_pattern ST_library option=-no_share
 apply_pattern ST_pfiles
