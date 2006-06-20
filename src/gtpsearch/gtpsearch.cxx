@@ -9,10 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "pulsarDb/AbsoluteTime.h"
 #include "pulsarDb/EphChooser.h"
 #include "pulsarDb/EphComputer.h"
-#include "pulsarDb/GlastTime.h"
 #include "pulsarDb/PulsarDb.h"
 #include "pulsarDb/PulsarEph.h"
 #include "pulsarDb/TimingModel.h"
@@ -20,6 +18,9 @@
 #include "st_app/AppParGroup.h"
 #include "st_app/StApp.h"
 #include "st_app/StAppFactory.h"
+
+#include "timeSystem/AbsoluteTime.h"
+#include "timeSystem/TimeRep.h"
 
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
@@ -37,6 +38,7 @@
 #include "Z2nTest.h"
 
 using namespace periodSearch;
+using namespace timeSystem;
 
 static const std::string s_cvs_id = "$Name:  $";
 
@@ -149,14 +151,11 @@ void PSearchApp::run() {
   std::string demod_bin_string = pars["demodbin"];
   for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = toupper(*itor);
   
-  std::auto_ptr<AbsoluteTime> abs_epoch(0);
-  if (epoch_time_sys == "TDB") {
-    abs_epoch.reset(new GlastTdbTime(epoch));
-  } else if (epoch_time_sys == "TT") {
-    abs_epoch.reset(new GlastTtTime(epoch));
-  } else {
+  if (epoch_time_sys != "TDB" && epoch_time_sys != "TT") {
     throw std::runtime_error("Ephemeris epoch can only be in TDB or TT time systems for now");
   }
+  MetRep epoch_rep(epoch_time_sys, 51910, 0., epoch);
+  AbsoluteTime abs_epoch = epoch_rep.getTime();
 
   // Open the test file.
   std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
@@ -185,20 +184,16 @@ void PSearchApp::run() {
 
   if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
 
-  std::auto_ptr<AbsoluteTime> abs_tstart(0);
-  std::auto_ptr<AbsoluteTime> abs_tstop(0);
-  std::auto_ptr<AbsoluteTime> abs_middle(0);
-  if (event_time_sys == "TDB") {
-    abs_tstart.reset(new GlastTdbTime(tstart));
-    abs_tstop.reset(new GlastTdbTime(tstop));
-    abs_middle.reset(new GlastTdbTime(.5 * (tstart + tstop)));
-  } else if (event_time_sys == "TT") {
-    abs_tstart.reset(new GlastTtTime(tstart));
-    abs_tstop.reset(new GlastTtTime(tstop));
-    abs_middle.reset(new GlastTtTime(.5 * (tstart + tstop)));
-  } else {
+  if (event_time_sys != "TDB" && event_time_sys != "TT") {
     throw std::runtime_error("Event file can only be in TDB or TT time systems for now");
   }
+  MetRep evt_time_rep(event_time_sys, 51910, 0., 0.);
+  evt_time_rep.setValue(tstart);
+  AbsoluteTime abs_tstart = evt_time_rep.getTime();
+  evt_time_rep.setValue(tstop);
+  AbsoluteTime abs_tstop = evt_time_rep.getTime();
+  evt_time_rep.setValue(.5 * (tstart + tstop));
+  AbsoluteTime abs_middle = evt_time_rep.getTime();
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration.
   if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
@@ -242,7 +237,7 @@ void PSearchApp::run() {
     // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
     PulsarEphCont & ephemerides(computer.getPulsarEphCont());
     ephemerides.clear();
-    ephemerides.push_back(FrequencyEph(*abs_tstart, *abs_tstop, *abs_epoch, phi0, f0, f1, f2).clone());
+    ephemerides.push_back(FrequencyEph(abs_tstart, abs_tstop, abs_epoch, phi0, f0, f1, f2).clone());
   } else if (eph_style == "PER") {
     double p0 = pars["p0"];
     double p1 = pars["p1"];
@@ -253,7 +248,7 @@ void PSearchApp::run() {
     // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
     PulsarEphCont & ephemerides(computer.getPulsarEphCont());
     ephemerides.clear();
-    ephemerides.push_back(PeriodEph(*abs_tstart, *abs_tstop, *abs_epoch, phi0, p0, p1, p2).clone());
+    ephemerides.push_back(PeriodEph(abs_tstart, abs_tstop, abs_epoch, phi0, p0, p1, p2).clone());
   } else if (eph_style == "DB") {
     // No action needed.
   }
@@ -261,19 +256,19 @@ void PSearchApp::run() {
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
   for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
-  std::auto_ptr<AbsoluteTime> abs_origin(0);
+  AbsoluteTime abs_origin("TDB", Duration(0, 0.), Duration(0, 0.));
   std::string origin_time_sys;
   if (origin_style == "TSTART") {
     // Get time of origin and its time system from event file.
-    abs_origin.reset(abs_tstart->clone());
+    abs_origin = abs_tstart;
     origin_time_sys = event_time_sys;
   } else if (origin_style == "TSTOP") {
     // Get time of origin and its time system from event file.
-    abs_origin.reset(abs_tstop->clone());
+    abs_origin = abs_tstop;
     origin_time_sys = event_time_sys;
   } else if (origin_style == "MIDDLE") {
     // Get time of origin and its time system from event file.
-    abs_origin.reset(abs_middle->clone());
+    abs_origin = abs_middle;
     origin_time_sys = event_time_sys;
   } else if (origin_style == "USER") {
     // Get time of origin and its format and system from parameters.
@@ -289,13 +284,11 @@ void PSearchApp::run() {
     if (origin_time_format != "GLAST") throw std::runtime_error("Time origin may only be in GLAST time format");
 
     // Set up the origin using the given time system.
-    if (origin_time_sys == "TDB") {
-      abs_origin.reset(new GlastTdbTime(origin_time));
-    } else if (origin_time_sys == "TT") {
-      abs_origin.reset(new GlastTtTime(origin_time));
-    } else {
+    if (origin_time_sys != "TDB" && origin_time_sys != "TT") {
       throw std::runtime_error("Time origin may only be in TDB or TT time systems");
     }
+    MetRep origin_rep(origin_time_sys, 51910, 0., origin_time);
+    abs_origin = origin_rep.getTime();
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
@@ -311,7 +304,7 @@ void PSearchApp::run() {
   for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = toupper(*itor);
 
   // Compute an ephemeris at abs_origin to use for the test.
-  std::auto_ptr<PulsarEph> eph(computer.calcPulsarEph(*abs_origin).clone());
+  std::auto_ptr<PulsarEph> eph(computer.calcPulsarEph(abs_origin).clone());
 
   // Reset computer to contain only the corrected ephemeris which was just computed.
   PulsarEphCont & ephemerides(computer.getPulsarEphCont());
@@ -320,14 +313,16 @@ void PSearchApp::run() {
 
   // Convert absolute origin to the time system demanded by event file.
   // TODO: Eliminate need for this hideous block.
-  double origin = 0.;
-  if (event_time_sys == "TDB") {
-    origin = GlastTdbTime(*abs_origin).elapsed();
-  } else if (event_time_sys == "TT") {
-    origin = GlastTtTime(*abs_origin).elapsed();
-  } else {
-    throw std::runtime_error("Event file can only be in TDB or TT time systems for now");
-  }
+  abs_origin.getTime(evt_time_rep);
+  double origin = evt_time_rep.getValue();
+//  double origin = 0.;
+//  if (event_time_sys == "TDB") {
+//    origin = GlastTdbTime(*abs_origin).elapsed();
+//  } else if (event_time_sys == "TT") {
+//    origin = GlastTtTime(*abs_origin).elapsed();
+//  } else {
+//    throw std::runtime_error("Event file can only be in TDB or TT time systems for now");
+//  }
 
   // Create the proper test.
   if (algorithm == "CHI2") 
@@ -343,6 +338,17 @@ void PSearchApp::run() {
     // Get value from the table.
     double evt_time = (*itor)[time_field].get();
 
+    evt_time_rep.setValue(evt_time);
+    AbsoluteTime abs_evt_time = evt_time_rep.getTime();
+    // Perform binary correction if so desired.
+    if (demod_bin) computer.demodulateBinary(abs_evt_time);
+
+    // Perform pdot correction if so desired.
+    // For efficiency use the TimingModel directly here, instead of using the EphComputer.
+    if (cancel_pdot) computer.cancelPdot(abs_evt_time);
+    abs_evt_time.getTime(evt_time_rep);
+    evt_time = evt_time_rep.getValue();
+#if 0
     if (event_time_sys == "TDB") {
       GlastTdbTime tdb(evt_time);
       // Perform binary correction if so desired.
@@ -362,6 +368,7 @@ void PSearchApp::run() {
       if (cancel_pdot) computer.cancelPdot(tt);
       evt_time = tt.elapsed();
     }
+#endif
 
     // Fill into the test.
     m_test->fill(evt_time);

@@ -12,7 +12,6 @@
 
 #include "pulsarDb/EphChooser.h"
 #include "pulsarDb/EphComputer.h"
-#include "pulsarDb/GlastTime.h"
 #include "pulsarDb/PulsarDb.h"
 #include "pulsarDb/PulsarEph.h"
 #include "pulsarDb/TimingModel.h"
@@ -26,6 +25,9 @@
 #include "st_stream/Stream.h"
 #include "st_stream/StreamFormatter.h"
 #include "st_stream/st_stream.h"
+
+#include "timeSystem/AbsoluteTime.h"
+#include "timeSystem/TimeRep.h"
 
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
@@ -143,19 +145,34 @@ void PSearchTestApp::run() {
   double p2dot = 0.; // Not available.
 
   using namespace pulsarDb;
+  using namespace timeSystem;
 
   // The following declarator looks like a function prototype.
   // PeriodEph eph(GlastTdbTime(valid_since), GlastTdbTime(valid_until), GlastTdbTime(epoch), phi0, 1. / central, pdot, p2dot);
   // Resolve the misunderstanding by using a temporary variable for the first argument.
-  GlastTdbTime vs(valid_since);
-  PeriodEph eph(vs, GlastTdbTime(valid_until), GlastTdbTime(epoch), phi0, 1. / central, pdot, p2dot);
+  MetRep glast_tdb("TDB", 51910, 0., 0.);
+  glast_tdb.setValue(valid_since);
+  AbsoluteTime abs_since = glast_tdb.getTime();
+  glast_tdb.setValue(valid_until);
+  AbsoluteTime abs_until = glast_tdb.getTime();
+  glast_tdb.setValue(epoch);
+  AbsoluteTime abs_epoch = glast_tdb.getTime();
+
+  PeriodEph eph(abs_since, abs_until, abs_epoch, phi0, 1. / central, pdot, p2dot);
+//  GlastTdbTime vs(valid_since);
+//  PeriodEph eph(vs, GlastTdbTime(valid_until), GlastTdbTime(epoch), phi0, 1. / central, pdot, p2dot);
   TimingModel timing_model;
 
   // Correct the data.
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
-    GlastTdbTime tdb(*itor);
-    timing_model.cancelPdot(eph, tdb);
-    *itor = tdb.elapsed();
+    glast_tdb.setValue(*itor);
+    AbsoluteTime evt_time = glast_tdb.getTime();
+    timing_model.cancelPdot(eph, evt_time);
+    evt_time.getTime(glast_tdb);
+    *itor = glast_tdb.getValue();
+//    GlastTdbTime tdb(*itor);
+//    timing_model.cancelPdot(eph, tdb);
+//    *itor = tdb.elapsed();
   }
 
   // Repeat test with the pdot corrected data.
@@ -229,6 +246,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string pulsar_name,
   double epoch) {
   using namespace pulsarDb;
+  using namespace timeSystem;
   using namespace tip;
 
   m_os.setMethod("testChooseEph");
@@ -257,7 +275,9 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
   // Load ephemerides into computer.
   computer.load(db);
 
-  FrequencyEph freq = computer.calcPulsarEph(GlastTdbTime(epoch));
+  MetRep glast_tdb("TDB", 51910, 0., epoch);
+  FrequencyEph freq = computer.calcPulsarEph(glast_tdb.getTime());
+//  FrequencyEph freq = computer.calcPulsarEph(GlastTdbTime(epoch));
 
   const double epsilon = 1.e-8;
 
@@ -274,7 +294,8 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
   }
 
   // Select the best ephemeris for this time.
-  const PulsarEph & chosen_eph(chooser.choose(computer.getPulsarEphCont(), GlastTdbTime(epoch)));
+  glast_tdb.setValue(epoch);
+  const PulsarEph & chosen_eph(chooser.choose(computer.getPulsarEphCont(), glast_tdb.getTime()));
 
   double correct_f2 = chosen_eph.f2();
   if (fabs(correct_f2/freq.f2() - 1.) > epsilon) {
