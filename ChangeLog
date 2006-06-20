@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Tue Jun 20 14:51:28 PDT 2006
+periodSearch/cmt
+
+Modified Files:
+	requirements 
+Log Message:
+Replace time-handling classes (AbsoluteTime etc.) with the ones in timeSystem package.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v3, operation: add
 Package: periodSearch
