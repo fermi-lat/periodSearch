@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Fri Jun 23 13:38:21 PDT 2006
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Adopt to changes in PulsarEph class (inclusion of time system and unit time). Add comments (TODO markers) to indicate needs of future works.
+
+    *
+------------------------------------------------------------
+User: hirayama  Fri Jun 23 13:38:21 PDT 2006
 periodSearch/src/gtpsearch
 
 Modified Files:
