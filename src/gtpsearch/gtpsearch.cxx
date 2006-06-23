@@ -154,6 +154,7 @@ void PSearchApp::run() {
   if (epoch_time_sys != "TDB" && epoch_time_sys != "TT") {
     throw std::runtime_error("Ephemeris epoch can only be in TDB or TT time systems for now");
   }
+  // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
   MetRep epoch_rep(epoch_time_sys, 51910, 0., epoch);
   AbsoluteTime abs_epoch = epoch_rep.getTime();
 
@@ -187,6 +188,7 @@ void PSearchApp::run() {
   if (event_time_sys != "TDB" && event_time_sys != "TT") {
     throw std::runtime_error("Event file can only be in TDB or TT time systems for now");
   }
+  // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
   MetRep evt_time_rep(event_time_sys, 51910, 0., 0.);
   evt_time_rep.setValue(tstart);
   AbsoluteTime abs_tstart = evt_time_rep.getTime();
@@ -237,7 +239,9 @@ void PSearchApp::run() {
     // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
     PulsarEphCont & ephemerides(computer.getPulsarEphCont());
     ephemerides.clear();
-    ephemerides.push_back(FrequencyEph(abs_tstart, abs_tstop, abs_epoch, phi0, f0, f1, f2).clone());
+    // TODO: Re-consider which time system to be used below. A new parameter?
+    // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
+    ephemerides.push_back(FrequencyEph(event_time_sys, abs_tstart, abs_tstop, abs_epoch, phi0, f0, f1, f2).clone());
   } else if (eph_style == "PER") {
     double p0 = pars["p0"];
     double p1 = pars["p1"];
@@ -248,7 +252,9 @@ void PSearchApp::run() {
     // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
     PulsarEphCont & ephemerides(computer.getPulsarEphCont());
     ephemerides.clear();
-    ephemerides.push_back(PeriodEph(abs_tstart, abs_tstop, abs_epoch, phi0, p0, p1, p2).clone());
+    // TODO: Re-consider which time system to be used below. A new parameter?
+    // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
+    ephemerides.push_back(PeriodEph(event_time_sys, abs_tstart, abs_tstop, abs_epoch, phi0, p0, p1, p2).clone());
   } else if (eph_style == "DB") {
     // No action needed.
   }
@@ -287,6 +293,7 @@ void PSearchApp::run() {
     if (origin_time_sys != "TDB" && origin_time_sys != "TT") {
       throw std::runtime_error("Time origin may only be in TDB or TT time systems");
     }
+  // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
     MetRep origin_rep(origin_time_sys, 51910, 0., origin_time);
     abs_origin = origin_rep.getTime();
   } else {
