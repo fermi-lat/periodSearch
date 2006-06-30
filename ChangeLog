@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Jun 30 14:15:05 PDT 2006
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Improve handling of changes in MJDREF by using timeSystem::MetRep class. Change hard-coded epoch from 23078385.922 to 212380785.922.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Jun 23 13:38:21 PDT 2006
 periodSearch/src/test
 
