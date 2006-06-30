@@ -38,10 +38,6 @@
 #include "RayleighTest.h"
 #include "Z2nTest.h"
 
-static const long double s_orig_mjdref = 54101.L;
-static const long double s_current_mjdref = 51910.L;
-static const long double s_mjd_offset = s_current_mjdref - s_orig_mjdref;
-static const double s_sec_per_day = 86400.;
 static const std::string s_cvs_id = "$Name:  $";
 
 class PSearchTestApp : public st_app::StApp {
@@ -94,7 +90,9 @@ void PSearchTestApp::run() {
   std::string unit = "(/s)";
 
   // Test process of picking the ephemeris.
-  testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", 23078385.922 - s_mjd_offset * s_sec_per_day);
+  testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", 212380785.922);
+
+
 
   if (m_failed) throw std::runtime_error("UNIT TEST FAILED");
 
@@ -110,7 +108,7 @@ void PSearchTestApp::run() {
   central = 1. / 50.41843041e-3;
   step = .168e-7 * central * central;
 
-  epoch = 23078385.922 - s_mjd_offset * s_sec_per_day;
+  epoch = 212380785.922;
 
   fake_evts.clear();
 
@@ -131,9 +129,13 @@ void PSearchTestApp::run() {
   // Make the array big enough to hold these events.
   fake_evts.resize(evt_table->getNumRecords());
 
+  timeSystem::MetRep orig_glast_time("TDB", 54101, 0., 0.);
+  timeSystem::MetRep current_glast_time("TDB", 51910, 0., 0.);
   std::vector<double>::iterator event_itor = fake_evts.begin();
   for (tip::Table::ConstIterator itor = evt_table->begin(); itor != evt_table->end(); ++itor, ++event_itor) {
-    *event_itor = (*itor)["TIME"].get() - s_mjd_offset * s_sec_per_day;
+    orig_glast_time.setValue((*itor)["TIME"].get());
+    current_glast_time.setTime(orig_glast_time.getTime());
+    *event_itor = current_glast_time.getValue();
   }
 
   // Repeat simple test with this somewhat less artificial data.
