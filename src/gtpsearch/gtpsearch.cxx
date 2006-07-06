@@ -156,7 +156,7 @@ void PSearchApp::run() {
   }
   // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
   MetRep epoch_rep(epoch_time_sys, 51910, 0., epoch);
-  AbsoluteTime abs_epoch = epoch_rep.getTime();
+  AbsoluteTime abs_epoch(epoch_rep);
 
   // Open the test file.
   std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
@@ -191,11 +191,11 @@ void PSearchApp::run() {
   // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
   MetRep evt_time_rep(event_time_sys, 51910, 0., 0.);
   evt_time_rep.setValue(tstart);
-  AbsoluteTime abs_tstart = evt_time_rep.getTime();
+  AbsoluteTime abs_tstart(evt_time_rep);
   evt_time_rep.setValue(tstop);
-  AbsoluteTime abs_tstop = evt_time_rep.getTime();
+  AbsoluteTime abs_tstop(evt_time_rep);
   evt_time_rep.setValue(.5 * (tstart + tstop));
-  AbsoluteTime abs_middle = evt_time_rep.getTime();
+  AbsoluteTime abs_middle(evt_time_rep);
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration.
   if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
@@ -295,7 +295,7 @@ void PSearchApp::run() {
     }
   // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
     MetRep origin_rep(origin_time_sys, 51910, 0., origin_time);
-    abs_origin = origin_rep.getTime();
+    abs_origin.setTime(origin_rep);
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
@@ -346,7 +346,7 @@ void PSearchApp::run() {
     double evt_time = (*itor)[time_field].get();
 
     evt_time_rep.setValue(evt_time);
-    AbsoluteTime abs_evt_time = evt_time_rep.getTime();
+    AbsoluteTime abs_evt_time(evt_time_rep);
     // Perform binary correction if so desired.
     if (demod_bin) computer.demodulateBinary(abs_evt_time);
 

@@ -134,7 +134,8 @@ void PSearchTestApp::run() {
   std::vector<double>::iterator event_itor = fake_evts.begin();
   for (tip::Table::ConstIterator itor = evt_table->begin(); itor != evt_table->end(); ++itor, ++event_itor) {
     orig_glast_time.setValue((*itor)["TIME"].get());
-    current_glast_time.setTime(orig_glast_time.getTime());
+    timeSystem::AbsoluteTime orig_time(orig_glast_time);
+    orig_time.getTime(current_glast_time);
     *event_itor = current_glast_time.getValue();
   }
 
@@ -154,11 +155,11 @@ void PSearchTestApp::run() {
   // Resolve the misunderstanding by using a temporary variable for the first argument.
   MetRep glast_tdb("TDB", 51910, 0., 0.);
   glast_tdb.setValue(valid_since);
-  AbsoluteTime abs_since = glast_tdb.getTime();
+  AbsoluteTime abs_since(glast_tdb);
   glast_tdb.setValue(valid_until);
-  AbsoluteTime abs_until = glast_tdb.getTime();
+  AbsoluteTime abs_until(glast_tdb);
   glast_tdb.setValue(epoch);
-  AbsoluteTime abs_epoch = glast_tdb.getTime();
+  AbsoluteTime abs_epoch(glast_tdb);
 
   PeriodEph eph("TDB", abs_since, abs_until, abs_epoch, phi0, 1. / central, pdot, p2dot);
 //  GlastTdbTime vs(valid_since);
@@ -168,7 +169,7 @@ void PSearchTestApp::run() {
   // Correct the data.
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
     glast_tdb.setValue(*itor);
-    AbsoluteTime evt_time = glast_tdb.getTime();
+    AbsoluteTime evt_time(glast_tdb);
     timing_model.cancelPdot(eph, evt_time);
     evt_time.getTime(glast_tdb);
     *itor = glast_tdb.getValue();
@@ -278,7 +279,7 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
   computer.load(db);
 
   MetRep glast_tdb("TDB", 51910, 0., epoch);
-  FrequencyEph freq = computer.calcPulsarEph(glast_tdb.getTime());
+  FrequencyEph freq = computer.calcPulsarEph(AbsoluteTime(glast_tdb));
 //  FrequencyEph freq = computer.calcPulsarEph(GlastTdbTime(epoch));
 
   const double epsilon = 1.e-8;
@@ -297,7 +298,7 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
 
   // Select the best ephemeris for this time.
   glast_tdb.setValue(epoch);
-  const PulsarEph & chosen_eph(chooser.choose(computer.getPulsarEphCont(), glast_tdb.getTime()));
+  const PulsarEph & chosen_eph(chooser.choose(computer.getPulsarEphCont(), AbsoluteTime(glast_tdb)));
 
   double correct_f2 = chosen_eph.f2();
   if (fabs(correct_f2/freq.f2() - 1.) > epsilon) {
