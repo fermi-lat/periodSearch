@@ -319,17 +319,8 @@ void PSearchApp::run() {
   ephemerides.push_back(eph->clone());
 
   // Convert absolute origin to the time system demanded by event file.
-  // TODO: Eliminate need for this hideous block.
   abs_origin.getTime(evt_time_rep);
   double origin = evt_time_rep.getValue();
-//  double origin = 0.;
-//  if (event_time_sys == "TDB") {
-//    origin = GlastTdbTime(*abs_origin).elapsed();
-//  } else if (event_time_sys == "TT") {
-//    origin = GlastTtTime(*abs_origin).elapsed();
-//  } else {
-//    throw std::runtime_error("Event file can only be in TDB or TT time systems for now");
-//  }
 
   // Create the proper test.
   if (algorithm == "CHI2") 
@@ -355,27 +346,6 @@ void PSearchApp::run() {
     if (cancel_pdot) computer.cancelPdot(abs_evt_time);
     abs_evt_time.getTime(evt_time_rep);
     evt_time = evt_time_rep.getValue();
-#if 0
-    if (event_time_sys == "TDB") {
-      GlastTdbTime tdb(evt_time);
-      // Perform binary correction if so desired.
-      if (demod_bin) computer.demodulateBinary(tdb);
-
-      // Perform pdot correction if so desired.
-      // For efficiency use the TimingModel directly here, instead of using the EphComputer.
-      if (cancel_pdot) computer.cancelPdot(tdb);
-      evt_time = tdb.elapsed();
-    } else {
-      GlastTtTime tt(evt_time);
-      // Perform binary correction if so desired.
-      if (demod_bin) computer.demodulateBinary(tt);
-
-      // Perform pdot correction if so desired.
-      // For efficiency use the TimingModel directly here, instead of using the EphComputer.
-      if (cancel_pdot) computer.cancelPdot(tt);
-      evt_time = tt.elapsed();
-    }
-#endif
 
     // Fill into the test.
     m_test->fill(evt_time);
