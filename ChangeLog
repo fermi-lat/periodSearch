@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Thu Jul  6 13:10:39 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Correct code so that it does not use TimeRep::getTime or setTime, which
+were removed.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Jun 30 14:15:05 PDT 2006
 periodSearch/src/test
 
