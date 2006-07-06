@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Thu Jul  6 14:14:02 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Clean up -- remove some commented out code.
+
+    *
+------------------------------------------------------------
+User: peachey  Thu Jul  6 14:14:02 PDT 2006
 periodSearch/src/test
 
 Modified Files:
