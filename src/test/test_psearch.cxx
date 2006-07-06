@@ -162,8 +162,6 @@ void PSearchTestApp::run() {
   AbsoluteTime abs_epoch(glast_tdb);
 
   PeriodEph eph("TDB", abs_since, abs_until, abs_epoch, phi0, 1. / central, pdot, p2dot);
-//  GlastTdbTime vs(valid_since);
-//  PeriodEph eph(vs, GlastTdbTime(valid_until), GlastTdbTime(epoch), phi0, 1. / central, pdot, p2dot);
   TimingModel timing_model;
 
   // Correct the data.
@@ -173,9 +171,6 @@ void PSearchTestApp::run() {
     timing_model.cancelPdot(eph, evt_time);
     evt_time.getTime(glast_tdb);
     *itor = glast_tdb.getValue();
-//    GlastTdbTime tdb(*itor);
-//    timing_model.cancelPdot(eph, tdb);
-//    *itor = tdb.elapsed();
   }
 
   // Repeat test with the pdot corrected data.
@@ -280,7 +275,6 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
 
   MetRep glast_tdb("TDB", 51910, 0., epoch);
   FrequencyEph freq = computer.calcPulsarEph(AbsoluteTime(glast_tdb));
-//  FrequencyEph freq = computer.calcPulsarEph(GlastTdbTime(epoch));
 
   const double epsilon = 1.e-8;
 
