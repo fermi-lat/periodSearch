@@ -139,14 +139,6 @@ void PSearchApp::run() {
   // Ignored but needed for timing model.
   double phi0 = 0.;
 
-  // Find the pulsar database.
-  std::string psrdb_file = pars["psrdbfile"];
-  std::string psrdb_file_uc = psrdb_file;
-  for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = toupper(*itor);
-  if ("DEFAULT" == psrdb_file_uc) {
-    using namespace st_facilities;
-    psrdb_file = Env::appendFileName(Env::getDataDir("periodSearch"), "master_pulsardb.fits");
-  }
   std::string psr_name = pars["psrname"];
   std::string demod_bin_string = pars["demodbin"];
   for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = toupper(*itor);
@@ -202,29 +194,6 @@ void PSearchApp::run() {
   SloppyEphChooser chooser;
   EphComputer computer(model, chooser);
 
-  if (eph_style == "DB" || demod_bin_string != "NO") {
-    // Open the database.
-    PulsarDb database(psrdb_file);
-
-    // Select only ephemerides for this pulsar.
-    database.filterName(psr_name);
-
-    // Load the selected ephemerides.
-    if (eph_style == "DB") computer.loadPulsarEph(database);
-    computer.loadOrbitalEph(database);
-  }
-
-  // Determine whether to perform binary demodulation.
-  bool demod_bin = false;
-  if (demod_bin_string != "NO") {
-    // User selected not "no", so attempt to perform demodulation
-    if (!computer.getOrbitalEphCont().empty()) {
-      demod_bin = true;
-    } else if (demod_bin_string == "YES") {
-      throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
-    }
-  }
-
   if (eph_style != "DB") {
     // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
     MetRep epoch_rep(epoch_time_sys, 51910, 0., epoch);
@@ -255,6 +224,38 @@ void PSearchApp::run() {
       // TODO: Re-consider which time system to be used below. A new parameter?
       // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
       ephemerides.push_back(PeriodEph(event_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, p0, p1, p2).clone());
+    }
+  }
+
+  if (eph_style == "DB" || demod_bin_string != "NO") {
+    // Find the pulsar database.
+    std::string psrdb_file = pars["psrdbfile"];
+    std::string psrdb_file_uc = psrdb_file;
+    for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = toupper(*itor);
+    if ("DEFAULT" == psrdb_file_uc) {
+      using namespace st_facilities;
+      psrdb_file = Env::appendFileName(Env::getDataDir("periodSearch"), "master_pulsardb.fits");
+    }
+
+    // Open the database.
+    PulsarDb database(psrdb_file);
+
+    // Select only ephemerides for this pulsar.
+    database.filterName(psr_name);
+
+    // Load the selected ephemerides.
+    if (eph_style == "DB") computer.loadPulsarEph(database);
+    computer.loadOrbitalEph(database);
+  }
+
+  // Determine whether to perform binary demodulation.
+  bool demod_bin = false;
+  if (demod_bin_string != "NO") {
+    // User selected not "no", so attempt to perform demodulation
+    if (!computer.getOrbitalEphCont().empty()) {
+      demod_bin = true;
+    } else if (demod_bin_string == "YES") {
+      throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
     }
   }
 
