@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Jul 12 14:00:12 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Set up block to handle user time formats other than GLAST, in principle.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jul 12 13:56:31 PDT 2006
 periodSearch/src/gtpsearch
 
