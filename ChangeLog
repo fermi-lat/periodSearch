@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Jul 12 13:48:09 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Determine database name in the same scope where it is used, and
+relocate manual ephemeris entry to occur before database is set up.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jul 12 13:42:45 PDT 2006
 periodSearch/src/gtpsearch
 
