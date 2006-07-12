@@ -154,10 +154,6 @@ void PSearchApp::run() {
   if (epoch_time_sys != "TDB" && epoch_time_sys != "TT") {
     throw std::runtime_error("Ephemeris epoch can only be in TDB or TT time systems for now");
   }
-  // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
-  MetRep epoch_rep(epoch_time_sys, 51910, 0., epoch);
-  AbsoluteTime abs_epoch(epoch_rep);
-
   // Open the test file.
   std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
 
@@ -228,35 +224,39 @@ void PSearchApp::run() {
     }
   }
 
-  // Handle either period or frequency-style input.
-  if (eph_style == "FREQ") {
-    double f0 = pars["f0"];
-    double f1 = pars["f1"];
-    double f2 = pars["f2"];
+  if (eph_style != "DB") {
+    // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
+    MetRep epoch_rep(epoch_time_sys, 51910, 0., epoch);
+    AbsoluteTime abs_epoch(epoch_rep);
 
-    if (0. >= f0) throw std::runtime_error("Frequency must be positive.");
-
-    // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
-    PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-    ephemerides.clear();
-    // TODO: Re-consider which time system to be used below. A new parameter?
-    // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
-    ephemerides.push_back(FrequencyEph(event_time_sys, abs_tstart, abs_tstop, abs_epoch, phi0, f0, f1, f2).clone());
-  } else if (eph_style == "PER") {
-    double p0 = pars["p0"];
-    double p1 = pars["p1"];
-    double p2 = pars["p2"];
-
-    if (0. >= p0) throw std::runtime_error("Period must be positive.");
-
-    // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
-    PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-    ephemerides.clear();
-    // TODO: Re-consider which time system to be used below. A new parameter?
-    // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
-    ephemerides.push_back(PeriodEph(event_time_sys, abs_tstart, abs_tstop, abs_epoch, phi0, p0, p1, p2).clone());
-  } else if (eph_style == "DB") {
-    // No action needed.
+    // Handle either period or frequency-style input.
+    if (eph_style == "FREQ") {
+      double f0 = pars["f0"];
+      double f1 = pars["f1"];
+      double f2 = pars["f2"];
+  
+      if (0. >= f0) throw std::runtime_error("Frequency must be positive.");
+  
+      // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
+      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+      ephemerides.clear();
+      // TODO: Re-consider which time system to be used below. A new parameter?
+      // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
+      ephemerides.push_back(FrequencyEph(event_time_sys, abs_tstart, abs_tstop, abs_epoch, phi0, f0, f1, f2).clone());
+    } else if (eph_style == "PER") {
+      double p0 = pars["p0"];
+      double p1 = pars["p1"];
+      double p2 = pars["p2"];
+  
+      if (0. >= p0) throw std::runtime_error("Period must be positive.");
+  
+      // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
+      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+      ephemerides.clear();
+      // TODO: Re-consider which time system to be used below. A new parameter?
+      // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
+      ephemerides.push_back(PeriodEph(event_time_sys, abs_tstart, abs_tstop, abs_epoch, phi0, p0, p1, p2).clone());
+    }
   }
 
   // Handle styles of origin input.
