@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Jul 12 13:56:31 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use epoch_time_sys for manual ephemerides, not the event time sys.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jul 12 13:53:43 PDT 2006
 periodSearch/src/gtpsearch
 
