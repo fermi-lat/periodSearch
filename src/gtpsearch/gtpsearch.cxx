@@ -131,9 +131,6 @@ void PSearchApp::run() {
   // Make time formats etc. case insensitive.
   for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = toupper(*itor);
 
-  if (eph_style != "DB" && epoch_time_format != "GLAST")
-    throw std::runtime_error("Only GLAST time format is supported for manual ephemeris epoch");
-
   using namespace pulsarDb;
 
   // Ignored but needed for timing model.
@@ -195,9 +192,13 @@ void PSearchApp::run() {
   EphComputer computer(model, chooser);
 
   if (eph_style != "DB") {
-    // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
-    MetRep epoch_rep(epoch_time_sys, 51910, 0., epoch);
-    AbsoluteTime abs_epoch(epoch_rep);
+    std::auto_ptr<TimeRep> epoch_rep(0);
+    if (epoch_time_format == "GLAST") {
+      epoch_rep.reset(new MetRep(epoch_time_sys, 51910, 0., epoch));
+    } else {
+      throw std::runtime_error("Only GLAST time format is supported for manual ephemeris epoch");
+    }
+    AbsoluteTime abs_epoch(*epoch_rep);
 
     // Handle either period or frequency-style input.
     if (eph_style == "FREQ") {
