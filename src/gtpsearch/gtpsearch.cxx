@@ -210,7 +210,8 @@ void PSearchApp::run() {
     database.filterName(psr_name);
 
     // Load the selected ephemerides.
-    computer.load(database);
+    if (eph_style == "DB") computer.loadPulsarEph(database);
+    computer.loadOrbitalEph(database);
   }
 
   // Determine whether to perform binary demodulation.
@@ -239,10 +240,9 @@ void PSearchApp::run() {
   
       // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
       PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-      ephemerides.clear();
       // TODO: Re-consider which time system to be used below. A new parameter?
       // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
-      ephemerides.push_back(FrequencyEph(event_time_sys, abs_tstart, abs_tstop, abs_epoch, phi0, f0, f1, f2).clone());
+      ephemerides.push_back(FrequencyEph(event_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, f0, f1, f2).clone());
     } else if (eph_style == "PER") {
       double p0 = pars["p0"];
       double p1 = pars["p1"];
@@ -252,10 +252,9 @@ void PSearchApp::run() {
   
       // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
       PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-      ephemerides.clear();
       // TODO: Re-consider which time system to be used below. A new parameter?
       // NOTE: Currently event_time_sys is used to match the latest release version (v3) of this tool.
-      ephemerides.push_back(PeriodEph(event_time_sys, abs_tstart, abs_tstop, abs_epoch, phi0, p0, p1, p2).clone());
+      ephemerides.push_back(PeriodEph(event_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, p0, p1, p2).clone());
     }
   }
 
