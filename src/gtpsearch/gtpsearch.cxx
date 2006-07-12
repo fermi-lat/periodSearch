@@ -290,9 +290,13 @@ void PSearchApp::run() {
     if (origin_time_sys != "TDB" && origin_time_sys != "TT") {
       throw std::runtime_error("Time origin may only be in TDB or TT time systems");
     }
-  // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
-    MetRep origin_rep(origin_time_sys, 51910, 0., origin_time);
-    abs_origin.setTime(origin_rep);
+    std::auto_ptr<TimeRep> origin_rep(0);
+    if (origin_time_format == "GLAST") {
+      origin_rep.reset(new MetRep(origin_time_sys, 51910, 0., origin_time));
+    } else {
+      throw std::runtime_error("Only GLAST time format is supported for user time origin");
+    }
+    abs_origin.setTime(*origin_rep);
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
