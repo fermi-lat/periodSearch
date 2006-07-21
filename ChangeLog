@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Jul 21 13:48:10 PDT 2006
+periodSearch/data
+
+Modified Files:
+	master_pulsardb.fits 
+Log Message:
+Remove a binary ephemeris for PSR B0540-69 for simplicity.
+    *
+------------------------------------------------------------
 User: hirayama  Fri Jul 21 13:43:52 PDT 2006
 periodSearch/src/test
 
