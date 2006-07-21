@@ -296,7 +296,7 @@ void PSearchApp::run() {
     } else {
       throw std::runtime_error("Only GLAST time format is supported for user time origin");
     }
-    abs_origin.setTime(*origin_rep);
+    abs_origin = *origin_rep;
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
@@ -320,7 +320,7 @@ void PSearchApp::run() {
   ephemerides.push_back(eph->clone());
 
   // Convert absolute origin to the time system demanded by event file.
-  abs_origin.getTime(evt_time_rep);
+  evt_time_rep = abs_origin;
   double origin = evt_time_rep.getValue();
 
   // Create the proper test.
@@ -345,7 +345,7 @@ void PSearchApp::run() {
     // Perform pdot correction if so desired.
     // For efficiency use the TimingModel directly here, instead of using the EphComputer.
     if (cancel_pdot) computer.cancelPdot(abs_evt_time);
-    abs_evt_time.getTime(evt_time_rep);
+    evt_time_rep = abs_evt_time;
     evt_time = evt_time_rep.getValue();
 
     // Fill into the test.

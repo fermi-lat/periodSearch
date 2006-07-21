@@ -134,8 +134,7 @@ void PSearchTestApp::run() {
   std::vector<double>::iterator event_itor = fake_evts.begin();
   for (tip::Table::ConstIterator itor = evt_table->begin(); itor != evt_table->end(); ++itor, ++event_itor) {
     orig_glast_time.setValue((*itor)["TIME"].get());
-    timeSystem::AbsoluteTime orig_time(orig_glast_time);
-    orig_time.getTime(current_glast_time);
+    current_glast_time = timeSystem::AbsoluteTime(orig_glast_time);
     *event_itor = current_glast_time.getValue();
   }
 
@@ -169,7 +168,7 @@ void PSearchTestApp::run() {
     glast_tdb.setValue(*itor);
     AbsoluteTime evt_time(glast_tdb);
     timing_model.cancelPdot(eph, evt_time);
-    evt_time.getTime(glast_tdb);
+    glast_tdb = evt_time;
     *itor = glast_tdb.getValue();
   }
 
