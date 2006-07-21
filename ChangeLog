@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Jul 21 13:43:52 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Replace AbsoluteTime::getTime and setTime with TimeRep::operator =(AbsoluteTime).
+    *
+------------------------------------------------------------
 User: peachey  Wed Jul 12 14:00:12 PDT 2006
 periodSearch/src/gtpsearch
 
