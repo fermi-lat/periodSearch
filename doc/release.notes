@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.13 2006/02/03 18:08:34 peachey Exp $
+$Id: release.notes,v 1.14 2006/03/29 19:46:27 peachey Exp $
 
 \verbatim
+26-jul-2006        v4 JP  Changed to work with timeSystem v1.
 29-mar-2006        v3 JP  Rename parameters related to user input origin.
                           Remove "auto" option from originstyle parameter.
                           Prompt for originstyle. Reset the EphComputer used by
