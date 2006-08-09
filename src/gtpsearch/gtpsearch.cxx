@@ -51,9 +51,6 @@ class PSearchApp : public st_app::StApp {
 
     virtual void prompt(st_app::AppParGroup & pars);
 
-    pulsarDb::FrequencyEph estimateFrequency(const std::string & psrdb_file, const std::string & psr_name,
-      double epoch, double mjdref);
-
     const std::string & getDataDir();
 
   private:
@@ -151,15 +148,16 @@ void PSearchApp::run() {
   std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
 
   // Get necessary keywords.
-  double mjdref = 0.;
   double duration = 0.;
   double tstart = 0.;
   double tstop = 0.;
   std::string telescope;
   std::string event_time_sys;
-  const tip::Header & header(gti_table->getHeader());
-  header["MJDREF"].get(mjdref);
-  header["TELAPSE"].get(duration);
+  // Find TELAPSE from GTI extension.
+  gti_table->getHeader()["TELAPSE"].get(duration);
+
+  // Find all other keywords from events extension.
+  const tip::Header & header(event_table->getHeader());
   header["TSTART"].get(tstart);
   header["TSTOP"].get(tstop);
   header["TELESCOP"].get(telescope);
@@ -174,8 +172,7 @@ void PSearchApp::run() {
   if (event_time_sys != "TDB" && event_time_sys != "TT") {
     throw std::runtime_error("Event file can only be in TDB or TT time systems for now");
   }
-  // TODO: Read MJDREF keyword value. Try MJDREFI and MJDREFF first.
-  MetRep evt_time_rep(event_time_sys, 51910, 0., 0.);
+  MetRep evt_time_rep(header, 0.);
   evt_time_rep.setValue(tstart);
   AbsoluteTime abs_tstart(evt_time_rep);
   evt_time_rep.setValue(tstop);
