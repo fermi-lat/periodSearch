@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug  9 13:30:12 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use GlastMetRep for epoch time origin and user time origin, if used.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v4, operation: add
 Package: periodSearch
