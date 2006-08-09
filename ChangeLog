@@ -1,4 +1,17 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug  9 14:26:35 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use new timeSystem::MetRep constructor to read the time system and
+MJDREF directly from the events extension. Corrected to use the events
+heaader for all keywords except TELAPSE, which is only present
+in the GTI extension. Remove unused declaration for estimateFrequency method.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Aug  9 13:30:12 PDT 2006
 periodSearch/src/gtpsearch
 
