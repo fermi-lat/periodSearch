@@ -20,6 +20,7 @@
 #include "st_app/StAppFactory.h"
 
 #include "timeSystem/AbsoluteTime.h"
+#include "timeSystem/GlastMetRep.h"
 #include "timeSystem/TimeRep.h"
 
 #include "tip/IFileSvc.h"
@@ -194,7 +195,7 @@ void PSearchApp::run() {
   if (eph_style != "DB") {
     std::auto_ptr<TimeRep> epoch_rep(0);
     if (epoch_time_format == "GLAST") {
-      epoch_rep.reset(new MetRep(epoch_time_sys, 51910, 0., epoch));
+      epoch_rep.reset(new GlastMetRep(epoch_time_sys, epoch));
     } else {
       throw std::runtime_error("Only GLAST time format is supported for manual ephemeris epoch");
     }
@@ -292,7 +293,7 @@ void PSearchApp::run() {
     }
     std::auto_ptr<TimeRep> origin_rep(0);
     if (origin_time_format == "GLAST") {
-      origin_rep.reset(new MetRep(origin_time_sys, 51910, 0., origin_time));
+      origin_rep.reset(new GlastMetRep(origin_time_sys, origin_time));
     } else {
       throw std::runtime_error("Only GLAST time format is supported for user time origin");
     }
