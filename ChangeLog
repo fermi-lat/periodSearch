@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug 23 13:27:54 PDT 2006
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Change type of reftime from real to string. Make timeformat and timesys auto.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v4r1, operation: add
 Package: periodSearch
