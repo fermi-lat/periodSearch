@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug 23 13:28:08 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change type of reftime from real to string. Allow MJD timeformat.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Aug 23 13:27:54 PDT 2006
 periodSearch/pfiles
 
