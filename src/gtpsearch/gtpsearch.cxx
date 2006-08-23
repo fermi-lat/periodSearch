@@ -107,7 +107,7 @@ void PSearchApp::run() {
   std::string event_extension = pars["evtable"];
   double scan_step = pars["scanstep"];
   long num_trials = pars["numtrials"];
-  double epoch = pars["ephepoch"];
+  std::string epoch = pars["ephepoch"];
   std::string epoch_time_format = pars["timeformat"];
   long num_bins = pars["numbins"];
   std::string time_field = pars["timefield"];
@@ -191,11 +191,18 @@ void PSearchApp::run() {
 
   if (eph_style != "DB") {
     std::auto_ptr<TimeRep> epoch_rep(0);
+    // Create representation for this time format and time system.
     if (epoch_time_format == "GLAST") {
-      epoch_rep.reset(new GlastMetRep(epoch_time_sys, epoch));
+      epoch_rep.reset(new GlastMetRep(epoch_time_sys, 0.));
+    } else if (epoch_time_format == "MJD") {
+      epoch_rep.reset(new MjdRep(epoch_time_sys, 0, 0.));
     } else {
-      throw std::runtime_error("Only GLAST time format is supported for manual ephemeris epoch");
+      throw std::runtime_error("Time format \"" + epoch_time_format + "\" is not supported for manual ephemeris epoch");
     }
+
+    // Assign the ephepoch supplied by the user to the representation.
+    epoch_rep->assign(epoch);
+
     AbsoluteTime abs_epoch(*epoch_rep);
 
     // Handle either period or frequency-style input.
@@ -273,7 +280,7 @@ void PSearchApp::run() {
     origin_time_sys = event_time_sys;
   } else if (origin_style == "USER") {
     // Get time of origin and its format and system from parameters.
-    double origin_time = pars["usertime"];
+    std::string origin_time = pars["usertime"];
     std::string origin_time_format = pars["userformat"];
     origin_time_sys = pars["usersys"].Value();
 
@@ -281,19 +288,23 @@ void PSearchApp::run() {
     for (std::string::iterator itor = origin_time_format.begin(); itor != origin_time_format.end(); ++itor) *itor = toupper(*itor);
     for (std::string::iterator itor = origin_time_sys.begin(); itor != origin_time_sys.end(); ++itor) *itor = toupper(*itor);
 
-    // Check for unsupported formats.
-    if (origin_time_format != "GLAST") throw std::runtime_error("Time origin may only be in GLAST time format");
-
     // Set up the origin using the given time system.
     if (origin_time_sys != "TDB" && origin_time_sys != "TT") {
       throw std::runtime_error("Time origin may only be in TDB or TT time systems");
     }
     std::auto_ptr<TimeRep> origin_rep(0);
+    // Create representation for this time format and time system.
     if (origin_time_format == "GLAST") {
-      origin_rep.reset(new GlastMetRep(origin_time_sys, origin_time));
+      origin_rep.reset(new GlastMetRep(origin_time_sys, 0.));
+    } else if (origin_time_format == "MJD") {
+      origin_rep.reset(new MjdRep(origin_time_sys, 0, 0.));
     } else {
-      throw std::runtime_error("Only GLAST time format is supported for user time origin");
+      throw std::runtime_error("Time format \"" + origin_time_format + "\" is not supported for user time origin");
     }
+
+    // Assign the user time supplied by the user to the representation.
+    origin_rep->assign(origin_time);
+
     abs_origin = *origin_rep;
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
