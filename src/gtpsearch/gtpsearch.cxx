@@ -118,8 +118,8 @@ void PSearchApp::run() {
   std::string eph_style = pars["ephstyle"];
 
   // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = epoch_time_format.begin(); itor != epoch_time_format.end(); ++itor) *itor = toupper(*itor);
-  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = toupper(*itor);
+  for (std::string::iterator itor = epoch_time_format.begin(); itor != epoch_time_format.end(); ++itor) *itor = std::toupper(*itor);
+  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
 
   // Determine the time system used for the ephemeris epoch.
   std::string epoch_time_sys;
@@ -127,7 +127,7 @@ void PSearchApp::run() {
   else epoch_time_sys = pars["timesys"].Value();
 
   // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = toupper(*itor);
+  for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
   using namespace pulsarDb;
 
@@ -136,7 +136,7 @@ void PSearchApp::run() {
 
   std::string psr_name = pars["psrname"];
   std::string demod_bin_string = pars["demodbin"];
-  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = toupper(*itor);
+  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
   
   if (epoch_time_sys != "TDB" && epoch_time_sys != "TT") {
     throw std::runtime_error("Ephemeris epoch can only be in TDB or TT time systems for now");
@@ -164,8 +164,8 @@ void PSearchApp::run() {
   header["TIMESYS"].get(event_time_sys);
 
   // Make names of time system and mission case insensitive.
-  for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = toupper(*itor);
-  for (std::string::iterator itor = event_time_sys.begin(); itor != event_time_sys.end(); ++itor) *itor = toupper(*itor);
+  for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = std::toupper(*itor);
+  for (std::string::iterator itor = event_time_sys.begin(); itor != event_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
   if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
 
@@ -233,7 +233,7 @@ void PSearchApp::run() {
     // Find the pulsar database.
     std::string psrdb_file = pars["psrdbfile"];
     std::string psrdb_file_uc = psrdb_file;
-    for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = toupper(*itor);
+    for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = std::toupper(*itor);
     if ("DEFAULT" == psrdb_file_uc) {
       using namespace st_facilities;
       psrdb_file = Env::appendFileName(Env::getDataDir("periodSearch"), "master_pulsardb.fits");
@@ -263,7 +263,7 @@ void PSearchApp::run() {
 
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
-  for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
+  for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = std::toupper(*itor);
   AbsoluteTime abs_origin("TDB", Duration(0, 0.), Duration(0, 0.));
   std::string origin_time_sys;
   if (origin_style == "TSTART") {
@@ -285,8 +285,8 @@ void PSearchApp::run() {
     origin_time_sys = pars["usersys"].Value();
 
     // Make case insensitive.
-    for (std::string::iterator itor = origin_time_format.begin(); itor != origin_time_format.end(); ++itor) *itor = toupper(*itor);
-    for (std::string::iterator itor = origin_time_sys.begin(); itor != origin_time_sys.end(); ++itor) *itor = toupper(*itor);
+    for (std::string::iterator itor = origin_time_format.begin(); itor != origin_time_format.end(); ++itor) *itor = std::toupper(*itor);
+    for (std::string::iterator itor = origin_time_sys.begin(); itor != origin_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
     // Set up the origin using the given time system.
     if (origin_time_sys != "TDB" && origin_time_sys != "TT") {
@@ -318,7 +318,7 @@ void PSearchApp::run() {
   // Choose which kind of test to create.
   std::string algorithm = pars["algorithm"];
 
-  for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = toupper(*itor);
+  for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = std::toupper(*itor);
 
   // Compute an ephemeris at abs_origin to use for the test.
   std::auto_ptr<PulsarEph> eph(computer.calcPulsarEph(abs_origin).clone());
@@ -425,7 +425,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
 
   pars.Prompt("timeorigin");
   std::string origin_style = pars["timeorigin"];
-  for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = toupper(*itor);
+  for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = std::toupper(*itor);
   if (origin_style == "USER") {
     pars.Prompt("usertime");
     pars.Prompt("userformat");
