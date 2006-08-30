@@ -1,5 +1,16 @@
 ------------------------------------------------------------
 User: peachey  Wed Aug 30 13:17:07 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use new leapsecfile parameter to use UTC, and relax restrictions on
+input time systems that are no longer necessary.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Aug 30 13:17:07 PDT 2006
 periodSearch/pfiles
 
 Modified Files:
