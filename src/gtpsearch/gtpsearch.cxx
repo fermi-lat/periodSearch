@@ -31,6 +31,7 @@
 #include "st_stream/Stream.h"
 #include "st_stream/StreamFormatter.h"
 #include "st_stream/st_stream.h"
+#include "timeSystem/TimeSystem.h"
 
 #include "periodSearch/PeriodTest.h"
 #include "ChiSquaredTest.h"
@@ -117,6 +118,10 @@ void PSearchApp::run() {
   std::string demod_binary_string = pars["demodbin"];
   std::string eph_style = pars["ephstyle"];
 
+  // Handle leap seconds.
+  std::string leap_sec_file = pars["leapsecfile"];
+  timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
+
   // Make time formats etc. case insensitive.
   for (std::string::iterator itor = epoch_time_format.begin(); itor != epoch_time_format.end(); ++itor) *itor = std::toupper(*itor);
   for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
@@ -138,9 +143,6 @@ void PSearchApp::run() {
   std::string demod_bin_string = pars["demodbin"];
   for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
   
-  if (epoch_time_sys != "TDB" && epoch_time_sys != "TT") {
-    throw std::runtime_error("Ephemeris epoch can only be in TDB or TT time systems for now");
-  }
   // Open the test file.
   std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
 
@@ -169,9 +171,6 @@ void PSearchApp::run() {
 
   if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
 
-  if (event_time_sys != "TDB" && event_time_sys != "TT") {
-    throw std::runtime_error("Event file can only be in TDB or TT time systems for now");
-  }
   MetRep evt_time_rep(header, 0.);
   evt_time_rep.setValue(tstart);
   AbsoluteTime abs_tstart(evt_time_rep);
@@ -289,9 +288,6 @@ void PSearchApp::run() {
     for (std::string::iterator itor = origin_time_sys.begin(); itor != origin_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
     // Set up the origin using the given time system.
-    if (origin_time_sys != "TDB" && origin_time_sys != "TT") {
-      throw std::runtime_error("Time origin may only be in TDB or TT time systems");
-    }
     std::auto_ptr<TimeRep> origin_rep(0);
     // Create representation for this time format and time system.
     if (origin_time_format == "GLAST") {
@@ -310,11 +306,6 @@ void PSearchApp::run() {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
   
-  // Make sure time systems are consistent.
-  if (event_time_sys != origin_time_sys || epoch_time_sys != origin_time_sys)
-    throw std::runtime_error("Event time system: " + event_time_sys + ", ephemeris epoch time system: " + epoch_time_sys +
-      ", and time origin: " + origin_time_sys + " must be the same for now");
-
   // Choose which kind of test to create.
   std::string algorithm = pars["algorithm"];
 
@@ -435,6 +426,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Prompt("timefield");
   pars.Prompt("plot");
   pars.Prompt("title");
+  pars.Prompt("leapsecfile");
 
   // Save current values of the parameters.
   pars.Save();
