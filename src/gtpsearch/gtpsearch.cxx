@@ -118,32 +118,7 @@ void PSearchApp::run() {
   std::string demod_binary_string = pars["demodbin"];
   std::string eph_style = pars["ephstyle"];
 
-  // Handle leap seconds.
-  std::string leap_sec_file = pars["leapsecfile"];
-  timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
-
-  // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = epoch_time_format.begin(); itor != epoch_time_format.end(); ++itor) *itor = std::toupper(*itor);
-  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
-
-  // Determine the time system used for the ephemeris epoch.
-  std::string epoch_time_sys;
-  if (eph_style == "DB") epoch_time_sys = "TDB";
-  else epoch_time_sys = pars["timesys"].Value();
-
-  // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = std::toupper(*itor);
-
-  using namespace pulsarDb;
-
-  // Ignored but needed for timing model.
-  double phi0 = 0.;
-
-  std::string psr_name = pars["psrname"];
-  std::string demod_bin_string = pars["demodbin"];
-  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
-  
-  // Open the test file.
+  // Open the event file.
   std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
 
   // Read GTI.
@@ -171,6 +146,35 @@ void PSearchApp::run() {
 
   if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
 
+  // Handle leap seconds.
+  std::string leap_sec_file = pars["leapsecfile"];
+  timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
+
+  // Make time formats etc. case insensitive.
+  for (std::string::iterator itor = epoch_time_format.begin(); itor != epoch_time_format.end(); ++itor) *itor = std::toupper(*itor);
+  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
+
+  // Determine the time system used for the ephemeris epoch.
+  std::string epoch_time_sys;
+  if (eph_style == "DB") epoch_time_sys = "TDB";
+  else epoch_time_sys = pars["timesys"].Value();
+
+  // Make time formats etc. case insensitive.
+  for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = std::toupper(*itor);
+
+  // Interpret FILE option: match epoch to event time system.
+  if ("FILE" == epoch_time_sys) epoch_time_sys = event_time_sys;
+
+  using namespace pulsarDb;
+
+  // Ignored but needed for timing model.
+  double phi0 = 0.;
+
+  std::string psr_name = pars["psrname"];
+  std::string demod_bin_string = pars["demodbin"];
+  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
+  
+  // Set up event time representation.
   MetRep evt_time_rep(header, 0.);
   evt_time_rep.setValue(tstart);
   AbsoluteTime abs_tstart(evt_time_rep);
@@ -191,7 +195,9 @@ void PSearchApp::run() {
   if (eph_style != "DB") {
     std::auto_ptr<TimeRep> epoch_rep(0);
     // Create representation for this time format and time system.
-    if (epoch_time_format == "GLAST") {
+    if (epoch_time_format == "FILE") {
+      epoch_rep.reset(new MetRep(header, 0.));
+    } else if (epoch_time_format == "GLAST") {
       epoch_rep.reset(new GlastMetRep(epoch_time_sys, 0.));
     } else if (epoch_time_format == "MJD") {
       epoch_rep.reset(new MjdRep(epoch_time_sys, 0, 0.));
@@ -287,10 +293,15 @@ void PSearchApp::run() {
     for (std::string::iterator itor = origin_time_format.begin(); itor != origin_time_format.end(); ++itor) *itor = std::toupper(*itor);
     for (std::string::iterator itor = origin_time_sys.begin(); itor != origin_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
+    // Interpret FILE option: match origin to event time system.
+    if ("FILE" == origin_time_sys) origin_time_sys = event_time_sys;
+
     // Set up the origin using the given time system.
     std::auto_ptr<TimeRep> origin_rep(0);
     // Create representation for this time format and time system.
-    if (origin_time_format == "GLAST") {
+    if (origin_time_format == "FILE") {
+      origin_rep.reset(new MetRep(header, 0.));
+    } else if (origin_time_format == "GLAST") {
       origin_rep.reset(new GlastMetRep(origin_time_sys, 0.));
     } else if (origin_time_format == "MJD") {
       origin_rep.reset(new MjdRep(origin_time_sys, 0, 0.));
