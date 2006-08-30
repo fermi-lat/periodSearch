@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug 30 12:09:38 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change toupper to std::toupper.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Aug 23 13:28:08 PDT 2006
 periodSearch/src/gtpsearch
 
