@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Sep  6 13:55:23 PDT 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Construct MetRep from MjdRefDatabase object instead of using defunct
+construction from a tip::Header.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v4r2, operation: add
 Package: periodSearch
