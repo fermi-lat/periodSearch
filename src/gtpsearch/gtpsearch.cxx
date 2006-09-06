@@ -140,6 +140,10 @@ void PSearchApp::run() {
   header["TELESCOP"].get(telescope);
   header["TIMESYS"].get(event_time_sys);
 
+  // Get the mjdref from the header, which is not as simple as just reading a single keyword.
+  MjdRefDatabase mjd_ref_db;
+  IntFracPair mjd_ref(mjd_ref_db(header));
+
   // Make names of time system and mission case insensitive.
   for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = std::toupper(*itor);
   for (std::string::iterator itor = event_time_sys.begin(); itor != event_time_sys.end(); ++itor) *itor = std::toupper(*itor);
@@ -174,8 +178,11 @@ void PSearchApp::run() {
   std::string demod_bin_string = pars["demodbin"];
   for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
   
+  std::string evt_time_sys;
+  header["TIMESYS"].get(evt_time_sys);
+  
   // Set up event time representation.
-  MetRep evt_time_rep(header, 0.);
+  MetRep evt_time_rep(evt_time_sys, mjd_ref, 0.);
   evt_time_rep.setValue(tstart);
   AbsoluteTime abs_tstart(evt_time_rep);
   evt_time_rep.setValue(tstop);
@@ -196,7 +203,7 @@ void PSearchApp::run() {
     std::auto_ptr<TimeRep> epoch_rep(0);
     // Create representation for this time format and time system.
     if (epoch_time_format == "FILE") {
-      epoch_rep.reset(new MetRep(header, 0.));
+      epoch_rep.reset(new MetRep(epoch_time_sys, mjd_ref, 0.));
     } else if (epoch_time_format == "GLAST") {
       epoch_rep.reset(new GlastMetRep(epoch_time_sys, 0.));
     } else if (epoch_time_format == "MJD") {
@@ -300,7 +307,7 @@ void PSearchApp::run() {
     std::auto_ptr<TimeRep> origin_rep(0);
     // Create representation for this time format and time system.
     if (origin_time_format == "FILE") {
-      origin_rep.reset(new MetRep(header, 0.));
+      origin_rep.reset(new MetRep(origin_time_sys, mjd_ref, 0.));
     } else if (origin_time_format == "GLAST") {
       origin_rep.reset(new GlastMetRep(origin_time_sys, 0.));
     } else if (origin_time_format == "MJD") {
