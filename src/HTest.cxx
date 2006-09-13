@@ -25,7 +25,6 @@ const std::vector<double> & HTest::computeStats() {
   // Pseudocode taken from work by M. Hirayama, which may be seen at:
   // http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/pc_z2ntest.txt
   //     norm = 2.0 / N_event;
-// TODO: protect against div / 0.
   double fourier_norm = 2. / m_num_events;
 
   //     for (i=0; i<N_trial; i++) {

@@ -28,7 +28,6 @@ const std::vector<double> & ChiSquaredTest::computeStats() {
   // Pseudocode taken from work by M. Hirayama, which may be seen at:
   // http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/pc_chi2test.txt
   //     avg = N_event / N_bin;
-// TODO: protect against div by 0
   double avg = double(m_num_events) / m_num_bins;
 
   //     for (i=0; i<N_trial; i++) {
