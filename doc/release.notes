@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.17 2006/09/06 19:26:10 peachey Exp $
+$Id: release.notes,v 1.18 2006/09/13 21:20:40 peachey Exp $
 
 \verbatim
+20-sep-2006    v5r0p1 JP  Update mainpage.h.
 13-sep-2006        v5 JP  Use latest version of timeSystem; read time system from event file, and
                           completely decouple time format from time system for both user and eph time.
                           Address some simple TODOs.
