@@ -44,7 +44,7 @@ algorithm = Chi2 [string]
     test may be obtained by choosing Z2n here and setting the
     number of bins used for each trial (numbins parameter) to 1.
 
-evfile [string]
+evfile [file name]
     Name of input event file, FT1 format or equivalent.
 
 psrname = ANY [string]
@@ -58,19 +58,53 @@ ephstyle = DB [string]
     for the frequency (period) and its derivatives at the time
     given by the epoch parameter.
 
-scanstep [double]
+scanstep = 0.5 [double]
     Size of steps for trials, in units of the Fourier resolution.
 
-numtrials [integer]
+ephepoch = 0. [string]
+    The epoch, or time origin, for the ephemeris used in this search.
+
+timeformat = FILE [string]
+    String describing the representation used for the ephepoch.
+    Valid choices are FILE, MJD and GLAST (MET). If FILE is chosen,
+    the time format specified in the input event file header will be
+    used.
+
+timesys = FILE [string]
+    String describing the time system used for the ephepoch.
+    Valid choices are FILE, TAI, TDB, TT and UTC. If FILE is chosen,
+    the time system specified in the input event file header (TIMESYS
+    keyword) will be used.
+
+numtrials = 100 [integer]
     The number of separate trials to perform. The larger this number,
     the wider the search around the central frequency.
 
-epoch [double]
-    The epoch, or time origin, for the ephemeris used in this search.
-
-numbins [integer]
+numbins = 10 [integer]
     The number of bins in each trial. For the Rayleigh test, set
     algorithm to Z2n, and set numbins to 1.
+
+timeorigin = MIDDLE [string]
+    Selects the origin of time for the periodicity test. Valid
+    choices are TSTART (taken from the evfile), TSTOP, MIDDLE (mid-way
+    between TSTART and TSTOP) and USER (user will supply explicitly using
+    usertime, userformat and usersys parameters.)
+
+usertime = 0. [string]
+    User-specified time origin for the periodicity test, used only
+    if timeorigin parameter is USER.
+
+userformat = FILE [string]
+    String describing the representation used for the usertime.
+    Valid choices are FILE, MJD and GLAST (MET). If FILE is chosen,
+    the time format specified in the input event file header will be
+    used. Used only if timeorigin parameter is USER.
+
+usersys = FILE [string]
+    String describing the time system used for the usertime.
+    Valid choices are FILE, TAI, TDB, TT and UTC. If FILE is chosen,
+    the time system specified in the input event file header (TIMESYS
+    keyword) will be used. Used only if timeorigin parameter is USER.
 
 (psrdbfile = DEFAULT) [file name]
     Name of pulsar ephemerides database file, in GLAST D4
@@ -107,20 +141,26 @@ numbins [integer]
     Title for the graph. By default a title indicating the type of
     test and other pertinent information will be displayed.
 
+(leapsecfile = DEFAULT) [file name]
+    The file containing the name of the leap second table, in
+    OGIP-compliant leap second table format. If leapsecfile is
+    the string DEFAULT, the default leapsec file (leapsec.fits),
+    which is distributed with the extFiles package, will be used.
+
 \endverbatim
 
     \subsection gtpsearch_freq_par gtpsearch Frequency Parameters
 
 \verbatim
-f0 [double]
+f0 = 1. [double]
     The value of the frequency at the epoch. This is the central
     frequency for the search.
 
-f1 [double]
+f1 = 0. [double]
     The value of the first time derivative of the frequency at the
     epoch. Only used if the cancelpdot parameter is yes.
 
-f2 [double]
+f2 = 0. [double]
     The value of the second time derivative of the frequency at the
     epoch. Only used if the cancelpdot parameter is yes.
 \endverbatim
@@ -128,18 +168,17 @@ f2 [double]
     \subsection gtpsearch_per_par gtpsearch Period Parameters
 
 \verbatim
-p0 [double]
+p0 = 1. [double]
     The value of the period at the epoch. Only used if
     ephstyle is PER.
 
-p1 [double]
+p1 = 0. [double]
     The value of the first time derivative of the period at the
     epoch. Only used if ephstyle is PER.
 
-p2 [double]
+p2 = 0. [double]
     The value of the second time derivative of the period at the
     epoch. Only used if ephstyle is PER.
 \endverbatim
-
 
 */
