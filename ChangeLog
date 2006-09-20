@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Sep 20 12:28:59 PDT 2006
+periodSearch/src
+
+Modified Files:
+	mainpage.h 
+Log Message:
+Add description of FILE option for timeformat and timesys parameters.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v5, operation: add
 Package: periodSearch
