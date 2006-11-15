@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Nov 15 13:51:42 PST 2006
+periodSearch/src
+
+Added Files:
+	FourierAnalysis.cxx FourierAnalysis.h 
+Log Message:
+Add Fourier analysis class derived from PeriodSearch.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Nov 15 13:51:00 PST 2006
 periodSearch/src
 
