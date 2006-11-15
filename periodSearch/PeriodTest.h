@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "periodSearch/PeriodSearch.h"
+
 #include "st_stream/Stream.h"
 
 namespace periodSearch {
@@ -18,7 +20,8 @@ namespace periodSearch {
       \brief Base class for various statistical tests used to determine frequency of pulsation
              when an approximate frequency is known.
   */
-  class PeriodTest {
+  // TODO Rename to PeriodicityTest?
+  class PeriodTest : public PeriodSearch {
     public:
       /// \brief Container type used to store histograms and/or Fourier transformed data.
       typedef std::vector<std::vector<std::complex<double> > > HistCont_t;
@@ -40,7 +43,7 @@ namespace periodSearch {
       /** \brief Use the trials as currently filled by data to compute statistics for this test. Details
                  depend on the specific test being performed in the subclass.
       */
-      virtual const std::vector<double> & computeStats() = 0;
+//      virtual const std::vector<double> & computeStats() = 0;
 
       /** \brief Display plot of statistics.
           \param title The title to display on the plot. (Purely cosmetic.)
@@ -56,7 +59,7 @@ namespace periodSearch {
       /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
           \param stat The value of the statistic.
       */
-      virtual std::pair<double, double> chanceProb(double stat) const = 0;
+//      virtual std::pair<double, double> chanceProb(double stat) const = 0;
 
       /** \brief Write the test values to the given stream.
           \param os The stream.
@@ -74,9 +77,6 @@ namespace periodSearch {
           \param duration The total time duration (only used if chance probability will be computed).
       */
       PeriodTest(double center, double step, long num_trials, double epoch, int num_bins, double duration);
-
-      // For convenience, compute once the value of 2 * pi.
-      static const double s_2pi;
 
       // The container of statistical trials.
       HistCont_t m_trial_hist;
