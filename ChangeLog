@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Nov 15 13:51:00 PST 2006
+periodSearch/src
+
+Added Files:
+	PeriodSearch.cxx 
+Log Message:
+New base class PeriodSearch which replaces PeriodTest as the fundamental base class.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Nov 15 13:51:00 PST 2006
 periodSearch/periodSearch
 
 Added Files:
