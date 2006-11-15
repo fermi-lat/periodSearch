@@ -33,7 +33,7 @@
 #include "st_stream/st_stream.h"
 #include "timeSystem/TimeSystem.h"
 
-#include "periodSearch/PeriodTest.h"
+#include "periodSearch/PeriodSearch.h"
 #include "ChiSquaredTest.h"
 #include "HTest.h"
 #include "RayleighTest.h"
@@ -57,7 +57,7 @@ class PSearchApp : public st_app::StApp {
   private:
     st_stream::StreamFormatter m_os;
     std::string m_data_dir;
-    PeriodTest * m_test;
+    PeriodSearch * m_test;
 };
 
 PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
