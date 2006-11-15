@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Nov 15 13:53:42 PST 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use new base class PeriodSearch instead of PeriodTest.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Nov 15 13:53:03 PST 2006
 periodSearch/src
 
