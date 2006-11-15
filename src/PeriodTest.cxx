@@ -19,8 +19,6 @@
 
 namespace periodSearch {
 
-  const double PeriodTest::s_2pi = 2. * 4. * atan(1.0);
-
   PeriodTest::PeriodTest(double center, double step, long num_trials, double epoch, int num_bins, double duration):
     m_trial_hist(num_trials, std::vector<std::complex<double> >(num_bins, 0.)), m_freqs(num_trials), m_stats(num_trials),
     m_center(center), m_epoch(epoch), m_duration(duration), m_num_bins(num_bins), m_num_events(0), m_num_indep_trials(0) {
