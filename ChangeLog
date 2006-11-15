@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Nov 15 13:51:00 PST 2006
+periodSearch/periodSearch
+
+Added Files:
+	PeriodSearch.h 
+Log Message:
+New base class PeriodSearch which replaces PeriodTest as the fundamental base class.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v5r0p1, operation: add
 Package: periodSearch
