@@ -34,6 +34,7 @@
 
 #include "periodSearch/PeriodTest.h"
 #include "ChiSquaredTest.h"
+#include "FourierAnalysis.h"
 #include "HTest.h"
 #include "RayleighTest.h"
 #include "Z2nTest.h"
@@ -55,7 +56,10 @@ class PSearchTestApp : public st_app::StApp {
 
     void testFindMax(const periodSearch::PeriodTest & test);
 
-    void testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string pulsar_name, double epoch);
+    void testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name, double epoch);
+
+    void testFourier(double t_start, double t_stop, double width, int num_bins, const std::vector<double> & events,
+      const std::string & unit, bool plot, double min_freq, double max_freq); 
 
     const std::string & getDataDir();
 
@@ -87,7 +91,7 @@ void PSearchTestApp::run() {
   double epoch = .2;
   int num_bins = 10;
   double duration = 1000.;
-  std::string unit = "(/s)";
+  std::string unit = "(Hz)";
 
   // Test process of picking the ephemeris.
   testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", 212380785.922);
@@ -100,6 +104,10 @@ void PSearchTestApp::run() {
 
   // First do simple test with this highly artificial data.
   testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
+
+  // Test Fourier analysis of this highly artificial data.
+  // Note: width of .1 s -> Nyquist = 1/.2s = 5 Hz.
+  testFourier(0., duration, .1, 10000, fake_evts, unit, plot, .9, 1.1);
 
   // Data taken from M. Hirayama's work with modified ASCA data.
   // http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/existing.html#tryout003
@@ -120,15 +128,10 @@ void PSearchTestApp::run() {
   duration = 0.;
   gti_table->getHeader()["TELAPSE"].get(duration);
 
-  double valid_since;
-  double valid_until;
-
-  gti_table->getHeader()["TSTART"].get(valid_since);
-  gti_table->getHeader()["TSTOP"].get(valid_until);
-
   // Make the array big enough to hold these events.
   fake_evts.resize(evt_table->getNumRecords());
 
+  // Correct event times for changed MJDREF.
   timeSystem::MetRep orig_glast_time("TDB", 54101, 0., 0.);
   timeSystem::MetRep current_glast_time("TDB", 51910, 0., 0.);
   std::vector<double>::iterator event_itor = fake_evts.begin();
@@ -138,8 +141,25 @@ void PSearchTestApp::run() {
     *event_itor = current_glast_time.getValue();
   }
 
+  double valid_since;
+  double valid_until;
+
+  gti_table->getHeader()["TSTART"].get(valid_since);
+  gti_table->getHeader()["TSTOP"].get(valid_until);
+
+  // Correct valid_since and valid_until for changed MJDREF.
+  orig_glast_time.setValue(valid_since);
+  current_glast_time = timeSystem::AbsoluteTime(orig_glast_time);
+  valid_since = current_glast_time.getValue();
+  orig_glast_time.setValue(valid_until);
+  current_glast_time = timeSystem::AbsoluteTime(orig_glast_time);
+  valid_until = current_glast_time.getValue();
+
   // Repeat simple test with this somewhat less artificial data.
   testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
+
+  // Note: width of .01 s -> Nyquist = 1/.02s = 50 Hz.
+  testFourier(valid_since, valid_until, .01, 1000000, fake_evts, unit, plot, 19.82, 19.85);
 
   // Now test pdot correction.
   double phi0 = 0.; // Ignored for these purposes anyway.
@@ -240,7 +260,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
   if (plot) test_h.plotStats("H Statistic", unit);
 }
 
-void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string pulsar_name,
+void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name,
   double epoch) {
   using namespace pulsarDb;
   using namespace timeSystem;
@@ -298,6 +318,27 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
     m_failed = true;
     m_os.err() << "ERROR: in testChooseEph, f2 was computed to be " << freq.f2() << ", not " << correct_f2 << std::endl;
   }
+}
+
+void PSearchTestApp::testFourier(double t_start, double t_stop, double width, int num_bins, const std::vector<double> & events,
+  const std::string & unit, bool plot, double min_freq, double max_freq) {
+  m_os.setMethod("testFourier");
+
+  // Create analysis object.
+  FourierAnalysis fa(t_start, t_stop, width, num_bins, events.size());
+
+  // Fill the data into the object.
+  for (std::vector<double>::const_iterator itor = events.begin(); itor != events.end(); ++itor) {
+    fa.fill(*itor);
+  }
+
+  // Compute the FFT.
+  fa.computeStats();
+
+  m_os.out() << "Fourier Power" << std::endl;
+  fa.writeRange(m_os.out(), min_freq, max_freq) << std::endl;
+  if (plot) fa.plot("Fourier Power", unit, min_freq, max_freq);
+
 }
 
 const std::string & PSearchTestApp::getDataDir() {
