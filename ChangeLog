@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Nov 15 13:53:03 PST 2006
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodTest.h 
+Log Message:
+Derive from new more fundamental base class PeriodSearch.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Nov 15 13:51:42 PST 2006
 periodSearch/src
 
