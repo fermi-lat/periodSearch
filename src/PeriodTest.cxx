@@ -79,47 +79,7 @@ namespace periodSearch {
   }
 
   void PeriodTest::plotStats(const std::string & title, const std::string & freq_unit) const {
-    using namespace st_graph;
-
-    try {
-      // Display value of maximum frequency/statistic in title.
-      std::ostringstream os;
-      std::pair<double, double> max = findMax();
-      std::pair<double, double> chance_prob = chanceProb(max.second);
-
-      os << title << ", max at: " << max.first << ", stat: " << max.second;
-
-      // Massage display: if difference between min and max is small enough just use max.
-      os.setf(std::ios::scientific);
-      os.precision(2); // 3 digits -> < 1. e -4. limit in next line.
-      if ((chance_prob.second - chance_prob.first) / chance_prob.second < 1.e-4)
-        os << ", chance prob: " << chance_prob.second;
-      else
-        os << ", chance prob < " << chance_prob.second;
-
-      // Get graphics engine to set up graph.
-      Engine & engine(Engine::instance());
-
-      // Typedef for readability.
-      typedef st_graph::ValueSequence<std::vector<double>::const_iterator> ValueSeq_t;
-
-      // Create plot, using m_freq as x, and m_spec as y.
-      std::auto_ptr<IPlot> plot(engine.createPlot(os.str(), 800, 600, "hist", ValueSeq_t(m_freq.begin(), m_freq.end()),
-        ValueSeq_t(m_spec.begin(), m_spec.end())));
-
-      // Set axes titles.
-      std::vector<Axis> & axes(plot->getAxes());
-      axes[0].setTitle("Frequency " + freq_unit);
-      axes[1].setTitle("Test Statistic");
-
-      // Display plot.
-      engine.run();
-
-    } catch (const std::exception & x) {
-      std::cerr << x.what() << std::endl;
-      std::cerr << "Warning: PeriodTest::plotStats could not display plot." << std::endl;
-      return;
-    }
+    plot(title, freq_unit);
   }
 
   std::pair<double, double> PeriodTest::findMax() const {

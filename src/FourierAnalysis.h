@@ -44,14 +44,6 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     /** \brief Display plot of statistics.
         \param title The title to display on the plot. (Purely cosmetic.)
         \param freq_unit The units to display on the x axis. (Purely cosmetic.)
-        \param min_freq The minimum frequency in the range.
-        \param max_freq The maximum frequency in the range.
-    */
-    virtual void plot(const std::string & title, const std::string & freq_unit, double min_freq = -1., double max_freq = -1.) const;
-
-    /** \brief Display plot of statistics.
-        \param title The title to display on the plot. (Purely cosmetic.)
-        \param freq_unit The units to display on the x axis. (Purely cosmetic.)
     */
     virtual void plotStats(const std::string & title, const std::string & freq_unit) const;
 
@@ -59,13 +51,6 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
                the statistic, as a pair.
     */
     virtual std::pair<double, double> findMax() const;
-
-    /** \brief Find the frequency for which the statistic is maximized in a given frequency range. Return the
-               frequency and the value of the statistic, as a pair.
-        \param min_freq The minimum frequency in the range.
-        \param max_freq The maximum frequency in the range.
-    */
-    virtual std::pair<double, double> findMaxRange(double min_freq = -1., double max_freq = -1.) const;
 
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
@@ -85,12 +70,6 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     virtual st_stream::OStream & writeRange(st_stream::OStream & os, double min_freq = -1., double max_freq = -1.) const;
 
   private:
-    /** \brief Given a frequency range, determine the indices of (inclusive) lower and upper bounds.
-        \param min_freq The minimum frequency.
-        \param max_freq The maximum frequency.
-    */
-    std::pair<size_type, size_type> getRangeIndex(double min_freq, double max_freq) const;
-
     typedef std::multimap<size_type, size_type> index_map_type;
     index_map_type m_index;
     double m_t_start;
