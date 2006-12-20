@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Dec 20 13:50:04 PST 2006
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearch.h 
+Log Message:
+Move plot, findMaxRange and getRangeIndex methods from subclasses into
+the base class PeriodSearch.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Dec 20 13:32:40 PST 2006
 periodSearch/src
 
