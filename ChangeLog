@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Dec 20 13:32:24 PST 2006
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearch.h PeriodTest.h 
+Log Message:
+Move m_freq and m_spec into PeriodSearch (base class) and change constructors
+to use size_type for array sizes and related variables.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Nov 15 13:53:56 PST 2006
 periodSearch/src/test
 
