@@ -83,15 +83,7 @@ namespace periodSearch {
   }
 
   std::pair<double, double> PeriodTest::findMax() const {
-    size_type max_idx = 0;
-    double max = 0.;
-    for (size_type ii = 0; ii < m_spec.size(); ++ii) {
-      if (m_spec[ii] > max) {
-        max = m_spec[ii];
-        max_idx = ii;
-      }
-    }
-    return std::pair<double, double>(m_freq[max_idx], max);
+    return findMaxRange();
   }
 
   st_stream::OStream & PeriodTest::write(st_stream::OStream & os) const {

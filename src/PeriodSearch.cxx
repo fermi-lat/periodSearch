@@ -75,7 +75,8 @@ namespace periodSearch {
   }
 
   std::pair<double, double> PeriodSearch::findMaxRange(double min_freq, double max_freq) const {
-    long max_idx = -1;
+    bool found_max = false;
+    size_type max_idx = 0;
     double max = 0.;
 
     // Impose range limits.
@@ -83,16 +84,17 @@ namespace periodSearch {
     size_type begin_index = indices.first;
     size_type end_index = indices.second;
 
-    for (unsigned long ii = begin_index; ii < end_index; ++ii) {
+    for (size_type ii = begin_index; ii < end_index; ++ii) {
       // If the value is larger than the current maximum, replace it.
       if (m_spec[ii] > max) {
         max = m_spec[ii];
         max_idx = ii;
+        found_max = true;
       }
     }
 
     // Make sure a valid maximum was found.
-    if (0 > max_idx) {
+    if (!found_max) {
       std::ostringstream os;
       os << "PeriodSearch::findMaxRange cannot find any trial frequency in range [" << min_freq << ", " << max_freq << "]";
       throw std::runtime_error(os.str());
