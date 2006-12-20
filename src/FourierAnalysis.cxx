@@ -24,7 +24,7 @@
 namespace periodSearch {
 
   FourierAnalysis::FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, int /* num_events */):
-    m_freq(num_bins / 2 + 1), m_spec(num_bins / 2 + 1), m_index(), m_t_start(t_start), m_t_stop(t_stop),
+    PeriodSearch(num_bins / 2 + 1), m_index(), m_t_start(t_start), m_t_stop(t_stop),
     m_width(width), m_num_segments(0) , m_num_bins(num_bins) {
     if (t_start > t_stop) throw std::runtime_error("FourierAnalysis: start time is > stop time");
     // m_index.reserve(num_events);

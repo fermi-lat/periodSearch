@@ -19,25 +19,33 @@
 
 namespace periodSearch {
 
-  PeriodTest::PeriodTest(double center, double step, long num_trials, double epoch, int num_bins, double duration):
-    m_trial_hist(num_trials, std::vector<std::complex<double> >(num_bins, 0.)), m_freqs(num_trials), m_stats(num_trials),
-    m_center(center), m_epoch(epoch), m_duration(duration), m_num_bins(num_bins), m_num_events(0), m_num_indep_trials(0) {
+  PeriodTest::PeriodTest(double center, double step, size_type num_trials, double epoch, size_type array_size, double duration):
+    PeriodSearch(num_trials), m_trial_hist(num_trials, std::vector<std::complex<double> >(array_size, 0.)),
+    m_center(center), m_epoch(epoch), m_duration(duration), m_num_events(0), m_num_indep_trials(0) {
     // Make certain there is no error in the input.
+    if (0. >= center) throw std::logic_error("PeriodTest constructor was passed a non-positive center");
+    if (0. >= step) throw std::logic_error("PeriodTest constructor was passed a non-positive step");
+    if (0 == num_trials) throw std::logic_error("PeriodTest constructor was passed a non-positive num_trials");
     if (0. >= m_duration) throw std::logic_error("PeriodTest constructor was passed a non-positive duration");
-    if (0 >= m_num_bins) throw std::logic_error("PeriodTest constructor was passed a non-positive number of bins");
+    if (0 == array_size) throw std::logic_error("PeriodTest constructor was passed a non-positive array_size");
 
     // Create vector containing the trial frequencies.
-    long ii_cent = num_trials / 2;
-    for (long ii = 0; ii < num_trials; ++ii) {
-      m_freqs[ii] = center + (ii - ii_cent) * step;
-      if (0. >= m_freqs[ii]) throw std::logic_error("PeriodTest constructor computed a non-positive trial frequency");
+    size_type ii_cent = num_trials / 2;
+    double min = center - ii_cent * step;
+
+    // Check whether the step was too big, leading to a negative frequency.
+    if (0. >= min) throw std::logic_error("PeriodTest constructor computed a non-positive trial frequency");
+
+    // Step from minimum frequency on up, populating frequency array.
+    for (size_type ii = 0; ii < num_trials; ++ii) {
+      m_freq[ii] = min + ii * step;
     }
 
     // Compute number of independent trials.
     double fourier_res = 1. / m_duration;
 
     //    N_Fourier = (stop - start) / Fourier_step
-    unsigned int n_fourier = int(ceil(fabs((m_freqs.back() - m_freqs.front()) / fourier_res)));
+    size_type n_fourier = size_type(ceil(fabs((m_freq.back() - m_freq.front()) / fourier_res)));
 
     m_num_indep_trials = (n_fourier < m_trial_hist.size()) ? n_fourier : m_trial_hist.size();
   }
@@ -59,10 +67,10 @@ namespace periodSearch {
     //     }
 
     // Iterate over the number of trial frequencies.
-    int num_trials = m_trial_hist.size();
-    for (int ii = 0; ii < num_trials; ++ii) {
+    size_type num_trials = m_trial_hist.size();
+    for (size_type ii = 0; ii < num_trials; ++ii) {
       // For each frequency, compute the phase.
-      double phase = dt * m_freqs[ii];
+      double phase = dt * m_freq[ii];
       phase -= floor(phase);
 
       // Use this phase information to fill in the corresponding trial.
@@ -95,9 +103,9 @@ namespace periodSearch {
       // Typedef for readability.
       typedef st_graph::ValueSequence<std::vector<double>::const_iterator> ValueSeq_t;
 
-      // Create plot, using m_freqs as x, and m_stats as y.
-      std::auto_ptr<IPlot> plot(engine.createPlot(os.str(), 800, 600, "hist", ValueSeq_t(m_freqs.begin(), m_freqs.end()),
-        ValueSeq_t(m_stats.begin(), m_stats.end())));
+      // Create plot, using m_freq as x, and m_spec as y.
+      std::auto_ptr<IPlot> plot(engine.createPlot(os.str(), 800, 600, "hist", ValueSeq_t(m_freq.begin(), m_freq.end()),
+        ValueSeq_t(m_spec.begin(), m_spec.end())));
 
       // Set axes titles.
       std::vector<Axis> & axes(plot->getAxes());
@@ -115,15 +123,15 @@ namespace periodSearch {
   }
 
   std::pair<double, double> PeriodTest::findMax() const {
-    unsigned long max_idx = 0;
+    size_type max_idx = 0;
     double max = 0.;
-    for (unsigned long ii = 0; ii < m_stats.size(); ++ii) {
-      if (m_stats[ii] > max) {
-        max = m_stats[ii];
+    for (size_type ii = 0; ii < m_spec.size(); ++ii) {
+      if (m_spec[ii] > max) {
+        max = m_spec[ii];
         max_idx = ii;
       }
     }
-    return std::pair<double, double>(m_freqs[max_idx], max);
+    return std::pair<double, double>(m_freq[max_idx], max);
   }
 
   st_stream::OStream & PeriodTest::write(st_stream::OStream & os) const {
@@ -146,7 +154,7 @@ namespace periodSearch {
     os << "Frequency\tStatistic";
 
     // Write out the statistics.
-    for (unsigned long ii = 0; ii < m_stats.size(); ++ii) os << std::endl << m_freqs[ii] << "\t" << m_stats[ii];
+    for (size_type ii = 0; ii < m_spec.size(); ++ii) os << std::endl << m_freq[ii] << "\t" << m_spec[ii];
 
     // Restore original precision.
     os.precision(save_precision);

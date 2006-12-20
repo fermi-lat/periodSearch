@@ -13,13 +13,12 @@
 
 #include "periodSearch/PeriodSearch.h"
 
+// TODO: Put this in a namespace.
+
 /** \class FourierAnalysis
 */
 class FourierAnalysis : public periodSearch::PeriodSearch {
   public:
-    typedef std::vector<double> cont_type;
-    typedef cont_type::size_type size_type;
-
     /// \brief Container type used to store histograms.
 //    typedef periodSearch::PeriodTest::HistCont_t HistCont_t;
 
@@ -93,8 +92,6 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     std::pair<size_type, size_type> getRangeIndex(double min_freq, double max_freq) const;
 
     typedef std::multimap<size_type, size_type> index_map_type;
-    std::vector<double> m_freq;
-    std::vector<double> m_spec;
     index_map_type m_index;
     double m_t_start;
     double m_t_stop;

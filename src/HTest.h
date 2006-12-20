@@ -23,10 +23,10 @@ class HTest : public periodSearch::PeriodTest {
         \param step The step size to use.
         \param num_trials The number of trials in the test scan range.
         \param epoch The global time offset defining the origin for purposes of this computation.
-        \param num_harmonics The maximum number of harmonics used.
+        \param max_harmonics The maximum number of harmonics used.
         \param duration The total time duration (only used if chance probability will be computed).
     */
-    HTest(double center, double step, long num_trials, double epoch, int num_harmonics, double duration);
+    HTest(double center, double step, size_type num_trials, double epoch, size_type max_harmonics, double duration);
 
     /** \brief For a given phase, compute a single statistical trial.
         \param phase The phase.
@@ -42,6 +42,9 @@ class HTest : public periodSearch::PeriodTest {
         \param stat The value of the statistic.
     */
     virtual std::pair<double, double> chanceProb(double stat) const; 
+
+  private:
+    size_type m_max_harm;
 };
 
 #endif

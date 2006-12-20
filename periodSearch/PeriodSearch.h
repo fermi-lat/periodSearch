@@ -20,6 +20,11 @@ namespace periodSearch {
   */
   class PeriodSearch {
     public:
+      typedef std::vector<double> cont_type;
+      typedef cont_type::size_type size_type;
+
+      PeriodSearch(size_type num_bins);
+
       virtual ~PeriodSearch() {}
 
       /** \brief Fill given time into histograms.
@@ -57,6 +62,11 @@ namespace periodSearch {
       // For convenience, compute once the value of 2 * pi.
       static const double s_2pi;
 
+      // The frequencies forming the domain of the search/test.
+      cont_type m_freq;
+
+      // The statistical measure of the validity of each trial.
+      cont_type m_spec;
   };
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearch & test);

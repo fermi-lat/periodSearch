@@ -72,20 +72,14 @@ namespace periodSearch {
           \param step The step size to use.
           \param num_trials The number of trials in the test scan range.
           \param epoch The global time offset defining the origin for purposes of this computation.
-          \param num_bins The number of bins used in each trial. Depending on the specific test, this
-                          may be an upper limit on the actual number of bins used.
+          \param array_size The size of array used for each trial. Depending on the specific test, this
+                 may be an upper limit on the actual number of elements used.
           \param duration The total time duration (only used if chance probability will be computed).
       */
-      PeriodTest(double center, double step, long num_trials, double epoch, int num_bins, double duration);
+      PeriodTest(double center, double step, size_type num_trials, double epoch, size_type array_size, double duration);
 
       // The container of statistical trials.
       HistCont_t m_trial_hist;
-
-      // The frequencies forming the domain of the search/test.
-      std::vector<double> m_freqs;
-
-      // The statistical measure of the validity of each trial.
-      std::vector<double> m_stats;
 
       // Center of scan.
       double m_center;
@@ -95,9 +89,6 @@ namespace periodSearch {
 
       // Duration of data.
       double m_duration;
-
-      // Number of bins used internally for histograms and/or Fourier transformed data.
-      int m_num_bins;
 
       // Number of events, used to normalize the trials.
       int m_num_events;

@@ -9,19 +9,19 @@
 #include "ChiSquaredProb.h"
 #include "Z2nTest.h"
 
-Z2nTest::Z2nTest(double center, double step, long num_trials, double epoch, int num_harmonics, double duration):
-  periodSearch::PeriodTest(center, step, num_trials, epoch, num_harmonics, duration) {
+Z2nTest::Z2nTest(double center, double step, size_type num_trials, double epoch, size_type num_harmonics, double duration):
+  periodSearch::PeriodTest(center, step, num_trials, epoch, num_harmonics, duration), m_num_harm(num_harmonics) {
 }
 
 void Z2nTest::fillOneTrial(double phase, std::vector<std::complex<double> > & trial) const {
   // For each phase, the complex Fourier component is computed for each trial harmonic.
-  for (int jj = 0; jj < m_num_bins; ++jj)
+  for (size_type jj = 0; jj < m_num_harm; ++jj)
     trial[jj] += exp(std::complex<double>(0., s_2pi * (jj + 1) * phase));
 }
 
 const std::vector<double> & Z2nTest::computeStats() {
-  m_stats.assign(m_stats.size(), 0.);
-  if (0 == m_num_events) return m_stats;
+  m_spec.assign(m_spec.size(), 0.);
+  if (0 == m_num_events) return m_spec;
 
   // Pseudocode taken from work by M. Hirayama, which may be seen at:
   // http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/pc_z2ntest.txt
@@ -43,20 +43,20 @@ const std::vector<double> & Z2nTest::computeStats() {
   //     }
 
   // Iterate over the number of trials.
-  int num_trials = m_trial_hist.size();
-  for (int ii = 0; ii < num_trials; ++ii) {
+  size_type num_trials = m_trial_hist.size();
+  for (size_type ii = 0; ii < num_trials; ++ii) {
     // Reset statistics for this trial each time this is called.
-    m_stats[ii] = 0.;
+    m_spec[ii] = 0.;
 
     // Iterate over bins in each trial.
-    for (int jj = 0; jj < m_num_bins; ++jj) {
+    for (size_type jj = 0; jj < m_num_harm; ++jj) {
       // Compute the power spectrum: just the sum of squared norms of all bins. (Note: norm of complex === norm^2)
-      m_stats[ii] += norm(m_trial_hist[ii][jj]);
+      m_spec[ii] += norm(m_trial_hist[ii][jj]);
     }
-    m_stats[ii] *= fourier_norm;
+    m_spec[ii] *= fourier_norm;
   }
 
-  return m_stats;
+  return m_spec;
 }
 
 std::pair<double, double> Z2nTest::chanceProb(double stat) const {
@@ -65,6 +65,6 @@ std::pair<double, double> Z2nTest::chanceProb(double stat) const {
   //      [where function chi2prob(chi2, dof) returns the chi-squared
   //       distribution for "dof" degrees of freedom, integrated from "chi2"
   //       to infinity];
-  periodSearch::ChiSquaredProb prob(2 * m_num_bins);
+  periodSearch::ChiSquaredProb prob(2 * m_num_harm);
   return prob(stat);
 }

@@ -8,19 +8,19 @@
 
 #include "HTest.h"
 
-HTest::HTest(double center, double step, long num_trials, double epoch, int num_harmonics, double duration):
-  periodSearch::PeriodTest(center, step, num_trials, epoch, num_harmonics, duration) {
+HTest::HTest(double center, double step, size_type num_trials, double epoch, size_type max_harmonics, double duration):
+  periodSearch::PeriodTest(center, step, num_trials, epoch, max_harmonics, duration), m_max_harm(max_harmonics) {
 }
 
 void HTest::fillOneTrial(double phase, std::vector<std::complex<double> > & trial) const {
   // For each phase, the complex Fourier component is computed for each trial harmonic.
-  for (int jj = 0; jj < m_num_bins; ++jj)
+  for (size_type jj = 0; jj < m_max_harm; ++jj)
     trial[jj] += exp(std::complex<double>(0., s_2pi * (jj + 1) * phase));
 }
 
 const std::vector<double> & HTest::computeStats() {
-  m_stats.assign(m_stats.size(), 0.);
-  if (0 == m_num_events) return m_stats;
+  m_spec.assign(m_spec.size(), 0.);
+  if (0 == m_num_events) return m_spec;
 
   // Pseudocode taken from work by M. Hirayama, which may be seen at:
   // http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/pc_z2ntest.txt
@@ -47,25 +47,25 @@ const std::vector<double> & HTest::computeStats() {
   //     }
 
   // Iterate over the number of trials.
-  int num_trials = m_trial_hist.size();
-  for (int ii = 0; ii < num_trials; ++ii) {
+  size_type num_trials = m_trial_hist.size();
+  for (size_type ii = 0; ii < num_trials; ++ii) {
     // Reset statistics for this trial each time this is called.
-    m_stats[ii] = 0.;
+    m_spec[ii] = 0.;
 
     double z2_value = 0.;
     // Iterate over bins in each trial.
-    for (int jj = 0; jj < m_num_bins; ++jj) {
+    for (size_type jj = 0; jj < m_max_harm; ++jj) {
       // Compute coefficient of power spectrum for each harmonic.
       z2_value += fourier_norm * norm(m_trial_hist[ii][jj]);
       double H_value = z2_value - 4. * jj;
-      if (H_value > m_stats[ii]) {
+      if (H_value > m_spec[ii]) {
         // Keep only the harmonic with the highest H_value.
-        m_stats[ii] = H_value;
+        m_spec[ii] = H_value;
       }
     }
   }
 
-  return m_stats;
+  return m_spec;
 }
 
 std::pair<double, double> HTest::chanceProb(double stat) const {
