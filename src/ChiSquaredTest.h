@@ -25,11 +25,11 @@ class ChiSquaredTest : public periodSearch::PeriodTest {
         \param step The step size to use.
         \param num_trials The number of trials in the test scan range.
         \param epoch The global time offset defining the origin for purposes of this computation.
-        \param num_bins The number of bins used in each trial. Depending on the specific test, this
-                        may be an upper limit on the actual number of bins used.
+        \param num_phase_bins The number of bins used in each trial. Depending on the specific test, this
+               may be an upper limit on the actual number of bins used.
         \param duration The total time duration (only used if chance probability will be computed).
     */
-    ChiSquaredTest(double center, double step, long num_trials, double epoch, int num_bins, double duration);
+    ChiSquaredTest(double center, double step, size_type num_trials, double epoch, size_type num_phase_bins, double duration);
 
     /** \brief For a given phase, compute a single statistical trial.
         \param phase The phase.
@@ -48,6 +48,8 @@ class ChiSquaredTest : public periodSearch::PeriodTest {
     */
     virtual std::pair<double, double> chanceProb(double stat) const; 
 
+  private:
+    size_type m_num_phase_bins;
 };
 
 #endif

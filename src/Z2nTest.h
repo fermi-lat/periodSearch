@@ -26,7 +26,7 @@ class Z2nTest : public periodSearch::PeriodTest {
         \param num_harmonics The maximum number of harmonics used.
         \param duration The total time duration (only used if chance probability will be computed).
     */
-    Z2nTest(double center, double step, long num_trials, double epoch, int num_harmonics, double duration);
+    Z2nTest(double center, double step, size_type num_trials, double epoch, size_type num_harmonics, double duration);
 
     /** \brief For a given phase, compute a single statistical trial.
         \param phase The phase.
@@ -42,6 +42,9 @@ class Z2nTest : public periodSearch::PeriodTest {
         \param stat The value of the statistic.
     */
     virtual std::pair<double, double> chanceProb(double stat) const; 
+
+  private:
+    size_type m_num_harm;
 };
 
 #endif
