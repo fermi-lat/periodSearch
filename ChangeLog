@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Dec 20 13:50:30 PST 2006
+periodSearch/cmt
+
+Modified Files:
+	requirements 
+Log Message:
+Use fftw.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Dec 20 13:50:04 PST 2006
 periodSearch/src
 
