@@ -1,5 +1,17 @@
 ------------------------------------------------------------
 User: peachey  Wed Dec 20 13:50:04 PST 2006
+periodSearch/src
+
+Modified Files:
+	FourierAnalysis.cxx FourierAnalysis.h PeriodSearch.cxx 
+	PeriodTest.cxx 
+Log Message:
+Move plot, findMaxRange and getRangeIndex methods from subclasses into
+the base class PeriodSearch.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Dec 20 13:50:04 PST 2006
 periodSearch/periodSearch
 
 Modified Files:
