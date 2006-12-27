@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Dec 27 14:14:01 PST 2006
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Finished moving and consolidating methods into the base class.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Dec 27 14:14:01 PST 2006
 periodSearch/src
 
 Modified Files:
