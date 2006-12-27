@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Dec 27 14:13:42 PST 2006
+periodSearch/src
+
+Modified Files:
+	FourierAnalysis.cxx PeriodSearch.cxx PeriodTest.cxx 
+Log Message:
+Finished moving and consolidating methods into the base class.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Dec 27 14:13:42 PST 2006
 periodSearch/periodSearch
 
 Modified Files:
