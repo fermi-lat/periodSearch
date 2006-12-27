@@ -385,7 +385,7 @@ void PSearchApp::run() {
   // with:
   // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
-  if (plot) m_test->plotStats(title, unit);
+  if (plot) m_test->plot(title, unit);
 }
 
 void PSearchApp::prompt(st_app::AppParGroup & pars) {

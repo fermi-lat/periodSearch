@@ -31,7 +31,7 @@ namespace periodSearch {
     try {
       // Display value of maximum frequency/statistic in title.
       std::ostringstream os;
-      std::pair<double, double> max = findMaxRange(min_freq, max_freq);
+      std::pair<double, double> max = findMax(min_freq, max_freq);
       std::pair<double, double> chance_prob = chanceProb(max.second);
 
       os << title << ", max at: " << max.first << ", stat: " << max.second;
@@ -70,11 +70,11 @@ namespace periodSearch {
 
     } catch (const std::exception & x) {
       std::cerr << x.what() << std::endl;
-      std::cerr << "Warning: PeriodSearch::plotStats could not display plot." << std::endl;
+      std::cerr << "Warning: PeriodSearch::plot could not display plot." << std::endl;
     }
   }
 
-  std::pair<double, double> PeriodSearch::findMaxRange(double min_freq, double max_freq) const {
+  std::pair<double, double> PeriodSearch::findMax(double min_freq, double max_freq) const {
     bool found_max = false;
     size_type max_idx = 0;
     double max = 0.;
@@ -96,10 +96,43 @@ namespace periodSearch {
     // Make sure a valid maximum was found.
     if (!found_max) {
       std::ostringstream os;
-      os << "PeriodSearch::findMaxRange cannot find any trial frequency in range [" << min_freq << ", " << max_freq << "]";
+      os << "PeriodSearch::findMax cannot find any trial frequency in range [" << min_freq << ", " << max_freq << "]";
       throw std::runtime_error(os.str());
     }
     return std::pair<double, double>(m_freq[max_idx], max);
+  }
+
+  st_stream::OStream & PeriodSearch::write(st_stream::OStream & os, double min_freq, double max_freq) const {
+    using namespace std;
+
+    // Get info about the maximum.
+    std::pair<double, double> max = findMax(min_freq, max_freq);
+
+    // Chance probability.
+    std::pair<double, double> chance_prob = chanceProb(max.second);
+
+    // Save current precision.
+    int save_precision = os.precision();
+
+    os.precision(15);
+
+    // Write out the results.
+    os << "Maximum at: " << max.first << std::endl << "Statistic: " << max.second << std::endl;
+    os << "Chance probability range: (" << chance_prob.first << ", " << chance_prob.second << ")" << std::endl;
+    os << "Frequency\tStatistic";
+
+    // Impose range limits.
+    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
+    size_type begin_index = indices.first;
+    size_type end_index = indices.second;
+
+    // Write out the statistics.
+    for (size_type ii = begin_index; ii < end_index; ++ii) os << std::endl << m_freq[ii] << "\t" << m_spec[ii];
+
+    // Restore original precision.
+    os.precision(save_precision);
+
+    return os;
   }
 
   std::pair<PeriodSearch::size_type, PeriodSearch::size_type> PeriodSearch::getRangeIndex(double min_freq,

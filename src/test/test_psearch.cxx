@@ -215,7 +215,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Chi Squared Statistic" << std::endl;
   m_os.out() << test << std::endl;
-  if (plot) test.plotStats("Chi Squared Statistic", unit);
+  if (plot) test.plot("Chi Squared Statistic", unit);
 
   // Test Z2n case.
   Z2nTest test_z2n(center, step, num_trials, epoch, num_bins, duration);
@@ -229,7 +229,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Z2n Statistic" << std::endl;
   m_os.out() << test_z2n << std::endl;
-  if (plot) test_z2n.plotStats("Z2n Statistic", unit);
+  if (plot) test_z2n.plot("Z2n Statistic", unit);
 
   // Test Rayleigh case.
   RayleighTest test_rayleigh(center, step, num_trials, epoch, duration);
@@ -243,7 +243,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "Rayleigh Statistic" << std::endl;
   m_os.out() << test_rayleigh << std::endl;
-  if (plot) test_rayleigh.plotStats("Rayleigh Statistic", unit);
+  if (plot) test_rayleigh.plot("Rayleigh Statistic", unit);
 
   // Test H case.
   HTest test_h(center, step, num_trials, epoch, num_bins, duration);
@@ -257,7 +257,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   m_os.out() << "H Statistic" << std::endl;
   m_os.out() << test_h << std::endl;
-  if (plot) test_h.plotStats("H Statistic", unit);
+  if (plot) test_h.plot("H Statistic", unit);
 }
 
 void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name,
@@ -336,7 +336,7 @@ void PSearchTestApp::testFourier(double t_start, double t_stop, double width, in
   fa.computeStats();
 
   m_os.out() << "Fourier Power" << std::endl;
-  fa.writeRange(m_os.out(), min_freq, max_freq) << std::endl;
+  fa.write(m_os.out(), min_freq, max_freq) << std::endl;
   if (plot) fa.plot("Fourier Power", unit, min_freq, max_freq);
 
 }
