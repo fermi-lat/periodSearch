@@ -13,15 +13,10 @@
 
 #include "periodSearch/PeriodSearch.h"
 
-// TODO: Put this in a namespace.
-
 /** \class FourierAnalysis
 */
 class FourierAnalysis : public periodSearch::PeriodSearch {
   public:
-    /// \brief Container type used to store histograms.
-//    typedef periodSearch::PeriodTest::HistCont_t HistCont_t;
-
     /** \brief Construct a FourierAnalysis.
         \param t_start Time lower boundary.
         \param t_stop Time upper boundary.
@@ -41,33 +36,10 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     */
     virtual const std::vector<double> & computeStats();
 
-    /** \brief Display plot of statistics.
-        \param title The title to display on the plot. (Purely cosmetic.)
-        \param freq_unit The units to display on the x axis. (Purely cosmetic.)
-    */
-    virtual void plotStats(const std::string & title, const std::string & freq_unit) const;
-
-    /** \brief Find the frequency for which the statistic is maximized. Return the frequency and the value of
-               the statistic, as a pair.
-    */
-    virtual std::pair<double, double> findMax() const;
-
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
     */
     virtual std::pair<double, double> chanceProb(double stat) const; 
-
-    /** \brief Write data as a function of frequency to the given stream.
-        \param os The stream.
-    */
-    virtual st_stream::OStream & write(st_stream::OStream & os) const;
-
-    /** \brief Write data over a specified frequency range as a function of frequency to the given stream.
-        \param os The stream.
-        \param min_freq The minimum frequency in the range.
-        \param max_freq The maximum frequency in the range.
-    */
-    virtual st_stream::OStream & writeRange(st_stream::OStream & os, double min_freq = -1., double max_freq = -1.) const;
 
   private:
     typedef std::multimap<size_type, size_type> index_map_type;

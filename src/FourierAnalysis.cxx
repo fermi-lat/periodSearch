@@ -104,54 +104,9 @@ namespace periodSearch {
     return m_spec;
   }
 
-  void FourierAnalysis::plotStats(const std::string & title, const std::string & freq_unit) const {
-    plot(title, freq_unit);
-  }
-
-  std::pair<double, double> FourierAnalysis::findMax() const {
-    return findMaxRange();
-  }
-
   std::pair<double,double> FourierAnalysis::chanceProb(double /* stat */) const {
     // TODO Use stat to compute chanceProb.
     return std::pair<double, double>(.001, .001);
-  }
-
-  st_stream::OStream & FourierAnalysis::write(st_stream::OStream & os) const {
-    return writeRange(os);
-  }
-
-  st_stream::OStream & FourierAnalysis::writeRange(st_stream::OStream & os, double min_freq, double max_freq) const {
-    using namespace std;
-
-    // Get info about the maximum.
-    std::pair<double, double> max = findMaxRange(min_freq, max_freq);
-
-    // Chance probability.
-    std::pair<double, double> chance_prob = chanceProb(max.second);
-
-    // Save current precision.
-    int save_precision = os.precision();
-
-    os.precision(15);
-
-    // Write out the results.
-    os << "Maximum at: " << max.first << std::endl << "Statistic: " << max.second << std::endl;
-    os << "Chance probability range: (" << chance_prob.first << ", " << chance_prob.second << ")" << std::endl;
-    os << "Frequency\tStatistic";
-
-    // Impose range limits.
-    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
-    size_type begin_index = indices.first;
-    size_type end_index = indices.second;
-
-    // Write out the statistics.
-    for (size_type ii = begin_index; ii < end_index; ++ii) os << std::endl << m_freq[ii] << "\t" << m_spec[ii];
-
-    // Restore original precision.
-    os.precision(save_precision);
-
-    return os;
   }
 
 }

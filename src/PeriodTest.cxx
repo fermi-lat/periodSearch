@@ -78,42 +78,6 @@ namespace periodSearch {
     }
   }
 
-  void PeriodTest::plotStats(const std::string & title, const std::string & freq_unit) const {
-    plot(title, freq_unit);
-  }
-
-  std::pair<double, double> PeriodTest::findMax() const {
-    return findMaxRange();
-  }
-
-  st_stream::OStream & PeriodTest::write(st_stream::OStream & os) const {
-    using namespace std;
-
-    // Get info about the maximum.
-    std::pair<double, double> max = findMax();
-
-    // Chance probability.
-    std::pair<double, double> chance_prob = chanceProb(max.second);
-
-    // Save current precision.
-    int save_precision = os.precision();
-
-    os.precision(15);
-
-    // Write out the results.
-    os << "Maximum at: " << max.first << std::endl << "Statistic: " << max.second << std::endl;
-    os << "Chance probability range: (" << chance_prob.first << ", " << chance_prob.second << ")" << std::endl;
-    os << "Frequency\tStatistic";
-
-    // Write out the statistics.
-    for (size_type ii = 0; ii < m_spec.size(); ++ii) os << std::endl << m_freq[ii] << "\t" << m_spec[ii];
-
-    // Restore original precision.
-    os.precision(save_precision);
-
-    return os;
-  }
-
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodTest & test) {
     return test.write(os);
   }
