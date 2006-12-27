@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Dec 27 14:13:42 PST 2006
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearch.h PeriodTest.h 
+Log Message:
+Finished moving and consolidating methods into the base class.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Dec 20 14:04:34 PST 2006
 periodSearch/src
 
