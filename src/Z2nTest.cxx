@@ -59,7 +59,7 @@ const std::vector<double> & Z2nTest::computeStats() {
   return m_spec;
 }
 
-std::pair<double, double> Z2nTest::chanceProb(double stat) const {
+std::pair<double, double> Z2nTest::chanceProbOneTrial(double stat) const {
   //      /* Leahy et al. 1983, ApJ 266, 160 */
   //      chance_prob = chi2prob(test_stat[imax], 2*N_harm) * N_Fourier;
   //      [where function chi2prob(chi2, dof) returns the chi-squared

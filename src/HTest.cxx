@@ -68,7 +68,7 @@ const std::vector<double> & HTest::computeStats() {
   return m_spec;
 }
 
-std::pair<double, double> HTest::chanceProb(double stat) const {
+std::pair<double, double> HTest::chanceProbOneTrial(double stat) const {
   /* De Jager et al. 1989, A&A 221, 180 */
   double lower_limit;
   double upper_limit;
