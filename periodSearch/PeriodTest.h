@@ -33,6 +33,10 @@ namespace periodSearch {
       */
       virtual void fill(double evt_time);
 
+      /** \brief Return the number of independent trials for this search method.
+      */
+      virtual size_type numIndepTrials() const;
+
       /** \brief For a given phase, compute a single statistical trial.
           \param phase The phase.
           \param trial A single trial array, whose exact interpretation depends on the type of test

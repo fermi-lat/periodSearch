@@ -78,8 +78,12 @@ namespace periodSearch {
     }
   }
 
+  PeriodSearch::size_type PeriodTest::numIndepTrials() const {
+    return m_num_indep_trials;
+  }
+
+
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodTest & test) {
     return test.write(os);
   }
-
 }
