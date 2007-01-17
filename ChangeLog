@@ -1,5 +1,20 @@
 ------------------------------------------------------------
 User: peachey  Wed Jan 17 14:05:09 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodSearch.cxx 
+Log Message:
+Modified base class methods:
+  plot(..., min_freq, max_freq) -> protected plotRange(same arguments)
+  write(..., min_freq, max_freq) -> protected writeRange(same arguments)
+  abstract chanceProb -> concrete chanceProb + abstract chanceProbOneTrial
+New base class method:
+  abstract numIndepTrials to compute number of statistically independent trials
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Jan 17 14:05:09 PST 2007
 periodSearch/periodSearch
 
 Modified Files:
