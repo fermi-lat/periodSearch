@@ -60,7 +60,7 @@ const std::vector<double> & ChiSquaredTest::computeStats() {
 
 }
 
-std::pair<double,double> ChiSquaredTest::chanceProb(double stat) const {
+std::pair<double,double> ChiSquaredTest::chanceProbOneTrial(double stat) const {
   //    /* Leahy et al. 1983, ApJ 266, 160 */
   //    chance_prob = chi2prob(S_value[imax], N_bin-1) * N_Fourier;
   //    [where function chi2prob(chisq, dof) returns the chi-squared

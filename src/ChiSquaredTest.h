@@ -46,7 +46,7 @@ class ChiSquaredTest : public periodSearch::PeriodTest {
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
     */
-    virtual std::pair<double, double> chanceProb(double stat) const; 
+    virtual std::pair<double, double> chanceProbOneTrial(double stat) const; 
 
   private:
     size_type m_num_phase_bins;
