@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Jan 17 14:08:38 PST 2007
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Use plotRange, writeRange for FourierAnalysis test.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jan 17 14:08:19 PST 2007
 periodSearch/src
 
