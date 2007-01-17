@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Jan 17 14:05:39 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodTest.cxx 
+Log Message:
+Add concrete numIndepTrials.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Jan 17 14:05:39 PST 2007
 periodSearch/periodSearch
 
 Modified Files:
