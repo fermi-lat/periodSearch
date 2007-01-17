@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <utility>
 
+#include "ChiSquaredProb.h"
 #include "FourierAnalysis.h"
 
 #include "fftw/fftw3.h"
@@ -104,9 +105,21 @@ namespace periodSearch {
     return m_spec;
   }
 
-  std::pair<double,double> FourierAnalysis::chanceProb(double /* stat */) const {
-    // TODO Use stat to compute chanceProb.
-    return std::pair<double, double>(.001, .001);
+  PeriodSearch::size_type FourierAnalysis::numIndepTrials() const {
+    return m_freq.size();
   }
 
+  std::pair<double,double> FourierAnalysis::chanceProbOneTrial(double stat) const {
+    periodSearch::ChiSquaredProb prob(2 * m_num_segments);
+    return prob(stat);
+  }
+
+  void FourierAnalysis::plotRange(const std::string & title, const std::string & freq_unit, double min_freq, double max_freq)
+    const {
+    PeriodSearch::plotRange(title, freq_unit, min_freq, max_freq);
+  }
+
+  st_stream::OStream & FourierAnalysis::writeRange(st_stream::OStream & os, double min_freq, double max_freq) const {
+    return PeriodSearch::writeRange(os, min_freq, max_freq);
+  }
 }
