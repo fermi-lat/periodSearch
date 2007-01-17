@@ -37,14 +37,11 @@ namespace periodSearch {
       */
       virtual const std::vector<double> & computeStats() = 0;
 
-      /** \brief Display plot of statistics.
+      /** \brief Display plot of statistic as a function of frequency for entire frequency range.
           \param title The title to display on the plot. (Purely cosmetic.)
           \param freq_unit The units to display on the x axis. (Purely cosmetic.)
-          \param min_freq The minimum frequency in the range (if negative, do not constrain minimum frequency.)
-          \param max_freq The maximum frequency in the range (if negative, do not constrain maximum frequency.)
       */
-      virtual void plot(const std::string & title, const std::string & freq_unit, double min_freq = -1., double max_freq = -1.)
-        const;
+      virtual void plot(const std::string & title, const std::string & freq_unit) const;
 
       /** \brief Find the frequency for which the statistic is maximized in a given frequency range. Return the
                  frequency and the value of the statistic, as a pair.
@@ -53,19 +50,42 @@ namespace periodSearch {
       */
       virtual std::pair<double, double> findMax(double min_freq = -1., double max_freq = -1.) const;
 
+      /** \brief Return the number of independent trials for this search method.
+      */
+      virtual size_type numIndepTrials() const = 0;
+
       /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
           \param stat The value of the statistic.
       */
-      virtual std::pair<double, double> chanceProb(double stat) const = 0;
+      virtual std::pair<double, double> chanceProbOneTrial(double stat) const = 0;
+
+      /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
+          \param stat The value of the statistic.
+      */
+      virtual std::pair<double, double> chanceProb(double stat) const;
+
+      /** \brief Write statistical data as a function of frequency to the given stream.
+          \param os The stream.
+      */
+      virtual st_stream::OStream & write(st_stream::OStream & os) const;
+
+    protected:
+      /** \brief Display plot of statistics as a function of frequency over the given range.
+          \param title The title to display on the plot. (Purely cosmetic.)
+          \param freq_unit The units to display on the x axis. (Purely cosmetic.)
+          \param min_freq The minimum frequency in the range (if negative, do not constrain minimum frequency.)
+          \param max_freq The maximum frequency in the range (if negative, do not constrain maximum frequency.)
+      */
+      virtual void plotRange(const std::string & title, const std::string & freq_unit, double min_freq = -1., double max_freq = -1.)
+        const;
 
       /** \brief Write data over a specified frequency range as a function of frequency to the given stream.
           \param os The stream.
           \param min_freq The minimum frequency in the range.
           \param max_freq The maximum frequency in the range.
       */
-      virtual st_stream::OStream & write(st_stream::OStream & os, double min_freq = -1., double max_freq = -1.) const;
+      virtual st_stream::OStream & writeRange(st_stream::OStream & os, double min_freq = -1., double max_freq = -1.) const;
 
-    protected:
       /** \brief Given a frequency range, determine the indices of (inclusive) lower and upper bounds.
           \param min_freq The minimum frequency.
           \param max_freq The maximum frequency.

@@ -25,7 +25,79 @@ namespace periodSearch {
 
   PeriodSearch::PeriodSearch(size_type num_bins): m_freq(num_bins), m_spec(num_bins) {}
 
-  void PeriodSearch::plot(const std::string & title, const std::string & freq_unit, double min_freq, double max_freq) const {
+  void PeriodSearch::plot(const std::string & title, const std::string & freq_unit) const {
+    plotRange(title, freq_unit);
+  }
+
+  std::pair<double, double> PeriodSearch::findMax(double min_freq, double max_freq) const {
+    bool found_max = false;
+    size_type max_idx = 0;
+    double max = 0.;
+
+    // Impose range limits.
+    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
+    size_type begin_index = indices.first;
+    size_type end_index = indices.second;
+
+    for (size_type ii = begin_index; ii < end_index; ++ii) {
+      // If the value is larger than the current maximum, replace it.
+      if (m_spec[ii] > max) {
+        max = m_spec[ii];
+        max_idx = ii;
+        found_max = true;
+      }
+    }
+
+    // Make sure a valid maximum was found.
+    if (!found_max) {
+      std::ostringstream os;
+      os << "PeriodSearch::findMax cannot find any trial frequency in range [" << min_freq << ", " << max_freq << "]";
+      throw std::runtime_error(os.str());
+    }
+    return std::pair<double, double>(m_freq[max_idx], max);
+  }
+
+  std::pair<double, double> PeriodSearch::chanceProb(double stat) const {
+    // Compute probability for one trial.
+    std::pair<double, double> chance_prob = chanceProbOneTrial(stat);
+
+    // Get "N".
+    size_type num_indep_trials = numIndepTrials();
+
+    // Multiply by N (small probability approximation).
+    chance_prob.first *= num_indep_trials;
+    chance_prob.second *= num_indep_trials;
+
+    // Limit to legally bounded range for probability.
+    chance_prob.first = chance_prob.first > 1. ? 1. : chance_prob.first;
+    chance_prob.second = chance_prob.second > 1. ? 1. : chance_prob.second;
+
+    return chance_prob;
+  }
+
+  st_stream::OStream & PeriodSearch::write(st_stream::OStream & os) const {
+    return writeRange(os);
+  }
+
+  std::pair<PeriodSearch::size_type, PeriodSearch::size_type> PeriodSearch::getRangeIndex(double min_freq,
+    double max_freq) const {
+    size_type begin_index = 0;
+    size_type end_index = m_freq.size();
+
+    if (0. <= min_freq) {
+      // Find first element whose frequency is not less than the minimum frequency.
+      for (begin_index = 0; begin_index < m_freq.size() && m_freq[begin_index] < min_freq; ++begin_index);
+    }
+
+    if (0. <= max_freq) {
+      // Find last element whose frequency is not greater than the maximum frequency.
+      for (end_index = m_freq.size(); end_index > begin_index && m_freq[end_index - 1] > max_freq; --end_index);
+    }
+
+    return std::make_pair(begin_index, end_index);
+  }
+
+  void PeriodSearch::plotRange(const std::string & title, const std::string & freq_unit, double min_freq, double max_freq) const {
     using namespace st_graph;
 
     try {
@@ -74,41 +146,14 @@ namespace periodSearch {
     }
   }
 
-  std::pair<double, double> PeriodSearch::findMax(double min_freq, double max_freq) const {
-    bool found_max = false;
-    size_type max_idx = 0;
-    double max = 0.;
-
-    // Impose range limits.
-    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
-    size_type begin_index = indices.first;
-    size_type end_index = indices.second;
-
-    for (size_type ii = begin_index; ii < end_index; ++ii) {
-      // If the value is larger than the current maximum, replace it.
-      if (m_spec[ii] > max) {
-        max = m_spec[ii];
-        max_idx = ii;
-        found_max = true;
-      }
-    }
-
-    // Make sure a valid maximum was found.
-    if (!found_max) {
-      std::ostringstream os;
-      os << "PeriodSearch::findMax cannot find any trial frequency in range [" << min_freq << ", " << max_freq << "]";
-      throw std::runtime_error(os.str());
-    }
-    return std::pair<double, double>(m_freq[max_idx], max);
-  }
-
-  st_stream::OStream & PeriodSearch::write(st_stream::OStream & os, double min_freq, double max_freq) const {
+  st_stream::OStream & PeriodSearch::writeRange(st_stream::OStream & os, double min_freq, double max_freq) const {
     using namespace std;
 
     // Get info about the maximum.
     std::pair<double, double> max = findMax(min_freq, max_freq);
 
     // Chance probability.
+    size_type num_indep_trials = numIndepTrials();
     std::pair<double, double> chance_prob = chanceProb(max.second);
 
     // Save current precision.
@@ -119,6 +164,7 @@ namespace periodSearch {
     // Write out the results.
     os << "Maximum at: " << max.first << std::endl << "Statistic: " << max.second << std::endl;
     os << "Chance probability range: (" << chance_prob.first << ", " << chance_prob.second << ")" << std::endl;
+    os << "Number of statistically independent trials: " << num_indep_trials << std::endl;
     os << "Frequency\tStatistic";
 
     // Impose range limits.
@@ -133,24 +179,6 @@ namespace periodSearch {
     os.precision(save_precision);
 
     return os;
-  }
-
-  std::pair<PeriodSearch::size_type, PeriodSearch::size_type> PeriodSearch::getRangeIndex(double min_freq,
-    double max_freq) const {
-    size_type begin_index = 0;
-    size_type end_index = m_freq.size();
-
-    if (0. <= min_freq) {
-      // Find first element whose frequency is not less than the minimum frequency.
-      for (begin_index = 0; begin_index < m_freq.size() && m_freq[begin_index] < min_freq; ++begin_index);
-    }
-
-    if (0. <= max_freq) {
-      // Find last element whose frequency is not greater than the maximum frequency.
-      for (end_index = m_freq.size(); end_index > begin_index && m_freq[end_index - 1] > max_freq; --end_index);
-    }
-
-    return std::make_pair(begin_index, end_index);
   }
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearch & test) {
