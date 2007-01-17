@@ -336,8 +336,8 @@ void PSearchTestApp::testFourier(double t_start, double t_stop, double width, in
   fa.computeStats();
 
   m_os.out() << "Fourier Power" << std::endl;
-  fa.write(m_os.out(), min_freq, max_freq) << std::endl;
-  if (plot) fa.plot("Fourier Power", unit, min_freq, max_freq);
+  fa.writeRange(m_os.out(), min_freq, max_freq) << std::endl;
+  if (plot) fa.plotRange("Fourier Power", unit, min_freq, max_freq);
 
 }
 
