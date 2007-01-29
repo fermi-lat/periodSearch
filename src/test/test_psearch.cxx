@@ -61,6 +61,8 @@ class PSearchTestApp : public st_app::StApp {
     void testFourier(double t_start, double t_stop, double width, int num_bins, const std::vector<double> & events,
       const std::string & unit, bool plot, double min_freq, double max_freq); 
 
+    void testChanceProb();
+
     const std::string & getDataDir();
 
     std::string findFile(const std::string & file_name);
@@ -74,6 +76,7 @@ class PSearchTestApp : public st_app::StApp {
 };
 
 void PSearchTestApp::run() {
+
   // Trick up some fake events.
   int num_evts = 1000;
 
@@ -197,6 +200,9 @@ void PSearchTestApp::run() {
 
   // Test process of picking the ephemeris.
   testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", epoch);
+
+  // Test computations of chance probability.
+  testChanceProb();
 }
 
 void PSearchTestApp::testAllStats(double center, double step, long num_trials, double epoch, int num_bins,
@@ -339,6 +345,61 @@ void PSearchTestApp::testFourier(double t_start, double t_stop, double width, in
   fa.writeRange(m_os.out(), min_freq, max_freq) << std::endl;
   if (plot) fa.plotRange("Fourier Power", unit, min_freq, max_freq);
 
+}
+
+void PSearchTestApp::testChanceProb() {
+  using namespace periodSearch;
+
+  // Vector to hold array of number of statistically independent trials to test chanceProb.
+  std::vector<PeriodSearch::size_type>::size_type trial_size = 11;
+  std::vector<PeriodSearch::size_type> num_indep_trial(trial_size, 0);
+  num_indep_trial[1] = 1;
+  num_indep_trial[2] = 2;
+  num_indep_trial[3] = 10;
+  for (std::vector<PeriodSearch::size_type>::size_type idx = 4; idx != trial_size; ++idx) {
+    num_indep_trial[idx] = 10 * num_indep_trial[idx - 1];
+  }
+
+  // Vector to hold array of single-trial probabilities used to test chanceProb calculation.
+  std::vector<double>::size_type prob_size = 201;
+  std::vector<double> prob_one_trial(prob_size, 0.);
+  for (std::vector<double>::size_type idx = 1; idx != prob_size; ++idx) {
+    prob_one_trial[idx] = std::pow(.9, double(prob_size - (idx + 1)));
+  }
+
+  // Populate array with approximate answers using a standard math library call. Note that this is
+  // inaccurate especially for probabilities near 0, and/or for large numbers of trials.
+  std::vector<std::vector<double> > approx_chance_prob(trial_size, std::vector<double>(prob_size, 0.));
+  for (std::vector<PeriodSearch::size_type>::size_type ii = 0; ii != trial_size; ++ii) {
+    for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
+      approx_chance_prob[ii][jj] = 1. - std::pow(1. - prob_one_trial[jj], double(num_indep_trial[ii]));
+    }
+  }
+
+  // Require the agreement between the approximate simple formula and the form used in the PeriodSearch class
+  // to be to about 6.5 digits. Note that this limit cannot be refined because the approximate values are
+  // not sufficiently accurate.
+  double epsilon = 1.e-7;
+
+  for (std::vector<PeriodSearch::size_type>::size_type ii = 0; ii != trial_size; ++ii) {
+    for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
+      double chance_prob = PeriodSearch::chanceProbMultiTrial(prob_one_trial[jj], num_indep_trial[ii]);
+      if (0. > chance_prob) {
+        m_failed = true;
+        m_os.err() << "ERROR: chanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
+          ") unexpectedly returned " << chance_prob << ", which is < 0." << std::endl;
+      } else if (1. < chance_prob) {
+        m_failed = true;
+        m_os.err() << "ERROR: chanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
+          ") unexpectedly returned " << chance_prob << ", which is > 1." << std::endl;
+      } else if ((0. == approx_chance_prob[ii][jj] && 0. != chance_prob) ||
+        (0. != approx_chance_prob[ii][jj] && epsilon < std::fabs(chance_prob / approx_chance_prob[ii][jj] - 1.))) {
+        m_failed = true;
+        m_os.err() << "ERROR: chanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] << ") returned " <<
+          chance_prob << ", not " << approx_chance_prob[ii][jj] << ", as expected." << std::endl;
+      }
+    }
+  }
 }
 
 const std::string & PSearchTestApp::getDataDir() {

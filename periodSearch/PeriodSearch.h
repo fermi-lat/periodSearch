@@ -69,7 +69,15 @@ namespace periodSearch {
       */
       virtual st_stream::OStream & write(st_stream::OStream & os) const;
 
+      /* \brief Compute the probability that an event occurs at least once in N statistically
+                independent trials, given that the probability of the event occurring in a single trial is p.
+         \param prob_one_trial The probability p of the event occuring in one trial.
+         \param num_indep_trial The number N of statistically independent trials.
+      */
+      static double chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial);
+
     protected:
+
       /** \brief Display plot of statistics as a function of frequency over the given range.
           \param title The title to display on the plot. (Purely cosmetic.)
           \param freq_unit The units to display on the x axis. (Purely cosmetic.)
