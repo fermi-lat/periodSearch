@@ -14,6 +14,7 @@
 #include <cmath>
 #include <iomanip>
 #include <memory>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -77,6 +78,81 @@ namespace periodSearch {
 
   st_stream::OStream & PeriodSearch::write(st_stream::OStream & os) const {
     return writeRange(os);
+  }
+
+  double PeriodSearch::chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial) {
+    static double epsilon = std::numeric_limits<double>::epsilon();
+    double chance_prob = 0.;
+
+    // Handle special cases.
+    if (0 == num_indep_trial) chance_prob = 0.;
+    else if (1 == num_indep_trial) chance_prob = prob_one_trial;
+    else if (1. == prob_one_trial) chance_prob = 1.;
+    else if (0. == prob_one_trial) chance_prob = 0.;
+    else {
+      // Compute x == -N * ln(1 - p) where N == num_indep_trial and p == prob_one_trial.
+      double xx = 0.;
+      if (.1 <= prob_one_trial) {
+        // For large p use the formula directly.
+        xx = -(signed long)(num_indep_trial) * std::log(1. - prob_one_trial);
+      } else {
+        // For small values of p, use iterative power series expansion.
+        // Helper: p^n.
+        double p_to_the_n = prob_one_trial;
+        // qn == p^n/n -> q1 = p / 1.
+        double q_sub_n = p_to_the_n;
+        // Sn == sum qn -> Initial sum is 0.
+        double S_sub_n = 0.;
+        // Iterate over nn starting with 1.
+        size_type nn = 1;
+        do {
+          // Compute Sn.
+          S_sub_n += q_sub_n;
+          // Prepare the next qn term and helper p_to_the_n:
+          // n becomes "n+1"
+          ++nn;
+          // Compute p^"n+1"
+          p_to_the_n *= prob_one_trial;
+          // Compute q_sub_"n+1"
+          q_sub_n = p_to_the_n / nn;
+        } while (epsilon < q_sub_n / S_sub_n); // Note that this compares q_sub_n for the current nn to S_sub_n for the previous nn.
+
+        // x == N * Sn for last n.
+        xx = num_indep_trial * S_sub_n;
+      }
+
+      // Compute chance_prob == Q == 1. - exp(-x).
+      if (.1 <= xx) {
+        // For large x use the formula directly.
+        chance_prob = 1. - std::exp(-xx);
+      } else {
+        // For small values of x, use iterative power series expansion.
+        // Helper: leading term is x^(2n+1) / (2n + 1)!. For n = 0 this is x^1/1 = x.
+        double leading_term = xx;
+        // qn == leading term * (1 - xx/(2n + 2)). For n = 0 this is leading term * (1 - x/2)
+        double q_sub_n = leading_term * (1. - xx / 2.);
+        // Sn == sum qn -> Initial sum is 0.
+        double S_sub_n = 0.;
+        // Iterate over nn starting with 1.
+        size_type nn = 0;
+        do {
+          // Compute Sn.
+          S_sub_n += q_sub_n;
+          // Prepare the next helper leading_term and qn.
+          // n becomes "n+1"
+          ++nn;
+          // Compute next leading term.
+          leading_term *= xx * xx / (2 * nn * (2 * nn + 1));
+          // Compute q_sub_"n+1"
+          q_sub_n = leading_term * (1. - xx / (2 * nn + 2));
+        } while (epsilon < q_sub_n / S_sub_n); // Note that this compares q_sub_n for the current nn to S_sub_n for the previous nn.
+
+        // Q == Sn for last n.
+        chance_prob = S_sub_n;
+      }
+    }
+
+    return chance_prob;
   }
 
   std::pair<PeriodSearch::size_type, PeriodSearch::size_type> PeriodSearch::getRangeIndex(double min_freq,
