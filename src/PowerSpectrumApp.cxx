@@ -278,6 +278,7 @@ void PowerSpectrumApp::run() {
   // Write the stats to the screen.
   m_os.info(eIncludeSummary) << title << std::endl;
   m_test->writeRange(m_os.info(eAllDetails), low_f_cut);
+  m_os.info() << std::endl;
 
   // TODO: When tip supports getting units from a column, replace the following:
   std::string unit = "(Hz)";
