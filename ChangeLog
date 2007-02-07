@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Feb  7 14:18:05 PST 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Add final newline to data output.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Feb  7 14:17:44 PST 2007
 periodSearch/src
 
