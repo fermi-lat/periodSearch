@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Feb  7 14:17:44 PST 2007
+periodSearch/src
+
+Modified Files:
+	FourierAnalysis.cxx 
+Log Message:
+Correct bug in computation of magnitude of complex value.
+
+    *
+------------------------------------------------------------
 User: peachey  Mon Feb  5 14:13:17 PST 2007
 periodSearch/pfiles
 
