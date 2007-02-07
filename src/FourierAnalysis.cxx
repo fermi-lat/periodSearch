@@ -95,7 +95,7 @@ namespace periodSearch {
       for (size_t ii = 0; ii < num_cpx_elements; ++ii) {
         const double & real = out[ii][0];
         const double & imag = out[ii][1];
-        m_spec[ii] += real * real + imag * imag * 2. / num_events;
+        m_spec[ii] += (real * real + imag * imag) * 2. / num_events;
       }
     }
 
