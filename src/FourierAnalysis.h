@@ -46,15 +46,6 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     */
     virtual std::pair<double, double> chanceProbOneTrial(double stat) const; 
 
-    /** \brief Display plot of statistics as a function of frequency over the given range.
-        \param title The title to display on the plot. (Purely cosmetic.)
-        \param freq_unit The units to display on the x axis. (Purely cosmetic.)
-        \param min_freq The minimum frequency in the range (if negative, do not constrain minimum frequency.)
-        \param max_freq The maximum frequency in the range (if negative, do not constrain maximum frequency.)
-    */
-    virtual void plotRange(const std::string & title, const std::string & freq_unit, double min_freq = -1., double max_freq = -1.)
-      const;
-
     /** \brief Write data over a specified frequency range as a function of frequency to the given stream.
         \param os The stream.
         \param min_freq The minimum frequency in the range.

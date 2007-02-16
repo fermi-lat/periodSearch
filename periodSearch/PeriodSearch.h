@@ -37,12 +37,6 @@ namespace periodSearch {
       */
       virtual const std::vector<double> & computeStats() = 0;
 
-      /** \brief Display plot of statistic as a function of frequency for entire frequency range.
-          \param title The title to display on the plot. (Purely cosmetic.)
-          \param freq_unit The units to display on the x axis. (Purely cosmetic.)
-      */
-      virtual void plot(const std::string & title, const std::string & freq_unit) const;
-
       /** \brief Find the frequency for which the statistic is maximized in a given frequency range. Return the
                  frequency and the value of the statistic, as a pair.
           \param min_freq The minimum frequency in the range.
@@ -69,23 +63,18 @@ namespace periodSearch {
       */
       virtual st_stream::OStream & write(st_stream::OStream & os) const;
 
+      //* \brief Get frequency data associated with this search object.
+      const cont_type getFreq() const;
+      
+      //* \brief Get spectral data associated with this search object.
+      const cont_type getSpec() const;
+      
       /* \brief Compute the probability that an event occurs at least once in N statistically
                 independent trials, given that the probability of the event occurring in a single trial is p.
          \param prob_one_trial The probability p of the event occuring in one trial.
          \param num_indep_trial The number N of statistically independent trials.
       */
       static double chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial);
-
-    protected:
-
-      /** \brief Display plot of statistics as a function of frequency over the given range.
-          \param title The title to display on the plot. (Purely cosmetic.)
-          \param freq_unit The units to display on the x axis. (Purely cosmetic.)
-          \param min_freq The minimum frequency in the range (if negative, do not constrain minimum frequency.)
-          \param max_freq The maximum frequency in the range (if negative, do not constrain maximum frequency.)
-      */
-      virtual void plotRange(const std::string & title, const std::string & freq_unit, double min_freq = -1., double max_freq = -1.)
-        const;
 
       /** \brief Write data over a specified frequency range as a function of frequency to the given stream.
           \param os The stream.
@@ -99,6 +88,8 @@ namespace periodSearch {
           \param max_freq The maximum frequency.
       */
       std::pair<size_type, size_type> getRangeIndex(double min_freq, double max_freq) const;
+
+    protected:
 
       // For convenience, compute once the value of 2 * pi.
       static const double s_2pi;

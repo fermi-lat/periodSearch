@@ -114,11 +114,6 @@ namespace periodSearch {
     return prob(stat);
   }
 
-  void FourierAnalysis::plotRange(const std::string & title, const std::string & freq_unit, double min_freq, double max_freq)
-    const {
-    PeriodSearch::plotRange(title, freq_unit, min_freq, max_freq);
-  }
-
   st_stream::OStream & FourierAnalysis::writeRange(st_stream::OStream & os, double min_freq, double max_freq) const {
     return PeriodSearch::writeRange(os, min_freq, max_freq);
   }

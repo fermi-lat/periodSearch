@@ -34,6 +34,7 @@
 #include "timeSystem/TimeSystem.h"
 
 #include "periodSearch/PeriodSearch.h"
+#include "periodSearch/PeriodSearchPlotter.h"
 #include "FourierAnalysis.h"
 
 using namespace periodSearch;
@@ -285,7 +286,8 @@ void PowerSpectrumApp::run() {
   // with:
   // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
-  if (plot) m_test->plotRange(title, unit, low_f_cut);
+  periodSearch::PeriodSearchPlotter plotter;
+  if (plot) plotter.plotRange(*m_test, title, unit, low_f_cut);
 }
 
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
