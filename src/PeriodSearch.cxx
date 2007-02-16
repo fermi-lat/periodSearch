@@ -6,14 +6,8 @@
 
 #include "periodSearch/PeriodSearch.h"
 
-#include "st_graph/Axis.h"
-#include "st_graph/Engine.h"
-#include "st_graph/IPlot.h"
-#include "st_graph/Sequence.h"
-
 #include <cmath>
 #include <iomanip>
-#include <memory>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
@@ -25,10 +19,6 @@ namespace periodSearch {
   const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
 
   PeriodSearch::PeriodSearch(size_type num_bins): m_freq(num_bins), m_spec(num_bins) {}
-
-  void PeriodSearch::plot(const std::string & title, const std::string & freq_unit) const {
-    plotRange(title, freq_unit);
-  }
 
   std::pair<double, double> PeriodSearch::findMax(double min_freq, double max_freq) const {
     bool found_max = false;
@@ -79,6 +69,10 @@ namespace periodSearch {
   st_stream::OStream & PeriodSearch::write(st_stream::OStream & os) const {
     return writeRange(os);
   }
+
+  const PeriodSearch::cont_type PeriodSearch::getFreq() const { return m_freq; }
+      
+  const PeriodSearch::cont_type PeriodSearch::getSpec() const { return m_spec; }
 
   double PeriodSearch::chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial) {
     static double epsilon = std::numeric_limits<double>::epsilon();
@@ -171,55 +165,6 @@ namespace periodSearch {
     }
 
     return std::make_pair(begin_index, end_index);
-  }
-
-  void PeriodSearch::plotRange(const std::string & title, const std::string & freq_unit, double min_freq, double max_freq) const {
-    using namespace st_graph;
-
-    try {
-      // Display value of maximum frequency/statistic in title.
-      std::ostringstream os;
-      std::pair<double, double> max = findMax(min_freq, max_freq);
-      std::pair<double, double> chance_prob = chanceProb(max.second);
-
-      os << title << ", max at: " << max.first << ", stat: " << max.second;
-
-      // Massage display: if difference between min and max is small enough just use max.
-      os.setf(std::ios::scientific);
-      os.precision(2); // 3 digits -> < 1. e -4. limit in next line.
-      if ((chance_prob.second - chance_prob.first) / chance_prob.second < 1.e-4)
-        os << ", chance prob: " << chance_prob.second;
-      else
-        os << ", chance prob < " << chance_prob.second;
-
-      // Get graphics engine to set up graph.
-      Engine & engine(Engine::instance());
-
-      // Typedef for readability.
-      typedef st_graph::ValueSequence<std::vector<double>::const_iterator> ValueSeq_t;
-
-      // Impose range limits.
-      std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
-      size_type begin_index = indices.first;
-      size_type end_index = indices.second;
-
-      // Create plot, using m_freq as x, and m_spec as y.
-      std::auto_ptr<IPlot> plot(engine.createPlot(os.str(), 800, 600, "hist",
-        ValueSeq_t(m_freq.begin() + begin_index, m_freq.begin() + end_index),
-        ValueSeq_t(m_spec.begin() + begin_index, m_spec.begin() + end_index)));
-
-      // Set axes titles.
-      std::vector<Axis> & axes(plot->getAxes());
-      axes[0].setTitle("Frequency " + freq_unit);
-      axes[1].setTitle("Test Statistic");
-
-      // Display plot.
-      engine.run();
-
-    } catch (const std::exception & x) {
-      std::cerr << x.what() << std::endl;
-      std::cerr << "Warning: PeriodSearch::plot could not display plot." << std::endl;
-    }
   }
 
   st_stream::OStream & PeriodSearch::writeRange(st_stream::OStream & os, double min_freq, double max_freq) const {
