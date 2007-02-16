@@ -1,5 +1,17 @@
 ------------------------------------------------------------
 User: peachey  Fri Feb 16 14:05:34 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodSearch.cxx FourierAnalysis.cxx FourierAnalysis.h 
+	PowerSpectrumApp.cxx 
+Log Message:
+Use new PeriodSearchPlotter class to plot; remove all plotting from PeriodSearch
+and its subclasses.
+
+    *
+------------------------------------------------------------
+User: peachey  Fri Feb 16 14:05:34 PST 2007
 periodSearch/periodSearch
 
 Modified Files:
