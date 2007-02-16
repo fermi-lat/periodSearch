@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Fri Feb 16 14:04:40 PST 2007
+periodSearch/periodSearch
+
+Added Files:
+	PeriodSearchPlotter.h 
+Log Message:
+New class encapsulating plotting functionality.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Feb  7 14:18:05 PST 2007
 periodSearch/src
 
