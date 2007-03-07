@@ -6,7 +6,9 @@
 #ifndef periodSearch_Z2nTest_h
 #define periodSearch_Z2nTest_h
 
+#include <complex>
 #include <utility>
+#include <vector>
 
 #include "periodSearch/PeriodTest.h"
 
@@ -42,6 +44,10 @@ class Z2nTest : public periodSearch::PeriodTest {
         \param stat The value of the statistic.
     */
     virtual std::pair<double, double> chanceProbOneTrial(double stat) const; 
+
+    /** \brief Return a description of this search.
+    */
+    virtual std::string getDescription() const;
 
   private:
     size_type m_num_harm;

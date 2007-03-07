@@ -3,6 +3,7 @@
     \authors Masaharu Hirayama, GSSC
              James Peachey, HEASARC/GSSC
 */
+#include <sstream>
 #include <stdexcept>
 
 #include "ChiSquaredProb.h"
@@ -68,4 +69,12 @@ std::pair<double,double> ChiSquaredTest::chanceProbOneTrial(double stat) const {
   //     to infinity];
   periodSearch::ChiSquaredProb prob(m_num_phase_bins - 1);
   return prob(stat);
+}
+
+std::string ChiSquaredTest::getDescription() const {
+  std::ostringstream os;
+  os << PeriodTest::getDescription() << "\n" <<
+    "Type of test: CHI2 Test, " << m_num_phase_bins << " phase bins\n" <<
+    "Probability distribution: Chi-squared, " << m_num_phase_bins - 1 << " degrees of freedom";
+  return os.str();
 }

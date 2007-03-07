@@ -4,6 +4,7 @@
              James Peachey, HEASARC/GSSC
 */
 
+#include <sstream>
 #include <stdexcept>
 
 #include "ChiSquaredProb.h"
@@ -67,4 +68,12 @@ std::pair<double, double> Z2nTest::chanceProbOneTrial(double stat) const {
   //       to infinity];
   periodSearch::ChiSquaredProb prob(2 * m_num_harm);
   return prob(stat);
+}
+
+std::string Z2nTest::getDescription() const {
+  std::ostringstream os;
+  os << PeriodTest::getDescription() << "\n" <<
+    "Type of test: Z2n Test, " << m_num_harm << " harmonics\n" <<
+    "Probability distribution: Chi-squared, " << 2 * m_num_harm << " degrees of freedom";
+  return os.str();
 }
