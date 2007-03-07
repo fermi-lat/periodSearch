@@ -157,8 +157,6 @@ void PowerSpectrumApp::run() {
   AbsoluteTime abs_tstart(evt_time_rep);
   evt_time_rep.setValue(tstop);
   AbsoluteTime abs_tstop(evt_time_rep);
-  evt_time_rep.setValue(.5 * (tstart + tstop));
-  AbsoluteTime abs_middle(evt_time_rep);
 
   // A TimingModel will be needed for several steps below.
   TimingModel model;
