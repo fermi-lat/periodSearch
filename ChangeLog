@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Mar  7 12:56:59 PST 2007
+periodSearch/src
+
+Removed Files:
+	PeriodSearchPlotter.cxx 
+Log Message:
+Removed PeriodSearchPlotter, which was superceded by PeriodSearchViewer class.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Mar  7 12:56:59 PST 2007
 periodSearch/periodSearch
 
 Removed Files:
