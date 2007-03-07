@@ -39,19 +39,16 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
 
     /** \brief Return the number of independent trials for this search method.
     */
-    virtual size_type numIndepTrials() const;
+    virtual size_type numIndepTrials(double min_freq = -1., double max_freq = -1.) const;
 
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
     */
     virtual std::pair<double, double> chanceProbOneTrial(double stat) const; 
 
-    /** \brief Write data over a specified frequency range as a function of frequency to the given stream.
-        \param os The stream.
-        \param min_freq The minimum frequency in the range.
-        \param max_freq The maximum frequency in the range.
+    /** \brief Return a description of this search.
     */
-    virtual st_stream::OStream & writeRange(st_stream::OStream & os, double min_freq = -1., double max_freq = -1.) const;
+    virtual std::string getDescription() const;
 
   private:
     typedef std::multimap<size_type, size_type> index_map_type;
@@ -59,6 +56,7 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     double m_t_start;
     double m_t_stop;
     double m_width;
+    double m_fourier_res;
     size_type m_num_segments;
     size_type m_num_bins;
 };
