@@ -68,8 +68,6 @@ class PSearchTestApp : public st_app::StApp {
 
     std::string findFile(const std::string & file_name);
 
-    std::string makeTitle(const periodSearch::PeriodTest & test, const std::string & init_title);
-
   private:
     st_stream::StreamFormatter m_os;
     std::string m_data_dir;
@@ -425,24 +423,6 @@ const std::string & PSearchTestApp::getDataDir() {
 
 std::string PSearchTestApp::findFile(const std::string & file_name) {
   return st_facilities::Env::appendFileName(getDataDir(), file_name);
-}
-
-std::string PSearchTestApp::makeTitle(const periodSearch::PeriodTest & test, const std::string & init_title) {
-  std::ostringstream os;
-  std::pair<double, double> max = test.findMax();
-  std::pair<double, double> chance_prob = test.chanceProb(max.second);
-
-  os << init_title << ", Max at: " << max.first << ", stat: " << max.second;
-
-  // Massage display: if difference between min and max is small enough just use max.
-  os.setf(std::ios::scientific);
-  os.precision(2); // 2 digits -> < 1. e -4. limit in next line.
-  if ((chance_prob.second - chance_prob.first) / chance_prob.second < 1.e-4) 
-    os << ", chance prob: " << chance_prob.second;
-  else
-    os << ", chance prob < " << chance_prob.second;
-
-  return os.str();
 }
 
 st_app::StAppFactory<PSearchTestApp> g_factory("test_periodSearch");
