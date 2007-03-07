@@ -34,7 +34,7 @@
 #include "timeSystem/TimeSystem.h"
 
 #include "periodSearch/PeriodSearch.h"
-#include "periodSearch/PeriodSearchPlotter.h"
+#include "periodSearch/PeriodSearchViewer.h"
 #include "FourierAnalysis.h"
 
 using namespace periodSearch;
@@ -277,8 +277,10 @@ void PowerSpectrumApp::run() {
   if (title == "DEFAULT") title = "FFT Test";
 
   // Write the stats to the screen.
+  periodSearch::PeriodSearchViewer viewer(*m_test, low_f_cut);
+
   m_os.info(eIncludeSummary) << title << std::endl;
-  m_test->writeRange(m_os.info(eAllDetails), low_f_cut);
+  viewer.write(m_os.info(eAllDetails));
   m_os.info() << std::endl;
 
   // TODO: When tip supports getting units from a column, replace the following:
@@ -286,8 +288,7 @@ void PowerSpectrumApp::run() {
   // with:
   // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
-  periodSearch::PeriodSearchPlotter plotter;
-  if (plot) plotter.plotRange(*m_test, title, unit, low_f_cut);
+  if (plot) viewer.plot(title, unit);
 }
 
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
