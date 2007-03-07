@@ -14,6 +14,44 @@
 #include "st_stream/Stream.h"
 
 namespace periodSearch {
+
+  /** \class PeriodSearchResult
+      \brief Class encapsulating result of a PeriodSearch.
+  */
+  class PeriodSearchResult {
+    public:
+      typedef std::vector<double> cont_type;
+      typedef cont_type::size_type size_type;
+
+      /** \brief Create a search result.
+          \param description Description of the probability distribution of the statistic.
+          \param min_freq The minimum frequency in the range.
+          \param max_freq The maximum frequency in the range.
+          \param num_freq_bin The number of trial frequencies used.
+          \param num_indep_trial The number of independent trial frequencies used.
+          \param max_stat The frequency where the maximum statistic occurs and the value of the statistic at that frequency.
+          \param chance_prob Range of chance probabilities.
+      */
+      PeriodSearchResult(const std::string & description, double min_freq, double max_freq, size_type num_freq_bin,
+        size_type num_indep_trial, const std::pair<double, double> & max_stat, const std::pair<double, double> & chance_prob);
+
+      /** \brief Write this search result to the given stream.
+          \param os The stream.
+      */
+      st_stream::OStream & write(st_stream::OStream & os) const;
+
+    private:
+      std::string m_description;
+      double m_min_freq;
+      double m_max_freq;
+      size_type m_num_freq_bin;
+      size_type m_num_indep_trial;
+      std::pair<double, double> m_max_stat;
+      std::pair<double, double> m_chance_prob;
+  };
+
+  st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearchResult & result);
+
   /** \class PeriodSearch
       \brief Base class for various statistical tests used to determine frequency of pulsation
              when an approximate frequency is known.
@@ -37,6 +75,9 @@ namespace periodSearch {
       */
       virtual const std::vector<double> & computeStats() = 0;
 
+      /** \brief Perform a period search and return the result of the test. */
+      virtual PeriodSearchResult search(double min_freq = -1., double max_freq = -1.);
+
       /** \brief Find the frequency for which the statistic is maximized in a given frequency range. Return the
                  frequency and the value of the statistic, as a pair.
           \param min_freq The minimum frequency in the range.
@@ -46,7 +87,7 @@ namespace periodSearch {
 
       /** \brief Return the number of independent trials for this search method.
       */
-      virtual size_type numIndepTrials() const = 0;
+      virtual size_type numIndepTrials(double min_freq = -1., double max_freq = -1.) const = 0;
 
       /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
           \param stat The value of the statistic.
@@ -56,12 +97,17 @@ namespace periodSearch {
       /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
           \param stat The value of the statistic.
       */
+      //TODO: remove chanceProb, because search does it correctly.
       virtual std::pair<double, double> chanceProb(double stat) const;
 
-      /** \brief Write statistical data as a function of frequency to the given stream.
+      /** \brief Output a description of this search.
           \param os The stream.
       */
       virtual st_stream::OStream & write(st_stream::OStream & os) const;
+
+      /** \brief Return a description of this search.
+      */
+      virtual std::string getDescription() const = 0;
 
       //* \brief Get frequency data associated with this search object.
       const cont_type getFreq() const;
@@ -75,13 +121,6 @@ namespace periodSearch {
          \param num_indep_trial The number N of statistically independent trials.
       */
       static double chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial);
-
-      /** \brief Write data over a specified frequency range as a function of frequency to the given stream.
-          \param os The stream.
-          \param min_freq The minimum frequency in the range.
-          \param max_freq The maximum frequency in the range.
-      */
-      virtual st_stream::OStream & writeRange(st_stream::OStream & os, double min_freq = -1., double max_freq = -1.) const;
 
       /** \brief Given a frequency range, determine the indices of (inclusive) lower and upper bounds.
           \param min_freq The minimum frequency.
