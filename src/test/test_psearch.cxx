@@ -225,7 +225,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
   m_os.out() << "Chi Squared Statistic" << std::endl;
   m_os.out() << test.search() << std::endl;
   m_os.out() << *viewer << std::endl;
-  if (plot) viewer->plot("Chi Squared Statistic", unit);
+  if (plot) viewer->plot("Folding Analysis: Chi Squared Statistic", unit);
 
   // Test Z2n case.
   Z2nTest test_z2n(center, step, num_trials, epoch, num_bins, duration);
@@ -241,7 +241,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
   m_os.out() << "Z2n Statistic" << std::endl;
   m_os.out() << test_z2n.search() << std::endl;
   m_os.out() << *viewer << std::endl;
-  if (plot) viewer->plot("Z2n Statistic", unit);
+  if (plot) viewer->plot("Folding Analysis: Z2n Statistic", unit);
 
   // Test Rayleigh case.
   RayleighTest test_rayleigh(center, step, num_trials, epoch, duration);
@@ -257,7 +257,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
   m_os.out() << "Rayleigh Statistic" << std::endl;
   m_os.out() << test_rayleigh.search() << std::endl;
   m_os.out() << *viewer << std::endl;
-  if (plot) viewer->plot("Rayleigh Statistic", unit);
+  if (plot) viewer->plot("Folding Analysis: Rayleigh Statistic", unit);
 
   // Test H case.
   HTest test_h(center, step, num_trials, epoch, num_bins, duration);
@@ -273,7 +273,7 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
   m_os.out() << "H Statistic" << std::endl;
   m_os.out() << test_h.search() << std::endl;
   m_os.out() << *viewer << std::endl;
-  if (plot) viewer->plot("H Statistic", unit);
+  if (plot) viewer->plot("Folding Analysis: H Statistic", unit);
 }
 
 void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name,
@@ -357,7 +357,7 @@ void PSearchTestApp::testFourier(double t_start, double t_stop, double width, in
   periodSearch::PeriodSearchViewer viewer(fa, min_freq, max_freq);
   m_os.out() << viewer << std::endl;
 
-  if (plot) viewer.plot("Fourier Power", unit);
+  if (plot) viewer.plot("Fourier Analysis: Power Spectrum", unit);
 
 }
 
