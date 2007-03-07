@@ -94,12 +94,6 @@ namespace periodSearch {
       */
       virtual std::pair<double, double> chanceProbOneTrial(double stat) const = 0;
 
-      /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
-          \param stat The value of the statistic.
-      */
-      //TODO: remove chanceProb, because search does it correctly.
-      virtual std::pair<double, double> chanceProb(double stat) const;
-
       /** \brief Output a description of this search.
           \param os The stream.
       */
