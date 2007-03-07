@@ -34,7 +34,7 @@
 #include "timeSystem/TimeSystem.h"
 
 #include "periodSearch/PeriodSearch.h"
-#include "periodSearch/PeriodSearchPlotter.h"
+#include "periodSearch/PeriodSearchViewer.h"
 #include "ChiSquaredTest.h"
 #include "HTest.h"
 #include "RayleighTest.h"
@@ -386,8 +386,8 @@ void PSearchApp::run() {
   // with:
   // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
-  periodSearch::PeriodSearchPlotter plotter;
-  if (plot) plotter.plot(*m_test, title, unit);
+  periodSearch::PeriodSearchViewer viewer(*m_test);
+  if (plot) viewer.plot(title, unit);
 }
 
 void PSearchApp::prompt(st_app::AppParGroup & pars) {
