@@ -35,21 +35,6 @@ namespace periodSearch {
     typedef PeriodSearch::size_type size_type;
 
     try {
-      // Display value of maximum frequency/statistic in title.
-      std::ostringstream os;
-      std::pair<double, double> max = m_search->findMax(m_min_freq, m_max_freq);
-      std::pair<double, double> chance_prob = m_search->chanceProb(max.second);
-
-      os << title << ", max at: " << max.first << ", stat: " << max.second;
-
-      // Massage display: if difference between min and max is small enough just use max.
-      os.setf(std::ios::scientific);
-      os.precision(2); // 3 digits -> < 1. e -4. limit in next line.
-      if ((chance_prob.second - chance_prob.first) / chance_prob.second < 1.e-4)
-        os << ", chance prob: " << chance_prob.second;
-      else
-        os << ", chance prob < " << chance_prob.second;
-
       // Get graphics engine to set up graph.
       Engine & engine(Engine::instance());
 
@@ -66,7 +51,7 @@ namespace periodSearch {
       // Create plot, using frequency as x, and spectrum/statistic as y.
       const cont_type & freq(m_search->getFreq());
       const cont_type & spec(m_search->getSpec());
-      std::auto_ptr<IPlot> plot(engine.createPlot(os.str(), 800, 600, "hist",
+      std::auto_ptr<IPlot> plot(engine.createPlot(title, 800, 600, "hist",
         ValueSeq_t(freq.begin() + begin_index, freq.begin() + end_index),
         ValueSeq_t(spec.begin() + begin_index, spec.begin() + end_index)));
 
