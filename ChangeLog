@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Mar  7 12:52:20 PST 2007
+periodSearch/src
+
+Modified Files:
+	RayleighTest.h 
+Log Message:
+Add getDescription method, for getting a description of the specific
+PeriodSearch-derived class.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Mar  7 12:52:08 PST 2007
 periodSearch/src/test
 
