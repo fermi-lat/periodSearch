@@ -43,6 +43,10 @@ class HTest : public periodSearch::PeriodTest {
     */
     virtual std::pair<double, double> chanceProbOneTrial(double stat) const; 
 
+    /** \brief Return a description of this search.
+    */
+    virtual std::string getDescription() const;
+
   private:
     size_type m_max_harm;
 };

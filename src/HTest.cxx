@@ -4,6 +4,7 @@
              James Peachey, HEASARC/GSSC
 */
 
+#include <sstream>
 #include <stdexcept>
 
 #include "HTest.h"
@@ -88,11 +89,17 @@ std::pair<double, double> HTest::chanceProbOneTrial(double stat) const {
      chance_prob_exact = false;
   }
 
-  upper_limit *= m_num_indep_trials;
-
   upper_limit = upper_limit < 1. ? upper_limit : 1.;
 
   lower_limit = chance_prob_exact ? upper_limit : 0.;
 
   return std::make_pair(lower_limit, upper_limit);
+}
+
+std::string HTest::getDescription() const {
+  std::ostringstream os;
+  os << PeriodTest::getDescription() << "\n" <<
+    "Type of test: H Test, " << m_max_harm << " maximum harmonics\n" <<
+    "Probability distribution: H Test-specific";
+  return os.str();
 }
