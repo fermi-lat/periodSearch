@@ -51,6 +51,8 @@ namespace periodSearch {
       // Create plot, using frequency as x, and spectrum/statistic as y.
       const cont_type & freq(m_search->getFreq());
       const cont_type & spec(m_search->getSpec());
+      // TODO Add output from PeriodSearchResult::write(...) to a text box on the plot, and/or in a
+      // GUI output window.
       std::auto_ptr<IPlot> plot(engine.createPlot(title, 800, 600, "hist",
         ValueSeq_t(freq.begin() + begin_index, freq.begin() + end_index),
         ValueSeq_t(spec.begin() + begin_index, spec.begin() + end_index)));
