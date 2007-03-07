@@ -8,6 +8,8 @@
 
 #include "Z2nTest.h"
 
+#include <sstream>
+
 /** \class RayleighTest
     \brief PeriodTest subclass which uses Rayleigh statistic (=== Z2n with n == 1) for its search/test.
 */
@@ -23,6 +25,15 @@ class RayleighTest : public Z2nTest {
     RayleighTest(double center, double step, long num_trials, double epoch, double duration):
       Z2nTest(center, step, num_trials, epoch, 1, duration) {}
 
+    /** \brief Return a description of this search.
+    */
+    virtual std::string getDescription() const {
+      std::ostringstream os;
+      os << PeriodTest::getDescription() << "\n" <<
+        "Type of test: Rayleigh Test (Z2n with n = 1 harmonic)\n" << 
+        "Probability distribution: Chi-squared, " << 2 << " degrees of freedom";
+      return os.str();
+    }
 };
 
 #endif
