@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Mar  7 13:33:11 PST 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Tweak titles on plots to be more descriptive of type of test.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Mar  7 13:32:39 PST 2007
 periodSearch/src
 
