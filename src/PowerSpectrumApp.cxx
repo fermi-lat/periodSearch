@@ -274,7 +274,7 @@ void PowerSpectrumApp::run() {
   };
 
   // Use default title if user did not specify one.
-  if (title == "DEFAULT") title = "FFT Test";
+  if (title == "DEFAULT") title = "Fourier Analysis: Power Spectrum";
 
   // Write the stats to the screen.
   periodSearch::PeriodSearchViewer viewer(*m_test, low_f_cut);

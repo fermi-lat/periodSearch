@@ -375,7 +375,7 @@ void PSearchApp::run() {
   m_test->computeStats();
 
   // Use default title if user did not specify one.
-  if (title == "DEFAULT") title = algorithm + " Test";
+  if (title == "DEFAULT") title = "Folding Analysis: " + algorithm + " Test";
 
   // Write the stats to the screen.
   m_os.out() << title << std::endl;
