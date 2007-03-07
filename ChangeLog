@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Mar  7 12:44:43 PST 2007
+periodSearch/src
+
+Added Files:
+	PeriodSearchViewer.cxx 
+Log Message:
+Add viewer class, which can plot and also write output.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Mar  7 12:44:43 PST 2007
 periodSearch/periodSearch
 
 Added Files:
