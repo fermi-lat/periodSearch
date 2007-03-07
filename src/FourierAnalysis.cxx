@@ -21,14 +21,14 @@ namespace periodSearch {
 
   FourierAnalysis::FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, int /* num_events */):
     PeriodSearch(num_bins / 2 + 1), m_index(), m_t_start(t_start), m_t_stop(t_stop),
-    m_width(width), m_num_segments(0) , m_num_bins(num_bins) {
+    m_width(width), m_fourier_res(0.), m_num_segments(0) , m_num_bins(num_bins) {
     if (t_start > t_stop) throw std::runtime_error("FourierAnalysis: start time is > stop time");
     // m_index.reserve(num_events);
 
     // Set up frequency array.
-    double freq_step = 1. / (m_width * m_num_bins);
+    m_fourier_res = 1. / (m_width * m_num_bins);
     for (size_t ii = 0; ii < m_freq.size(); ++ii) {
-      m_freq[ii] = ii * freq_step;
+      m_freq[ii] = ii * m_fourier_res;
     }
   }
 
@@ -105,8 +105,10 @@ namespace periodSearch {
     return m_spec;
   }
 
-  PeriodSearch::size_type FourierAnalysis::numIndepTrials() const {
-    return m_freq.size();
+  PeriodSearch::size_type FourierAnalysis::numIndepTrials(double min_freq, double max_freq) const {
+    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
+    size_type num_indep_trials = indices.second >= indices.first ? indices.second - indices.first : 0;
+    return num_indep_trials;
   }
 
   std::pair<double,double> FourierAnalysis::chanceProbOneTrial(double stat) const {
@@ -114,7 +116,13 @@ namespace periodSearch {
     return prob(stat);
   }
 
-  st_stream::OStream & FourierAnalysis::writeRange(st_stream::OStream & os, double min_freq, double max_freq) const {
-    return PeriodSearch::writeRange(os, min_freq, max_freq);
+  std::string FourierAnalysis::getDescription() const {
+    std::ostringstream os;
+    os << "Search Type: Fourier Analysis\n"
+       << "Fourier Resolution: " << m_fourier_res << " Hz\n"
+       << "Sampling Frequency: " << m_fourier_res << " Hz\n"
+       << "Data Binning: " << m_num_segments << " segments with " << m_num_bins << " time bins in each segment\n"
+       << "Probability Distribution: Chi Squared with " << 2 * m_num_segments << " degrees of freedom";
+    return os.str();
   }
 }

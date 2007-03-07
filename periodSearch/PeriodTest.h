@@ -35,7 +35,7 @@ namespace periodSearch {
 
       /** \brief Return the number of independent trials for this search method.
       */
-      virtual size_type numIndepTrials() const;
+      virtual size_type numIndepTrials(double min_freq = -1., double max_freq = -1.) const;
 
       /** \brief For a given phase, compute a single statistical trial.
           \param phase The phase.
@@ -43,6 +43,10 @@ namespace periodSearch {
                        being performed in the subclass.
       */
       virtual void fillOneTrial(double phase, std::vector<std::complex<double> > & trial) const = 0;
+
+      /** \brief Return a description of this search.
+      */
+      virtual std::string getDescription() const;
 
     protected:
       /** \brief Construct a test object using given trial information.
@@ -59,20 +63,17 @@ namespace periodSearch {
       // The container of statistical trials.
       HistCont_t m_trial_hist;
 
-      // Center of scan.
-      double m_center;
+      // Sampling frequency (frequency step).
+      double m_step;
 
       // Temporal origin.
       double m_epoch;
 
-      // Duration of data.
-      double m_duration;
+      // Fourier resolution of search.
+      double m_fourier_res;
 
       // Number of events, used to normalize the trials.
       int m_num_events;
-
-      // Number of independent trials.
-      int m_num_indep_trials;
   };
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodTest & test);
