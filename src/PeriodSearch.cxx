@@ -16,9 +16,56 @@
 
 namespace periodSearch {
 
+  PeriodSearchResult::PeriodSearchResult(const std::string & description, double min_freq, double max_freq, size_type num_freq_bin,
+    size_type num_indep_trial, const std::pair<double, double> & max_stat, const std::pair<double, double> & chance_prob):
+    m_description(description),
+    m_min_freq(min_freq),
+    m_max_freq(max_freq),
+    m_num_freq_bin(num_freq_bin),
+    m_num_indep_trial(num_indep_trial),
+    m_max_stat(max_stat),
+    m_chance_prob(chance_prob) {}
+
+  st_stream::OStream & PeriodSearchResult::write(st_stream::OStream & os) const {
+    os << m_description << "\n"
+       << "Search Range (Hz): [" << m_min_freq << ", " << m_max_freq << "]\n"
+       << "Number of Trial Frequencies: " << m_num_freq_bin << "\n"
+       << "Number of Independent Trials: " << m_num_indep_trial << "\n"
+       << "Maximum Statistic: " << m_max_stat.second << " at " << m_max_stat.first << " Hz\n"
+       << "Chance Probability Range: " << "(" << m_chance_prob.first << ", " << m_chance_prob.second << ")";
+    return os;
+  }
+
+  st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearchResult & result) { return result.write(os); }
+
   const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
 
   PeriodSearch::PeriodSearch(size_type num_bins): m_freq(num_bins), m_spec(num_bins) {}
+
+  PeriodSearchResult PeriodSearch::search(double min_freq, double max_freq) {
+    // Find position of the maximum in the range.
+    std::pair<double, double> max = findMax(min_freq, max_freq);
+
+    // Compute probability for one trial.
+    std::pair<double, double> chance_prob = chanceProbOneTrial(max.second);
+
+    // Compute the number of independent trials.
+    size_type num_indep_trials = numIndepTrials(min_freq, max_freq);
+
+    // Compute the multi-trial chance probability.
+    chance_prob.first = chanceProbMultiTrial(chance_prob.first, num_indep_trials);
+    chance_prob.second = chanceProbMultiTrial(chance_prob.second, num_indep_trials);
+
+    // Compute number of bins.
+    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
+    size_type num_bins = indices.second - indices.first;
+
+    // Reset min/max frequency if either bound was not explicitly specified (negative).
+    if (0. > min_freq) min_freq = m_freq[indices.first];
+    if (0. > max_freq && indices.second > 0) max_freq = m_freq[indices.second - 1];
+
+    return PeriodSearchResult(getDescription(), min_freq, max_freq, num_bins, num_indep_trials, max, chance_prob);
+  }
 
   std::pair<double, double> PeriodSearch::findMax(double min_freq, double max_freq) const {
     bool found_max = false;
@@ -55,19 +102,15 @@ namespace periodSearch {
     // Get "N".
     size_type num_indep_trials = numIndepTrials();
 
-    // Multiply by N (small probability approximation).
-    chance_prob.first *= num_indep_trials;
-    chance_prob.second *= num_indep_trials;
-
-    // Limit to legally bounded range for probability.
-    chance_prob.first = chance_prob.first > 1. ? 1. : chance_prob.first;
-    chance_prob.second = chance_prob.second > 1. ? 1. : chance_prob.second;
+    // Compute the multi-trial chance probability.
+    chance_prob.first = chanceProbMultiTrial(chance_prob.first, num_indep_trials);
+    chance_prob.second = chanceProbMultiTrial(chance_prob.second, num_indep_trials);
 
     return chance_prob;
   }
 
   st_stream::OStream & PeriodSearch::write(st_stream::OStream & os) const {
-    return writeRange(os);
+    return os << getDescription();
   }
 
   const PeriodSearch::cont_type PeriodSearch::getFreq() const { return m_freq; }
@@ -164,42 +207,13 @@ namespace periodSearch {
       for (end_index = m_freq.size(); end_index > begin_index && m_freq[end_index - 1] > max_freq; --end_index);
     }
 
+    if (begin_index >= end_index) {
+      std::ostringstream os;
+      os << "No bins contained in frequency search range [" << min_freq << ", " << max_freq << "] Hz";
+      throw std::runtime_error(os.str());
+    }
+
     return std::make_pair(begin_index, end_index);
-  }
-
-  st_stream::OStream & PeriodSearch::writeRange(st_stream::OStream & os, double min_freq, double max_freq) const {
-    using namespace std;
-
-    // Get info about the maximum.
-    std::pair<double, double> max = findMax(min_freq, max_freq);
-
-    // Chance probability.
-    size_type num_indep_trials = numIndepTrials();
-    std::pair<double, double> chance_prob = chanceProb(max.second);
-
-    // Save current precision.
-    int save_precision = os.precision();
-
-    os.precision(15);
-
-    // Write out the results.
-    os << "Maximum at: " << max.first << std::endl << "Statistic: " << max.second << std::endl;
-    os << "Chance probability range: (" << chance_prob.first << ", " << chance_prob.second << ")" << std::endl;
-    os << "Number of statistically independent trials: " << num_indep_trials << std::endl;
-    os << "Frequency\tStatistic";
-
-    // Impose range limits.
-    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
-    size_type begin_index = indices.first;
-    size_type end_index = indices.second;
-
-    // Write out the statistics.
-    for (size_type ii = begin_index; ii < end_index; ++ii) os << std::endl << m_freq[ii] << "\t" << m_spec[ii];
-
-    // Restore original precision.
-    os.precision(save_precision);
-
-    return os;
   }
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearch & test) {
