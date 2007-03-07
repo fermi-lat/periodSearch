@@ -95,20 +95,6 @@ namespace periodSearch {
     return std::pair<double, double>(m_freq[max_idx], max);
   }
 
-  std::pair<double, double> PeriodSearch::chanceProb(double stat) const {
-    // Compute probability for one trial.
-    std::pair<double, double> chance_prob = chanceProbOneTrial(stat);
-
-    // Get "N".
-    size_type num_indep_trials = numIndepTrials();
-
-    // Compute the multi-trial chance probability.
-    chance_prob.first = chanceProbMultiTrial(chance_prob.first, num_indep_trials);
-    chance_prob.second = chanceProbMultiTrial(chance_prob.second, num_indep_trials);
-
-    return chance_prob;
-  }
-
   st_stream::OStream & PeriodSearch::write(st_stream::OStream & os) const {
     return os << getDescription();
   }
