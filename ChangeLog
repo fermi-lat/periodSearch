@@ -1,4 +1,18 @@
 ------------------------------------------------------------
+User: peachey  Wed Mar  7 12:50:02 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodSearch.cxx 
+Log Message:
+Added PeriodSearchResult class for formatting output separately from the
+search itself. Added min/max frequency arguments to numIndepTrials method,
+Added getDescription and search methods, for getting a description of
+the search type and performing a search and reporting results,
+respectively. Removed writeRange method.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Mar  7 12:49:46 PST 2007
 periodSearch/periodSearch
 
