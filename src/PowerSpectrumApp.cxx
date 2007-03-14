@@ -151,13 +151,6 @@ void PowerSpectrumApp::run() {
   std::string evt_time_sys;
   header["TIMESYS"].get(evt_time_sys);
 
-  // Set up event time representation.
-  MetRep evt_time_rep(evt_time_sys, mjd_ref, 0.);
-  evt_time_rep.setValue(tstart);
-  AbsoluteTime abs_tstart(evt_time_rep);
-  evt_time_rep.setValue(tstop);
-  AbsoluteTime abs_tstop(evt_time_rep);
-
   // A TimingModel will be needed for several steps below.
   TimingModel model;
   SloppyEphChooser chooser;
@@ -236,6 +229,9 @@ void PowerSpectrumApp::run() {
       throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
     }
   }
+
+  // Set up event time representation.
+  MetRep evt_time_rep(evt_time_sys, mjd_ref, 0.);
 
   double bin_width = pars["binwidth"];
 
