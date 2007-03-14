@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Mar 14 14:36:41 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Bug fix: apply arrival time correction to TSTART and TSTOP.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Mar 14 14:06:13 PDT 2007
 periodSearch/src
 
