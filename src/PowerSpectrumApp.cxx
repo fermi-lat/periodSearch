@@ -233,6 +233,23 @@ void PowerSpectrumApp::run() {
   // Set up event time representation.
   MetRep evt_time_rep(evt_time_sys, mjd_ref, 0.);
 
+  // Apply arrival time correction to TSTART.
+  evt_time_rep.setValue(tstart);
+  AbsoluteTime abs_tstart(evt_time_rep);
+  if (demod_bin) computer.demodulateBinary(abs_tstart);
+  if (cancel_pdot) computer.cancelPdot(abs_tstart);
+  evt_time_rep = abs_tstart;
+  tstart = evt_time_rep.getValue();
+
+  // Apply arrival time correction to TSTOP.
+  evt_time_rep.setValue(tstop);
+  AbsoluteTime abs_tstop(evt_time_rep);
+  if (demod_bin) computer.demodulateBinary(abs_tstop);
+  if (cancel_pdot) computer.cancelPdot(abs_tstop);
+  evt_time_rep = abs_tstop;
+  tstop = evt_time_rep.getValue();
+
+  // Get binwidth parameter.
   double bin_width = pars["binwidth"];
 
   // Create the proper test.
