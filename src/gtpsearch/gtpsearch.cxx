@@ -182,15 +182,6 @@ void PSearchApp::run() {
   std::string evt_time_sys;
   header["TIMESYS"].get(evt_time_sys);
   
-  // Set up event time representation.
-  MetRep evt_time_rep(evt_time_sys, mjd_ref, 0.);
-  evt_time_rep.setValue(tstart);
-  AbsoluteTime abs_tstart(evt_time_rep);
-  evt_time_rep.setValue(tstop);
-  AbsoluteTime abs_tstop(evt_time_rep);
-  evt_time_rep.setValue(.5 * (tstart + tstop));
-  AbsoluteTime abs_middle(evt_time_rep);
-
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration.
   if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
   double f_step = scan_step / duration;
@@ -273,6 +264,33 @@ void PSearchApp::run() {
       throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
     }
   }
+
+  // Set up event time representations.
+  MetRep evt_time_rep(evt_time_sys, mjd_ref, 0.);
+
+  // Set up start time of observation (data set). Apply necessary corrections.
+  evt_time_rep.setValue(tstart);
+  AbsoluteTime abs_tstart(evt_time_rep);
+  if (demod_bin) computer.demodulateBinary(abs_tstart);
+  if (cancel_pdot) computer.cancelPdot(abs_tstart);
+  // Propagate corrected time back to the original tstart variable.
+  evt_time_rep = abs_tstart;
+  tstart = evt_time_rep.getValue();
+
+  // Set up stop time of observation (data set). Apply necessary corrections.
+  evt_time_rep.setValue(tstop);
+  AbsoluteTime abs_tstop(evt_time_rep);
+  if (demod_bin) computer.demodulateBinary(abs_tstop);
+  if (cancel_pdot) computer.cancelPdot(abs_tstop);
+  // Propagate corrected time back to the original tstop variable.
+  evt_time_rep = abs_tstop;
+  tstop = evt_time_rep.getValue();
+
+  // Compute a time to resresent the center of the observation.
+  // It is not necessary to perform binary demodulation or pdot cancellation again because
+  // the tstart and tstop already had these corrections.
+  evt_time_rep.setValue(.5 * (tstart + tstop));
+  AbsoluteTime abs_middle(evt_time_rep);
 
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
@@ -374,19 +392,30 @@ void PSearchApp::run() {
   // Compute the statistics.
   m_test->computeStats();
 
+  enum ChatLevel {
+    eDefault = 2,
+    eIncludeSummary= 3,
+    eAllDetails = 4,
+  };
+
   // Use default title if user did not specify one.
   if (title == "DEFAULT") title = "Folding Analysis: " + algorithm + " Test";
 
+  // Create a viewer for plotting and writing output.
+  periodSearch::PeriodSearchViewer viewer(*m_test);
+
   // Write the stats to the screen.
-  m_os.out() << title << std::endl;
-  m_os.out() << *m_test << std::endl;
+  m_os.info(eIncludeSummary) << title << std::endl;
+  m_os.info(eIncludeSummary) << m_test->search() << std::endl;
+
+  // Write details of test result if chatter is high enough.
+  m_os.info(eAllDetails) << viewer << std::endl;
 
   // TODO: When tip supports getting units from a column, replace the following:
   std::string unit = "(Hz)";
   // with:
   // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
-  periodSearch::PeriodSearchViewer viewer(*m_test);
   if (plot) viewer.plot(title, unit);
 }
 
