@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Mon Mar 19 13:57:23 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Apply binary and/or pdot corrections to TSTART/TSTOP, similar to how this
+is done in PowerSpectrumApp.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Mar 14 14:36:41 PDT 2007
 periodSearch/src
 
