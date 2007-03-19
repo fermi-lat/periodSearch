@@ -4,7 +4,7 @@ version v0
 
 author James Peachey <peachey@milkyway.gsfc.nasa.gov>
 
-# $Id: requirements,v 1.4 2006/06/20 21:51:28 hirayama Exp $
+# $Id: requirements,v 1.5 2006/12/20 21:50:30 peachey Exp $
 
 use STpolicy *
 use pulsarDb *
@@ -18,4 +18,5 @@ use fftw * IExternal
 apply_pattern ST_library option=-no_share
 apply_pattern ST_pfiles
 
+application gtpspec gtpspec/*.cxx
 application gtpsearch gtpsearch/*.cxx
