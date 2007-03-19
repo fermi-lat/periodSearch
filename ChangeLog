@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Mon Mar 19 13:57:51 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Make comments and details of output format similar to gtpsearch.
+
+    *
+------------------------------------------------------------
 User: peachey  Mon Mar 19 13:57:23 PDT 2007
 periodSearch/src/gtpsearch
 
