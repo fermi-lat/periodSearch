@@ -287,12 +287,15 @@ void PowerSpectrumApp::run() {
   // Use default title if user did not specify one.
   if (title == "DEFAULT") title = "Fourier Analysis: Power Spectrum";
 
-  // Write the stats to the screen.
+  // Create a viewer for plotting and writing output.
   periodSearch::PeriodSearchViewer viewer(*m_test, low_f_cut);
 
+  // Write the stats to the screen.
   m_os.info(eIncludeSummary) << title << std::endl;
-  viewer.write(m_os.info(eAllDetails));
-  m_os.info() << std::endl;
+  m_os.info(eIncludeSummary) << m_test->search() << std::endl;
+
+  // Write details of test result if chatter is high enough.
+  m_os.info(eAllDetails) << viewer << std::endl;
 
   // TODO: When tip supports getting units from a column, replace the following:
   std::string unit = "(Hz)";
