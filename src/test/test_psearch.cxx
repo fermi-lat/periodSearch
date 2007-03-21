@@ -143,25 +143,38 @@ void PSearchTestApp::run() {
     *event_itor = current_glast_time.getValue();
   }
 
-  double valid_since;
-  double valid_until;
+  double tstart = 0.;
+  double tstop = 0.;
 
-  gti_table->getHeader()["TSTART"].get(valid_since);
-  gti_table->getHeader()["TSTOP"].get(valid_until);
+  const tip::Header & header(evt_table->getHeader());
 
-  // Correct valid_since and valid_until for changed MJDREF.
-  orig_glast_time.setValue(valid_since);
+  // If possible, get tstart and tstop from first and last interval in GTI extension.
+  tip::Table::ConstIterator gti_itor = gti_table->begin();
+  if (gti_itor != gti_table->end()) {
+    // TSTART is the start of the first interval.
+    tstart = (*gti_itor)["START"].get();
+    // TSTOP is from the stop of the last interval.
+    gti_itor = gti_table->end();
+    --gti_itor;
+    tstop = (*gti_itor)["STOP"].get();
+  } else {
+    header["TSTART"].get(tstart);
+    header["TSTOP"].get(tstop);
+  }
+
+  // Correct tstart and tstop for changed MJDREF.
+  orig_glast_time.setValue(tstart);
   current_glast_time = timeSystem::AbsoluteTime(orig_glast_time);
-  valid_since = current_glast_time.getValue();
-  orig_glast_time.setValue(valid_until);
+  tstart = current_glast_time.getValue();
+  orig_glast_time.setValue(tstop);
   current_glast_time = timeSystem::AbsoluteTime(orig_glast_time);
-  valid_until = current_glast_time.getValue();
+  tstop = current_glast_time.getValue();
 
   // Repeat simple test with this somewhat less artificial data.
   testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
 
   // Note: width of .01 s -> Nyquist = 1/.02s = 50 Hz.
-  testFourier(valid_since, valid_until, .01, 1000000, fake_evts, unit, plot, 19.82, 19.85);
+  testFourier(tstart, tstop, .01, 1000000, fake_evts, unit, plot, 19.82, 19.85);
 
   // Now test pdot correction.
   double phi0 = 0.; // Ignored for these purposes anyway.
@@ -171,31 +184,46 @@ void PSearchTestApp::run() {
   using namespace pulsarDb;
   using namespace timeSystem;
 
-  // The following declarator looks like a function prototype.
-  // PeriodEph eph(GlastTdbTime(valid_since), GlastTdbTime(valid_until), GlastTdbTime(epoch), phi0, 1. / central, pdot, p2dot);
-  // Resolve the misunderstanding by using a temporary variable for the first argument.
   MetRep glast_tdb("TDB", 51910, 0., 0.);
-  glast_tdb.setValue(valid_since);
-  AbsoluteTime abs_since(glast_tdb);
-  glast_tdb.setValue(valid_until);
-  AbsoluteTime abs_until(glast_tdb);
   glast_tdb.setValue(epoch);
   AbsoluteTime abs_epoch(glast_tdb);
 
-  PeriodEph eph("TDB", abs_since, abs_until, abs_epoch, phi0, 1. / central, pdot, p2dot);
+  PeriodEph eph("TDB", abs_epoch, abs_epoch, abs_epoch, phi0, 1. / central, pdot, p2dot);
   TimingModel timing_model;
 
   // Correct the data.
+  AbsoluteTime evt_time(glast_tdb);
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
     glast_tdb.setValue(*itor);
-    AbsoluteTime evt_time(glast_tdb);
+    evt_time = glast_tdb;
     timing_model.cancelPdot(eph, evt_time);
     glast_tdb = evt_time;
     *itor = glast_tdb.getValue();
   }
 
+  // Cancel pdot in tstart, tstop and epoch to be consistent.
+  glast_tdb.setValue(tstart);
+  evt_time = glast_tdb;
+  timing_model.cancelPdot(eph, evt_time);
+  glast_tdb = evt_time;
+  tstart = glast_tdb.getValue();
+
+  glast_tdb.setValue(tstop);
+  evt_time = glast_tdb;
+  timing_model.cancelPdot(eph, evt_time);
+  glast_tdb = evt_time;
+  tstop = glast_tdb.getValue();
+
+  glast_tdb.setValue(epoch);
+  evt_time = glast_tdb;
+  timing_model.cancelPdot(eph, evt_time);
+  glast_tdb = evt_time;
+  epoch = glast_tdb.getValue();
+
   // Repeat test with the pdot corrected data.
   testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
+
+  testFourier(tstart, tstop, .01, 1000000, fake_evts, unit, plot, 19.82, 19.85);
 
   // Test process of picking the ephemeris.
   testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", epoch);
