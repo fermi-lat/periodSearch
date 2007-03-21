@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Mar 21 13:49:22 PDT 2007
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Use time range spanned by all GTIs to set start and stop time.
+General clean-up of validity ranges for test ephemeris.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Mar 21 13:48:44 PDT 2007
 periodSearch/src
 
