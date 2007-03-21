@@ -86,8 +86,8 @@ numbins = 10 [integer]
 
 timeorigin = MIDDLE [string]
     Selects the origin of time for the periodicity test. Valid
-    choices are TSTART (taken from the evfile), TSTOP, MIDDLE (mid-way
-    between TSTART and TSTOP) and USER (user will supply explicitly using
+    choices are START (taken from the evfile), STOP, MIDDLE (mid-way
+    between START and STOP) and USER (user will supply explicitly using
     usertime, userformat and usersys parameters.)
 
 usertime = 0. [string]
