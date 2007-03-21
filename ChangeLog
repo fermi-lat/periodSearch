@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Mar 21 13:48:44 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Use time range spanned by all GTIs to set start and stop time.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Mar 21 13:48:28 PDT 2007
 periodSearch/src/gtpsearch
 
