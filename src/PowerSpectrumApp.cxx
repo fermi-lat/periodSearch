@@ -105,10 +105,22 @@ void PowerSpectrumApp::run() {
 
   // Find all other keywords from events extension.
   const tip::Header & header(event_table->getHeader());
-  header["TSTART"].get(tstart);
-  header["TSTOP"].get(tstop);
   header["TELESCOP"].get(telescope);
   header["TIMESYS"].get(event_time_sys);
+
+  // If possible, get tstart and tstop from first and last interval in GTI extension.
+  tip::Table::ConstIterator gti_itor = gti_table->begin();
+  if (gti_itor != gti_table->end()) {
+    // TSTART is the start of the first interval.
+    tstart = (*gti_itor)["START"].get();
+    // TSTOP is from the stop of the last interval.
+    gti_itor = gti_table->end();
+    --gti_itor;
+    tstop = (*gti_itor)["STOP"].get();
+  } else {
+    header["TSTART"].get(tstart);
+    header["TSTOP"].get(tstop);
+  }
 
   // Get the mjdref from the header, which is not as simple as just reading a single keyword.
   MjdRefDatabase mjd_ref_db;
