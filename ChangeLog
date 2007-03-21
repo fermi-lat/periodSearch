@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Mar 21 13:38:27 PDT 2007
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Change options for timeorigin parameter to be START, STOP, MIDDLE, USER.
+
+    *
+------------------------------------------------------------
 User: peachey  Mon Mar 19 13:58:36 PDT 2007
 periodSearch/cmt
 
