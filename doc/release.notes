@@ -2,9 +2,13 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.18 2006/09/13 21:20:40 peachey Exp $
+$Id: release.notes,v 1.19 2006/09/20 19:35:31 peachey Exp $
 
 \verbatim
+29-mar-2007        v6 JP  Add FFT-based blind search tool gtpspec. Refactored PeriodTest hierarchy
+                          to accomodate this. Rationalized behavior of gtpsearch to
+                          be consistent with gtpspec. Specifically, output of both applications is
+                          suppressible by users using chatter.
 20-sep-2006    v5r0p1 JP  Update mainpage.h.
 13-sep-2006        v5 JP  Use latest version of timeSystem; read time system from event file, and
                           completely decouple time format from time system for both user and eph time.
