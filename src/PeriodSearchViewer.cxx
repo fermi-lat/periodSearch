@@ -16,6 +16,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -71,13 +72,18 @@ namespace periodSearch {
     }
   }
 
-  st_stream::OStream & PeriodSearchViewer::write(st_stream::OStream & os) const {
+  st_stream::OStream & PeriodSearchViewer::writeSummary(st_stream::OStream & os) const {
+    os << m_search->search(m_min_freq, m_max_freq);
+    return os;
+  }
+
+  st_stream::OStream & PeriodSearchViewer::writeData(st_stream::OStream & os) const {
     using namespace std;
 
     // Save current precision.
     int save_precision = os.precision();
 
-    os.precision(15);
+    os.precision(std::numeric_limits<double>::digits10);
 
     // Write out the data.
     os << "Frequency\tStatistic";
@@ -99,10 +105,6 @@ namespace periodSearch {
     os.precision(save_precision);
 
     return os;
-  }
-
-  st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearchViewer & viewer) {
-    return viewer.write(os);
   }
 
 }
