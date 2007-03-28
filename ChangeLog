@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Mar 28 12:21:44 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Use low frequency cutoff in search.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Mar 21 13:49:22 PDT 2007
 periodSearch/src/test
 
