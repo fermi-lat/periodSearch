@@ -37,10 +37,15 @@ namespace periodSearch {
       */
       virtual void plot(const std::string & title, const std::string & freq_unit) const;
 
-      /** \brief Write description of this test to the given stream.
+      /** \brief Write description of this search to the given stream.
           \param os The stream to which to send output.
       */
-      virtual st_stream::OStream & write(st_stream::OStream & os) const;
+      virtual st_stream::OStream & writeSummary(st_stream::OStream & os) const;
+
+      /** \brief Write data used to perform this search to the given stream.
+          \param os The stream to which to send output.
+      */
+      virtual st_stream::OStream & writeData(st_stream::OStream & os) const;
 
       // TODO Add fits file output method.
       //  o Summary goes to COMMENT header keywords (human readable).
@@ -52,7 +57,6 @@ namespace periodSearch {
       double m_max_freq;
   };
 
-  st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearchViewer & viewer);
 }
 
 #endif

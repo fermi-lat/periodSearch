@@ -418,10 +418,10 @@ void PSearchApp::run() {
 
   // Write the stats to the screen.
   m_os.info(eIncludeSummary) << title << std::endl;
-  m_os.info(eIncludeSummary) << m_test->search() << std::endl;
+  viewer.writeSummary(m_os.info(eIncludeSummary)) << std::endl;
 
   // Write details of test result if chatter is high enough.
-  m_os.info(eAllDetails) << viewer << std::endl;
+  viewer.writeData(m_os.info(eAllDetails)) << std::endl;
 
   // TODO: When tip supports getting units from a column, replace the following:
   std::string unit = "(Hz)";

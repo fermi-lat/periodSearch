@@ -251,8 +251,8 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
   std::auto_ptr<PeriodSearchViewer> viewer(new PeriodSearchViewer(test));
 
   m_os.out() << "Chi Squared Statistic" << std::endl;
-  m_os.out() << test.search() << std::endl;
-  m_os.out() << *viewer << std::endl;
+  viewer->writeSummary(m_os.out()) << std::endl;
+  viewer->writeData(m_os.out()) << std::endl;
   if (plot) viewer->plot("Folding Analysis: Chi Squared Statistic", unit);
 
   // Test Z2n case.
@@ -267,8 +267,8 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   viewer.reset(new PeriodSearchViewer(test_z2n));
   m_os.out() << "Z2n Statistic" << std::endl;
-  m_os.out() << test_z2n.search() << std::endl;
-  m_os.out() << *viewer << std::endl;
+  viewer->writeSummary(m_os.out()) << std::endl;
+  viewer->writeData(m_os.out()) << std::endl;
   if (plot) viewer->plot("Folding Analysis: Z2n Statistic", unit);
 
   // Test Rayleigh case.
@@ -283,8 +283,8 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   viewer.reset(new PeriodSearchViewer(test_rayleigh));
   m_os.out() << "Rayleigh Statistic" << std::endl;
-  m_os.out() << test_rayleigh.search() << std::endl;
-  m_os.out() << *viewer << std::endl;
+  viewer->writeSummary(m_os.out()) << std::endl;
+  viewer->writeData(m_os.out()) << std::endl;
   if (plot) viewer->plot("Folding Analysis: Rayleigh Statistic", unit);
 
   // Test H case.
@@ -299,8 +299,8 @@ void PSearchTestApp::testAllStats(double center, double step, long num_trials, d
 
   viewer.reset(new PeriodSearchViewer(test_h));
   m_os.out() << "H Statistic" << std::endl;
-  m_os.out() << test_h.search() << std::endl;
-  m_os.out() << *viewer << std::endl;
+  viewer->writeSummary(m_os.out()) << std::endl;
+  viewer->writeData(m_os.out()) << std::endl;
   if (plot) viewer->plot("Folding Analysis: H Statistic", unit);
 }
 
@@ -380,10 +380,10 @@ void PSearchTestApp::testFourier(double t_start, double t_stop, double width, in
   fa.computeStats();
 
   m_os.out() << "Fourier Power" << std::endl;
-  m_os.out() << fa.search(min_freq, max_freq) << std::endl;
 
   periodSearch::PeriodSearchViewer viewer(fa, min_freq, max_freq);
-  m_os.out() << viewer << std::endl;
+  viewer.writeSummary(m_os.out()) << std::endl;
+  viewer.writeData(m_os.out()) << std::endl;
 
   if (plot) viewer.plot("Fourier Analysis: Power Spectrum", unit);
 
