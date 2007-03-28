@@ -405,9 +405,8 @@ void PSearchApp::run() {
   m_test->computeStats();
 
   enum ChatLevel {
-    eDefault = 2,
-    eIncludeSummary= 3,
-    eAllDetails = 4,
+    eIncludeSummary= 2,
+    eAllDetails = 3
   };
 
   // Use default title if user did not specify one.
