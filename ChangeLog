@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Mar 28 13:01:24 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change chatter level; print summary if chatter is >= 2, data if chatter ?=3.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Mar 28 13:01:24 PDT 2007
 periodSearch/src
 
 Modified Files:
