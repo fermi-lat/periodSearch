@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <iomanip>
+#include <iosfwd>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
@@ -27,12 +28,15 @@ namespace periodSearch {
     m_chance_prob(chance_prob) {}
 
   st_stream::OStream & PeriodSearchResult::write(st_stream::OStream & os) const {
+    std::streamsize orig_precision = os.precision();
+    os.precision(std::numeric_limits<double>::digits10);
     os << m_description << "\n"
        << "Search Range (Hz): [" << m_min_freq << ", " << m_max_freq << "]\n"
        << "Number of Trial Frequencies: " << m_num_freq_bin << "\n"
        << "Number of Independent Trials: " << m_num_indep_trial << "\n"
        << "Maximum Statistic: " << m_max_stat.second << " at " << m_max_stat.first << " Hz\n"
        << "Chance Probability Range: " << "(" << m_chance_prob.first << ", " << m_chance_prob.second << ")";
+    os.precision(orig_precision);
     return os;
   }
 
