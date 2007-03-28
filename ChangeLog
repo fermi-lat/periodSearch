@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Mar 28 12:44:08 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PeriodSearchViewer.cxx PowerSpectrumApp.cxx 
+Log Message:
+Add and use new writeSummary, writeData methods in PeriodSearchViewer
+to present results in a more uniform interface.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Mar 28 12:22:33 PDT 2007
 periodSearch/src
 
