@@ -304,7 +304,7 @@ void PowerSpectrumApp::run() {
 
   // Write the stats to the screen.
   m_os.info(eIncludeSummary) << title << std::endl;
-  m_os.info(eIncludeSummary) << m_test->search() << std::endl;
+  m_os.info(eIncludeSummary) << m_test->search(low_f_cut) << std::endl;
 
   // Write details of test result if chatter is high enough.
   m_os.info(eAllDetails) << viewer << std::endl;
