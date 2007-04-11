@@ -38,7 +38,8 @@ namespace periodSearch {
       /** \brief Write this search result to the given stream.
           \param os The stream.
       */
-      st_stream::OStream & write(st_stream::OStream & os) const;
+      template <typename StreamType>
+      StreamType & write(StreamType & os) const;
 
     private:
       std::string m_description;
@@ -49,6 +50,20 @@ namespace periodSearch {
       std::pair<double, double> m_max_stat;
       std::pair<double, double> m_chance_prob;
   };
+
+  template <typename StreamType>
+  inline StreamType & PeriodSearchResult::write(StreamType & os) const {
+    std::streamsize orig_precision = os.precision();
+    os.precision(std::numeric_limits<double>::digits10);
+    os << m_description << "\n"
+       << "Search Range (Hz): [" << m_min_freq << ", " << m_max_freq << "]\n"
+       << "Number of Trial Frequencies: " << m_num_freq_bin << "\n"
+       << "Number of Independent Trials: " << m_num_indep_trial << "\n"
+       << "Maximum Statistic: " << m_max_stat.second << " at " << m_max_stat.first << " Hz\n"
+       << "Chance Probability Range: " << "(" << m_chance_prob.first << ", " << m_chance_prob.second << ")";
+    os.precision(orig_precision);
+    return os;
+  }
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearchResult & result);
 
@@ -76,7 +91,7 @@ namespace periodSearch {
       virtual const std::vector<double> & computeStats() = 0;
 
       /** \brief Perform a period search and return the result of the test. */
-      virtual PeriodSearchResult search(double min_freq = -1., double max_freq = -1.);
+      virtual PeriodSearchResult search(double min_freq = -1., double max_freq = -1.) const;
 
       /** \brief Find the frequency for which the statistic is maximized in a given frequency range. Return the
                  frequency and the value of the statistic, as a pair.
