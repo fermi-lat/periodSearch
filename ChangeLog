@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Apr 11 14:23:17 PDT 2007
+periodSearch/data
+
+Added Files:
+	gtpspec-out.tpl 
+Log Message:
+Add template for producing output files for gtpspec (and gtpsearch for now) output.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Apr  4 14:23:24 PDT 2007
 periodSearch/pfiles
 
