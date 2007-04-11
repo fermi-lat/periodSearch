@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Apr 11 14:25:00 PDT 2007
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearchViewer.h 
+Log Message:
+Add overloads for writeSummary and writeData to write output to tip file.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Apr 11 14:24:18 PDT 2007
 periodSearch/periodSearch
 
