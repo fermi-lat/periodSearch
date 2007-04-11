@@ -79,6 +79,7 @@ void PowerSpectrumApp::run() {
 
   // Get parameters.
   std::string event_file = pars["evfile"];
+  std::string out_file = pars["outfile"];
   std::string event_extension = pars["evtable"];
   std::string epoch = pars["ephepoch"];
   std::string epoch_time_format = pars["timeformat"];
@@ -90,6 +91,7 @@ void PowerSpectrumApp::run() {
   bool cancel_pdot = pars["cancelpdot"];
   std::string demod_binary_string = pars["demodbin"];
   std::string eph_style = pars["ephstyle"];
+  bool clobber = pars["clobber"];
 
   // Open the event file.
   std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
@@ -301,6 +303,27 @@ void PowerSpectrumApp::run() {
   // Create a viewer for plotting and writing output.
   periodSearch::PeriodSearchViewer viewer(*m_test, low_f_cut);
 
+  // Interpret output file parameter.
+  std::string out_file_uc = out_file;
+  for (std::string::iterator itor = out_file_uc.begin(); itor != out_file_uc.end(); ++itor) *itor = std::toupper(*itor);
+
+  if ("NONE" != out_file_uc) {
+    // Find the template file.
+    using namespace st_facilities;
+    std::string template_file = Env::appendFileName(Env::getDataDir("periodSearch"), "gtpspec-out.tpl");
+
+    // Create output file.
+    tip::IFileSvc::instance().createFile(out_file, template_file, clobber);
+
+    // Open output file and get reference to its header.
+    std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
+    tip::Header & out_header(out_table->getHeader());
+
+    // Write the summary to the output header, and the data to the output table.
+    viewer.writeSummary(out_header);
+    viewer.writeData(*out_table);
+  }
+
   // Write the stats to the screen.
   m_os.info(eIncludeSummary) << title << std::endl;
   viewer.writeSummary(m_os.info(eIncludeSummary)) << std::endl;
@@ -319,6 +342,7 @@ void PowerSpectrumApp::run() {
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
   // Prompt for most parameters automatically.
   pars.Prompt("evfile");
+  pars.Prompt("outfile");
   pars.Prompt("evtable");
   pars.Prompt("psrdbfile");
   pars.Prompt("psrname");
@@ -362,6 +386,7 @@ void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
   pars.Prompt("plot");
   pars.Prompt("title");
   pars.Prompt("leapsecfile");
+  pars.Prompt("clobber");
 
   // Save current values of the parameters.
   pars.Save();
