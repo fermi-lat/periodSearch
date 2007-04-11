@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Wed Apr 11 14:26:33 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use outfile parameter to write fits output file.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Apr 11 14:26:33 PDT 2007
 periodSearch/src
 
 Modified Files:
