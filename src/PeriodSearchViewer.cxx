@@ -14,6 +14,9 @@
 
 #include "st_stream/Stream.h"
 
+#include "tip/Header.h"
+#include "tip/Table.h"
+
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -77,6 +80,19 @@ namespace periodSearch {
     return os;
   }
 
+  tip::Header & PeriodSearchViewer::writeSummary(tip::Header & header) const {
+    PeriodSearchResult result = m_search->search(m_min_freq, m_max_freq);
+    std::stringstream ss;
+    result.write(ss);
+    while (ss.good()) {
+      const unsigned int buf_size = 1024;
+      char buf[buf_size];
+      ss.getline(buf, buf_size);
+      header.addComment(buf);
+    }
+    return header;
+  }
+
   st_stream::OStream & PeriodSearchViewer::writeData(st_stream::OStream & os) const {
     using namespace std;
 
@@ -105,6 +121,32 @@ namespace periodSearch {
     os.precision(save_precision);
 
     return os;
+  }
+
+  tip::Table & PeriodSearchViewer::writeData(tip::Table & table) const {
+    // Impose range limits.
+    // TODO Move interpretation of min/max frequency into constructor and store the selected index locating
+    // the min and max to avoid recomputing min/max index each time this is called.
+    std::pair<PeriodSearch::size_type, PeriodSearch::size_type> indices = m_search->getRangeIndex(m_min_freq, m_max_freq);
+    PeriodSearch::size_type begin_index = indices.first;
+    PeriodSearch::size_type end_index = indices.second;
+
+    const std::vector<double> & freq(m_search->getFreq());
+    const std::vector<double> & spec(m_search->getSpec());
+
+    // Resize the table to accomodate all the data.
+    table.setNumRecords(end_index - begin_index);
+
+    // Start at the beginning of the table.
+    tip::Table::Iterator itor = table.begin();
+
+    // Write out the statistics.
+    for (PeriodSearch::size_type ii = begin_index; ii < end_index; ++ii, ++itor) {
+      (*itor)["FREQUENCY"].set(freq[ii]);
+      (*itor)["POWER"].set(spec[ii]);
+    }
+
+    return table;
   }
 
 }
