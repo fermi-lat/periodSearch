@@ -27,26 +27,13 @@ namespace periodSearch {
     m_max_stat(max_stat),
     m_chance_prob(chance_prob) {}
 
-  st_stream::OStream & PeriodSearchResult::write(st_stream::OStream & os) const {
-    std::streamsize orig_precision = os.precision();
-    os.precision(std::numeric_limits<double>::digits10);
-    os << m_description << "\n"
-       << "Search Range (Hz): [" << m_min_freq << ", " << m_max_freq << "]\n"
-       << "Number of Trial Frequencies: " << m_num_freq_bin << "\n"
-       << "Number of Independent Trials: " << m_num_indep_trial << "\n"
-       << "Maximum Statistic: " << m_max_stat.second << " at " << m_max_stat.first << " Hz\n"
-       << "Chance Probability Range: " << "(" << m_chance_prob.first << ", " << m_chance_prob.second << ")";
-    os.precision(orig_precision);
-    return os;
-  }
-
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearchResult & result) { return result.write(os); }
 
   const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
 
   PeriodSearch::PeriodSearch(size_type num_bins): m_freq(num_bins), m_spec(num_bins) {}
 
-  PeriodSearchResult PeriodSearch::search(double min_freq, double max_freq) {
+  PeriodSearchResult PeriodSearch::search(double min_freq, double max_freq) const {
     // Find position of the maximum in the range.
     std::pair<double, double> max = findMax(min_freq, max_freq);
 
