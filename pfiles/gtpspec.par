@@ -1,4 +1,5 @@
 evfile,         f, a, , , , "Event data file name"
+outfile,        f, a, gtpspec-out.fits, , , "Output FITS file name (NONE for no FITS output)"
 psrname,        s, a, "ANY", , ,"Pulsar name"
 binwidth,       r, a, 1.e-2, 0., , "Width of time bins, in seconds"
 numbins,        i, a, 1000000, , , "Number of time bins to be transformed at once"
