@@ -12,6 +12,11 @@ namespace st_stream {
   class OStream;
 }
 
+namespace tip {
+  class Header;
+  class Table;
+}
+
 namespace periodSearch {
 
   class PeriodSearch;
@@ -42,10 +47,20 @@ namespace periodSearch {
       */
       virtual st_stream::OStream & writeSummary(st_stream::OStream & os) const;
 
+      /** \brief Write description of this search to the given tip header.
+          \param header The tip header to which to write the summary.
+      */
+      virtual tip::Header & writeSummary(tip::Header & header) const;
+
       /** \brief Write data used to perform this search to the given stream.
           \param os The stream to which to send output.
       */
       virtual st_stream::OStream & writeData(st_stream::OStream & os) const;
+
+      /** \brief Write data used to perform this search to the given tip table.
+          \param table The tip table to which to send output.
+      */
+      virtual tip::Table & writeData(tip::Table & table) const;
 
       // TODO Add fits file output method.
       //  o Summary goes to COMMENT header keywords (human readable).
