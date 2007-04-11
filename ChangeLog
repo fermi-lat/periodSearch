@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Apr 11 14:24:18 PDT 2007
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearch.h 
+Log Message:
+Template-ize PeriodSearchResult::write method. Fix const-ness of PeriodSearch::search.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Apr 11 14:23:17 PDT 2007
 periodSearch/data
 
