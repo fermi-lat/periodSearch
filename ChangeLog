@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: peachey  Mon Apr 16 13:11:58 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Rename gtpspec-out.tpl to period-search-out.tpl
+
+    *
+------------------------------------------------------------
+User: peachey  Mon Apr 16 13:11:58 PDT 2007
 periodSearch/src
 
 Modified Files:
