@@ -1,5 +1,21 @@
 ------------------------------------------------------------
 User: peachey  Mon Apr 16 13:05:45 PDT 2007
+periodSearch/data/outref
+
+Added Files:
+	artificial-chi-sq.fits artificial-fourier.fits 
+	artificial-h.fits artificial-rayleigh.fits artificial-z2n.fits 
+	psrb0540-chi-sq.fits psrb0540-fourier.fits psrb0540-h.fits 
+	psrb0540-pdot-chi-sq.fits psrb0540-pdot-fourier.fits 
+	psrb0540-pdot-h.fits psrb0540-pdot-rayleigh.fits 
+	psrb0540-pdot-z2n.fits psrb0540-rayleigh.fits 
+	psrb0540-z2n.fits 
+Log Message:
+Add test output FITS data.
+
+    *
+------------------------------------------------------------
+User: peachey  Mon Apr 16 13:05:45 PDT 2007
 periodSearch/src/test
 
 Modified Files:
