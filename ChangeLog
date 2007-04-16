@@ -1,4 +1,16 @@
 ------------------------------------------------------------
+User: peachey  Mon Apr 16 13:11:37 PDT 2007
+periodSearch/data
+
+Added Files:
+	period-search-out.tpl 
+Removed Files:
+	gtpspec-out.tpl 
+Log Message:
+Rename gtpspec-out.tpl to period-search-out.tpl
+
+    *
+------------------------------------------------------------
 User: peachey  Mon Apr 16 13:05:45 PDT 2007
 periodSearch/data/outref
 
