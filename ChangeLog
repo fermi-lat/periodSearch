@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Mon Apr 16 13:04:42 PDT 2007
+periodSearch/data
+
+Modified Files:
+	gtpspec-out.tpl 
+Log Message:
+Use the more generic 'STATISTIC' for the title of the output instead of 'POWER'
+
+    *
+------------------------------------------------------------
 User: peachey  Mon Apr 16 13:00:24 PDT 2007
 periodSearch/data/outref
 
