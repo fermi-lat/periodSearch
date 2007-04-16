@@ -143,7 +143,7 @@ namespace periodSearch {
     // Write out the statistics.
     for (PeriodSearch::size_type ii = begin_index; ii < end_index; ++ii, ++itor) {
       (*itor)["FREQUENCY"].set(freq[ii]);
-      (*itor)["POWER"].set(spec[ii]);
+      (*itor)["STATISTIC"].set(spec[ii]);
     }
 
     return table;
