@@ -2,9 +2,11 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.19 2006/09/20 19:35:31 peachey Exp $
+$Id: release.notes,v 1.20 2007/03/28 20:39:27 peachey Exp $
 
 \verbatim
+16-apr-2007      v6r1 JP  Add optional FITS output of search results, controlled by
+                          new outfile parameter, for both gtpsearch and gtpspec.
 29-mar-2007        v6 JP  Add FFT-based blind search tool gtpspec. Refactored PeriodTest hierarchy
                           to accomodate this. Rationalized behavior of gtpsearch to
                           be consistent with gtpspec. Specifically, output of both applications is
