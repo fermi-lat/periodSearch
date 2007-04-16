@@ -29,6 +29,7 @@
 #include "timeSystem/AbsoluteTime.h"
 #include "timeSystem/TimeRep.h"
 
+#include "tip/Header.h"
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
 
@@ -42,8 +43,11 @@
 
 static const std::string s_cvs_id = "$Name:  $";
 
+using namespace periodSearch;
+
 class PSearchTestApp : public st_app::StApp {
   public:
+
     PSearchTestApp(): m_os("PSearchTestApp", "", 2), m_data_dir(), m_failed(false) {
       setName("test_stpsearch");
       setVersion(s_cvs_id);
@@ -52,15 +56,13 @@ class PSearchTestApp : public st_app::StApp {
     virtual ~PSearchTestApp() throw() {}
     virtual void run();
 
-    void testAllStats(double center, double step, long num_trials, double epoch, int num_bins, const std::vector<double> & events,
-      double duration, const std::string & unit, bool plot);
+    void testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
+      double center, double step, long num_trials, double epoch, int num_bins,
+      double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot);
 
     void testFindMax(const periodSearch::PeriodTest & test);
 
     void testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name, double epoch);
-
-    void testFourier(double t_start, double t_stop, double width, int num_bins, const std::vector<double> & events,
-      const std::string & unit, bool plot, double min_freq, double max_freq); 
 
     void testChanceProb();
 
@@ -69,6 +71,10 @@ class PSearchTestApp : public st_app::StApp {
     std::string findFile(const std::string & file_name);
 
   private:
+    void testOneSearch(const std::vector<double> & events, PeriodSearch & search,
+      const std::string & text_title, const std::string & plot_title, const std::string & out_file,
+      bool plot, double min_freq = -1., double max_freq = -1.);
+
     st_stream::StreamFormatter m_os;
     std::string m_data_dir;
     bool m_failed;
@@ -93,7 +99,6 @@ void PSearchTestApp::run() {
   double epoch = .2;
   int num_bins = 10;
   double duration = 1000.;
-  std::string unit = "(Hz)";
 
   // Test process of picking the ephemeris.
   testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", 212380785.922);
@@ -105,11 +110,8 @@ void PSearchTestApp::run() {
   bool plot = getParGroup()["plot"];
 
   // First do simple test with this highly artificial data.
-  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
-
-  // Test Fourier analysis of this highly artificial data.
-  // Note: width of .1 s -> Nyquist = 1/.2s = 5 Hz.
-  testFourier(0., duration, .1, 10000, fake_evts, unit, plot, .9, 1.1);
+  // Note for Fourier test: width of .1 s -> Nyquist = 1/.2s = 5 Hz.
+  testAllStats("artificial", fake_evts, 0., duration, central, step, num_pds, epoch, num_bins, .1, 10000, .9, 1.1, plot);
 
   // Data taken from M. Hirayama's work with modified ASCA data.
   // http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/existing.html#tryout003
@@ -171,10 +173,8 @@ void PSearchTestApp::run() {
   tstop = current_glast_time.getValue();
 
   // Repeat simple test with this somewhat less artificial data.
-  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
-
-  // Note: width of .01 s -> Nyquist = 1/.02s = 50 Hz.
-  testFourier(tstart, tstop, .01, 1000000, fake_evts, unit, plot, 19.82, 19.85);
+  // Note for Fourier test: width of .01 s -> Nyquist = 1/.02s = 50 Hz.
+  testAllStats("psrb0540", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000, 19.82, 19.85, plot);
 
   // Now test pdot correction.
   double phi0 = 0.; // Ignored for these purposes anyway.
@@ -221,9 +221,8 @@ void PSearchTestApp::run() {
   epoch = glast_tdb.getValue();
 
   // Repeat test with the pdot corrected data.
-  testAllStats(central, step, num_pds, epoch, num_bins, fake_evts, duration, unit, plot);
-
-  testFourier(tstart, tstop, .01, 1000000, fake_evts, unit, plot, 19.82, 19.85);
+  testAllStats("psrb0540-pdot", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000,
+    19.82, 19.85, plot);
 
   // Test process of picking the ephemeris.
   testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", epoch);
@@ -232,76 +231,44 @@ void PSearchTestApp::run() {
   testChanceProb();
 }
 
-void PSearchTestApp::testAllStats(double center, double step, long num_trials, double epoch, int num_bins,
-  const std::vector<double> & events, double duration, const std::string & unit, bool plot) {
+void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
+  double center, double step, long num_trials, double epoch, int num_bins,
+  double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot) {
   using namespace periodSearch;
 
   m_os.setMethod("testAllStats");
 
+  double duration = t_stop - t_start;
+
   // Test ChiSquared case.
   ChiSquaredTest test(center, step, num_trials, epoch, num_bins, duration);
 
-  // Iterate over the fake events.
-  for (std::vector<double>::const_iterator itor = events.begin(); itor != events.end(); ++itor) {
-    test.fill(*itor);
-  }
-
-  test.computeStats();
-
-  std::auto_ptr<PeriodSearchViewer> viewer(new PeriodSearchViewer(test));
-
-  m_os.out() << "Chi Squared Statistic" << std::endl;
-  viewer->writeSummary(m_os.out()) << std::endl;
-  viewer->writeData(m_os.out()) << std::endl;
-  if (plot) viewer->plot("Folding Analysis: Chi Squared Statistic", unit);
+  testOneSearch(events, test, "Chi Squared Statistic", "Folding Analysis: Chi Squared Statistic", prefix + "-chi-sq.fits",
+    plot);
 
   // Test Z2n case.
   Z2nTest test_z2n(center, step, num_trials, epoch, num_bins, duration);
 
-  // Iterate over the fake events.
-  for (std::vector<double>::const_iterator itor = events.begin(); itor != events.end(); ++itor) {
-    test_z2n.fill(*itor);
-  }
-
-  test_z2n.computeStats();
-
-  viewer.reset(new PeriodSearchViewer(test_z2n));
-  m_os.out() << "Z2n Statistic" << std::endl;
-  viewer->writeSummary(m_os.out()) << std::endl;
-  viewer->writeData(m_os.out()) << std::endl;
-  if (plot) viewer->plot("Folding Analysis: Z2n Statistic", unit);
+  testOneSearch(events, test_z2n, "Z2n Statistic", "Folding Analysis: Z2n Statistic", prefix + "-z2n.fits",
+    plot);
 
   // Test Rayleigh case.
   RayleighTest test_rayleigh(center, step, num_trials, epoch, duration);
 
-  // Iterate over the fake events.
-  for (std::vector<double>::const_iterator itor = events.begin(); itor != events.end(); ++itor) {
-    test_rayleigh.fill(*itor);
-  }
-
-  test_rayleigh.computeStats();
-
-  viewer.reset(new PeriodSearchViewer(test_rayleigh));
-  m_os.out() << "Rayleigh Statistic" << std::endl;
-  viewer->writeSummary(m_os.out()) << std::endl;
-  viewer->writeData(m_os.out()) << std::endl;
-  if (plot) viewer->plot("Folding Analysis: Rayleigh Statistic", unit);
+  testOneSearch(events, test_rayleigh, "Rayleigh Statistic", "Folding Analysis: Rayleigh Statistic", prefix + "-rayleigh.fits",
+    plot);
 
   // Test H case.
   HTest test_h(center, step, num_trials, epoch, num_bins, duration);
 
-  // Iterate over the fake events.
-  for (std::vector<double>::const_iterator itor = events.begin(); itor != events.end(); ++itor) {
-    test_h.fill(*itor);
-  }
+  testOneSearch(events, test_h, "H Statistic", "Folding Analysis: H Statistic", prefix + "-h.fits",
+    plot);
 
-  test_h.computeStats();
+  // Create analysis object.
+  FourierAnalysis test_fourier(t_start, t_stop, fourier_width, fourier_num_bins, events.size());
 
-  viewer.reset(new PeriodSearchViewer(test_h));
-  m_os.out() << "H Statistic" << std::endl;
-  viewer->writeSummary(m_os.out()) << std::endl;
-  viewer->writeData(m_os.out()) << std::endl;
-  if (plot) viewer->plot("Folding Analysis: H Statistic", unit);
+  testOneSearch(events, test_fourier, "Fourier Power", "Fourier Analysis: Power Spectrum", prefix + "-fourier.fits",
+    plot, fourier_min_freq, fourier_max_freq);
 }
 
 void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name,
@@ -362,31 +329,6 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
     m_failed = true;
     m_os.err() << "ERROR: in testChooseEph, f2 was computed to be " << freq.f2() << ", not " << correct_f2 << std::endl;
   }
-}
-
-void PSearchTestApp::testFourier(double t_start, double t_stop, double width, int num_bins, const std::vector<double> & events,
-  const std::string & unit, bool plot, double min_freq, double max_freq) {
-  m_os.setMethod("testFourier");
-
-  // Create analysis object.
-  FourierAnalysis fa(t_start, t_stop, width, num_bins, events.size());
-
-  // Fill the data into the object.
-  for (std::vector<double>::const_iterator itor = events.begin(); itor != events.end(); ++itor) {
-    fa.fill(*itor);
-  }
-
-  // Compute the FFT.
-  fa.computeStats();
-
-  m_os.out() << "Fourier Power" << std::endl;
-
-  periodSearch::PeriodSearchViewer viewer(fa, min_freq, max_freq);
-  viewer.writeSummary(m_os.out()) << std::endl;
-  viewer.writeData(m_os.out()) << std::endl;
-
-  if (plot) viewer.plot("Fourier Analysis: Power Spectrum", unit);
-
 }
 
 void PSearchTestApp::testChanceProb() {
@@ -451,6 +393,55 @@ const std::string & PSearchTestApp::getDataDir() {
 
 std::string PSearchTestApp::findFile(const std::string & file_name) {
   return st_facilities::Env::appendFileName(getDataDir(), file_name);
+}
+
+void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search,
+  const std::string & text_title, const std::string & plot_title, const std::string & out_file,
+  bool plot, double min_freq, double max_freq) {
+
+  PeriodSearchViewer viewer(search, min_freq, max_freq);
+
+  // Fill the data into the search object.
+  for (std::vector<double>::const_iterator itor = events.begin(); itor != events.end(); ++itor) {
+    search.fill(*itor);
+  }
+
+  // Perform the search operation.
+  search.computeStats();
+
+  // Find the template file.
+  using namespace st_facilities;
+  std::string template_file = Env::appendFileName(Env::getDataDir("periodSearch"), "gtpspec-out.tpl");
+
+  // Create output file.
+  tip::IFileSvc::instance().createFile(out_file, template_file, true);
+
+  // Open output file and get reference to its header.
+  std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
+  tip::Header & out_header(out_table->getHeader());
+
+  // Write the summary to the output header, and the data to the output table.
+  viewer.writeSummary(out_header);
+  viewer.writeData(*out_table);
+
+  enum ChatLevel {
+    eIncludeSummary= 2,
+    eAllDetails = 3
+  };
+
+  // Write the stats to the screen.
+  m_os.info(eIncludeSummary) << text_title << std::endl;
+  viewer.writeSummary(m_os.info(eIncludeSummary)) << std::endl;
+
+  // Write details of test result if chatter is high enough.
+  viewer.writeData(m_os.info(eAllDetails)) << std::endl;
+
+  // TODO: When tip supports getting units from a column, replace the following:
+  std::string unit = "(Hz)";
+  // with:
+  // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
+  // Display a plot, if desired.
+  if (plot) viewer.plot(plot_title, unit);
 }
 
 st_app::StAppFactory<PSearchTestApp> g_factory("test_periodSearch");
