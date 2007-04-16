@@ -310,7 +310,7 @@ void PowerSpectrumApp::run() {
   if ("NONE" != out_file_uc) {
     // Find the template file.
     using namespace st_facilities;
-    std::string template_file = Env::appendFileName(Env::getDataDir("periodSearch"), "gtpspec-out.tpl");
+    std::string template_file = Env::appendFileName(Env::getDataDir("periodSearch"), "period-search-out.tpl");
 
     // Create output file.
     tip::IFileSvc::instance().createFile(out_file, template_file, clobber);
