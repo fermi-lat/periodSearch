@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed May 23 14:22:20 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add new helper method initEphComputer.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed May 23 13:41:52 PDT 2007
 periodSearch/src/gtpsearch
 
