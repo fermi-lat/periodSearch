@@ -53,10 +53,10 @@ class PSearchApp : public st_app::StApp {
 
     virtual void prompt(st_app::AppParGroup & pars);
 
-    virtual AbsoluteTime createAbsoluteTime(const std::string & time_format, const std::string & time_system,
+    virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value);
 
-    virtual AbsoluteTime createAbsoluteTime(const std::string & time_format, const std::string & time_system,
+    virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
 
     const std::string & getDataDir();
@@ -161,13 +161,8 @@ void PSearchApp::run() {
     header["TSTOP"].get(tstop);
   }
 
-  // Get the mjdref from the header, which is not as simple as just reading a single keyword.
-  MjdRefDatabase mjd_ref_db;
-  IntFracPair mjd_ref(mjd_ref_db(header));
-
   // Make names of time system and mission case insensitive.
   for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = std::toupper(*itor);
-  for (std::string::iterator itor = event_time_sys.begin(); itor != event_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
   if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
 
@@ -176,16 +171,12 @@ void PSearchApp::run() {
   timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
 
   // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = epoch_time_format.begin(); itor != epoch_time_format.end(); ++itor) *itor = std::toupper(*itor);
   for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
 
   // Determine the time system used for the ephemeris epoch.
   std::string epoch_time_sys;
   if (eph_style == "DB") epoch_time_sys = "TDB";
   else epoch_time_sys = pars["timesys"].Value();
-
-  // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
   using namespace pulsarDb;
 
@@ -195,9 +186,6 @@ void PSearchApp::run() {
   std::string psr_name = pars["psrname"];
   std::string demod_bin_string = pars["demodbin"];
   for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
-  
-  std::string evt_time_sys;
-  header["TIMESYS"].get(evt_time_sys);
   
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration.
   if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
@@ -210,7 +198,7 @@ void PSearchApp::run() {
 
   if (eph_style != "DB") {
     
-    AbsoluteTime abs_epoch(createAbsoluteTime(epoch_time_format, epoch_time_sys, epoch, header));
+    AbsoluteTime abs_epoch(*createTimeRep(epoch_time_format, epoch_time_sys, epoch, header));
 
     // Handle either period or frequency-style input.
     if (eph_style == "FREQ") {
@@ -269,60 +257,52 @@ void PSearchApp::run() {
   }
 
   // Set up event time representations.
-  MetRep evt_time_rep(evt_time_sys, mjd_ref, 0.);
+  std::auto_ptr<TimeRep> evt_time_rep(createTimeRep("FILE", "FILE", "0.", header));
 
   // Set up start time of observation (data set). Apply necessary corrections.
-  evt_time_rep.setValue(tstart);
-  AbsoluteTime abs_tstart(evt_time_rep);
+  evt_time_rep->set("TIME", tstart);
+  AbsoluteTime abs_tstart(*evt_time_rep);
   if (demod_bin) computer.demodulateBinary(abs_tstart);
   if (cancel_pdot) computer.cancelPdot(abs_tstart);
   // Propagate corrected time back to the original tstart variable.
-  evt_time_rep = abs_tstart;
-  tstart = evt_time_rep.getValue();
+  *evt_time_rep = abs_tstart;
+  evt_time_rep->get("TIME", tstart);
 
   // Set up stop time of observation (data set). Apply necessary corrections.
-  evt_time_rep.setValue(tstop);
-  AbsoluteTime abs_tstop(evt_time_rep);
+  evt_time_rep->set("TIME", tstop);
+  AbsoluteTime abs_tstop(*evt_time_rep);
   if (demod_bin) computer.demodulateBinary(abs_tstop);
   if (cancel_pdot) computer.cancelPdot(abs_tstop);
   // Propagate corrected time back to the original tstop variable.
-  evt_time_rep = abs_tstop;
-  tstop = evt_time_rep.getValue();
+  *evt_time_rep = abs_tstop;
+  evt_time_rep->get("TIME", tstop);
 
   // Compute a time to resresent the center of the observation.
   // It is not necessary to perform binary demodulation or pdot cancellation again because
   // the tstart and tstop already had these corrections.
-  evt_time_rep.setValue(.5 * (tstart + tstop));
-  AbsoluteTime abs_middle(evt_time_rep);
+  evt_time_rep->set("TIME", .5 * (tstart + tstop));
+  AbsoluteTime abs_middle(*evt_time_rep);
 
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
   for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = std::toupper(*itor);
   AbsoluteTime abs_origin("TDB", Duration(0, 0.), Duration(0, 0.));
-  std::string origin_time_sys;
   if (origin_style == "START") {
     // Get time of origin and its time system from event file.
     abs_origin = abs_tstart;
-    origin_time_sys = event_time_sys;
   } else if (origin_style == "STOP") {
     // Get time of origin and its time system from event file.
     abs_origin = abs_tstop;
-    origin_time_sys = event_time_sys;
   } else if (origin_style == "MIDDLE") {
     // Get time of origin and its time system from event file.
     abs_origin = abs_middle;
-    origin_time_sys = event_time_sys;
   } else if (origin_style == "USER") {
     // Get time of origin and its format and system from parameters.
     std::string origin_time = pars["usertime"];
     std::string origin_time_format = pars["userformat"];
-    origin_time_sys = pars["usersys"].Value();
+    std::string origin_time_sys = pars["usersys"].Value();
 
-    // Make case insensitive.
-    for (std::string::iterator itor = origin_time_format.begin(); itor != origin_time_format.end(); ++itor) *itor = std::toupper(*itor);
-    for (std::string::iterator itor = origin_time_sys.begin(); itor != origin_time_sys.end(); ++itor) *itor = std::toupper(*itor);
-
-    abs_origin = createAbsoluteTime(origin_time_format, origin_time_sys, origin_time, header);
+    abs_origin = *createTimeRep(origin_time_format, origin_time_sys, origin_time, header);
 
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
@@ -342,8 +322,9 @@ void PSearchApp::run() {
   ephemerides.push_back(eph->clone());
 
   // Convert absolute origin to the time system demanded by event file.
-  evt_time_rep = abs_origin;
-  double origin = evt_time_rep.getValue();
+  *evt_time_rep = abs_origin;
+  double origin = 0.;
+  evt_time_rep->get("TIME", origin);
 
   // Create the proper test.
   if (algorithm == "CHI2") 
@@ -359,16 +340,16 @@ void PSearchApp::run() {
     // Get value from the table.
     double evt_time = (*itor)[time_field].get();
 
-    evt_time_rep.setValue(evt_time);
-    AbsoluteTime abs_evt_time(evt_time_rep);
+    evt_time_rep->set("TIME", evt_time);
+    AbsoluteTime abs_evt_time(*evt_time_rep);
     // Perform binary correction if so desired.
     if (demod_bin) computer.demodulateBinary(abs_evt_time);
 
     // Perform pdot correction if so desired.
     // For efficiency use the TimingModel directly here, instead of using the EphComputer.
     if (cancel_pdot) computer.cancelPdot(abs_evt_time);
-    evt_time_rep = abs_evt_time;
-    evt_time = evt_time_rep.getValue();
+    *evt_time_rep = abs_evt_time;
+    evt_time_rep->get("TIME", evt_time);
 
     // Fill into the test.
     m_test->fill(evt_time);
@@ -488,14 +469,21 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Save();
 }
 
-AbsoluteTime PSearchApp::createAbsoluteTime(const std::string & time_format, const std::string & time_system,
+std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format, const std::string & time_system,
   const std::string & time_value) {
   std::auto_ptr<TimeRep> time_rep(0);
 
+  // Make upper case copies of input for case insensitive comparisons.
+  std::string time_format_uc(time_format);
+  for (std::string::iterator itor = time_format_uc.begin(); itor != time_format_uc.end(); ++itor) *itor = std::toupper(*itor);
+
+  std::string time_system_uc(time_system);
+  for (std::string::iterator itor = time_system_uc.begin(); itor != time_system_uc.end(); ++itor) *itor = std::toupper(*itor);
+
   // Create representation for this time format and time system.
-  if ("GLAST" == time_format) {
+  if ("GLAST" == time_format_uc) {
     time_rep.reset(new GlastMetRep(time_system, 0.));
-  } else if ("MJD" == time_format) {
+  } else if ("MJD" == time_format_uc) {
     time_rep.reset(new MjdRep(time_system, 0, 0.));
   } else {
     throw std::runtime_error("Time format \"" + time_format + "\" is not supported for ephemeris time");
@@ -504,34 +492,41 @@ AbsoluteTime PSearchApp::createAbsoluteTime(const std::string & time_format, con
   // Assign the ephtime supplied by the user to the representation.
   time_rep->assign(time_value);
 
-  return AbsoluteTime(*time_rep);
+  return time_rep;
 }
 
-AbsoluteTime PSearchApp::createAbsoluteTime(const std::string & time_format, const std::string & time_system,
+std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format, const std::string & time_system,
   const std::string & time_value, const tip::Header & header) {
   std::auto_ptr<TimeRep> time_rep(0);
 
-  // Make a local modifiable copy.
-  std::string time_system_copy = time_system;
+  // Make upper case copies of input for case insensitive comparisons.
+  std::string time_format_uc(time_format);
+  for (std::string::iterator itor = time_format_uc.begin(); itor != time_format_uc.end(); ++itor) *itor = std::toupper(*itor);
+
+  std::string time_system_uc(time_system);
+  for (std::string::iterator itor = time_system_uc.begin(); itor != time_system_uc.end(); ++itor) *itor = std::toupper(*itor);
+
+  // Make a local modifiable copy to hold the rationalized time system.
+  std::string time_system_rat(time_system);
 
   // First check whether time system should be read from the tip::Header.
-  if ("FILE" == time_system_copy) header["TIMESYS"].get(time_system_copy);
+  if ("FILE" == time_system_uc) header["TIMESYS"].get(time_system_rat);
 
   // Create representation for this time format and time system.
-  if ("FILE" == time_format) {
+  if ("FILE" == time_format_uc) {
     // Get the mjdref from the header, which is not as simple as just reading a single keyword.
     MjdRefDatabase mjd_ref_db;
     IntFracPair mjd_ref(mjd_ref_db(header));
-    time_rep.reset(new MetRep(time_system_copy, mjd_ref, 0.));
+    time_rep.reset(new MetRep(time_system_rat, mjd_ref, 0.));
   } else {
     // Delegate to overload that does not use tip.
-    return createAbsoluteTime(time_format, time_system_copy, time_value);
+    return createTimeRep(time_format, time_system_rat, time_value);
   }
 
   // Assign the time supplied by the user to the representation.
   time_rep->assign(time_value);
 
-  return AbsoluteTime(*time_rep);
+  return time_rep;
 }
 
 const std::string & PSearchApp::getDataDir() {
