@@ -59,6 +59,8 @@ class PSearchApp : public st_app::StApp {
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
 
+    void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
+
     const std::string & getDataDir();
 
   private:
@@ -116,15 +118,12 @@ void PSearchApp::run() {
   std::string event_extension = pars["evtable"];
   double scan_step = pars["scanstep"];
   long num_trials = pars["numtrials"];
-  std::string epoch = pars["ephepoch"];
-  std::string epoch_time_format = pars["timeformat"];
   long num_bins = pars["numbins"];
   std::string time_field = pars["timefield"];
   bool plot = pars["plot"];
   std::string title = pars["title"];
   bool cancel_pdot = pars["cancelpdot"];
   std::string demod_binary_string = pars["demodbin"];
-  std::string eph_style = pars["ephstyle"];
   bool clobber = pars["clobber"];
 
   // Open the event file.
@@ -170,81 +169,17 @@ void PSearchApp::run() {
   std::string leap_sec_file = pars["leapsecfile"];
   timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
 
-  // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
-
-  // Determine the time system used for the ephemeris epoch.
-  std::string epoch_time_sys;
-  if (eph_style == "DB") epoch_time_sys = "TDB";
-  else epoch_time_sys = pars["timesys"].Value();
-
   using namespace pulsarDb;
-
-  // Ignored but needed for timing model.
-  double phi0 = 0.;
-
-  std::string psr_name = pars["psrname"];
-  std::string demod_bin_string = pars["demodbin"];
-  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
-  
-  // Compute frequency step from scan step and the Fourier resolution == 1. / duration.
-  if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
-  double f_step = scan_step / duration;
 
   // A TimingModel will be needed for several steps below.
   TimingModel model;
   SloppyEphChooser chooser;
   EphComputer computer(model, chooser);
+  initEphComputer(pars, header, computer);
 
-  if (eph_style != "DB") {
-    
-    AbsoluteTime abs_epoch(*createTimeRep(epoch_time_format, epoch_time_sys, epoch, header));
-
-    // Handle either period or frequency-style input.
-    if (eph_style == "FREQ") {
-      double f0 = pars["f0"];
-      double f1 = pars["f1"];
-      double f2 = pars["f2"];
+  std::string demod_bin_string = pars["demodbin"];
+  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
   
-      if (0. >= f0) throw std::runtime_error("Frequency must be positive.");
-  
-      // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
-      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-      ephemerides.push_back(FrequencyEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, f0, f1, f2).clone());
-    } else if (eph_style == "PER") {
-      double p0 = pars["p0"];
-      double p1 = pars["p1"];
-      double p2 = pars["p2"];
-  
-      if (0. >= p0) throw std::runtime_error("Period must be positive.");
-  
-      // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
-      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-      ephemerides.push_back(PeriodEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, p0, p1, p2).clone());
-    }
-  }
-
-  if (eph_style == "DB" || demod_bin_string != "NO") {
-    // Find the pulsar database.
-    std::string psrdb_file = pars["psrdbfile"];
-    std::string psrdb_file_uc = psrdb_file;
-    for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = std::toupper(*itor);
-    if ("DEFAULT" == psrdb_file_uc) {
-      using namespace st_facilities;
-      psrdb_file = Env::appendFileName(Env::getDataDir("periodSearch"), "master_pulsardb.fits");
-    }
-
-    // Open the database.
-    PulsarDb database(psrdb_file);
-
-    // Select only ephemerides for this pulsar.
-    database.filterName(psr_name);
-
-    // Load the selected ephemerides.
-    if (eph_style == "DB") computer.loadPulsarEph(database);
-    computer.loadOrbitalEph(database);
-  }
-
   // Determine whether to perform binary demodulation.
   bool demod_bin = false;
   if (demod_bin_string != "NO") {
@@ -325,6 +260,10 @@ void PSearchApp::run() {
   *evt_time_rep = abs_origin;
   double origin = 0.;
   evt_time_rep->get("TIME", origin);
+
+  // Compute frequency step from scan step and the Fourier resolution == 1. / duration.
+  if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
+  double f_step = scan_step / duration;
 
   // Create the proper test.
   if (algorithm == "CHI2") 
@@ -527,6 +466,76 @@ std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format
   time_rep->assign(time_value);
 
   return time_rep;
+}
+
+void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer) {
+  using namespace periodSearch;
+  using namespace pulsarDb;
+
+  std::string eph_style = pars["ephstyle"];
+  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
+
+  // Determine the time system used for the ephemeris epoch.
+  std::string epoch_time_sys;
+  if (eph_style == "DB") epoch_time_sys = "TDB";
+  else epoch_time_sys = pars["timesys"].Value();
+
+  // Ignored but needed for timing model.
+  double phi0 = 0.;
+
+  std::string psr_name = pars["psrname"];
+
+  if (eph_style != "DB") {
+    std::string epoch_time_format = pars["timeformat"];
+    std::string epoch = pars["ephepoch"];
+    AbsoluteTime abs_epoch(*createTimeRep(epoch_time_format, epoch_time_sys, epoch, header));
+
+    // Handle either period or frequency-style input.
+    if (eph_style == "FREQ") {
+      double f0 = pars["f0"];
+      double f1 = pars["f1"];
+      double f2 = pars["f2"];
+  
+      if (0. >= f0) throw std::runtime_error("Frequency must be positive.");
+  
+      // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
+      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+      ephemerides.push_back(FrequencyEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, f0, f1, f2).clone());
+    } else if (eph_style == "PER") {
+      double p0 = pars["p0"];
+      double p1 = pars["p1"];
+      double p2 = pars["p2"];
+  
+      if (0. >= p0) throw std::runtime_error("Period must be positive.");
+  
+      // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
+      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+      ephemerides.push_back(PeriodEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, p0, p1, p2).clone());
+    }
+  }
+
+  std::string demod_bin_string = pars["demodbin"];
+  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
+  if (eph_style == "DB" || demod_bin_string != "NO") {
+    // Find the pulsar database.
+    std::string psrdb_file = pars["psrdbfile"];
+    std::string psrdb_file_uc = psrdb_file;
+    for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = std::toupper(*itor);
+    if ("DEFAULT" == psrdb_file_uc) {
+      using namespace st_facilities;
+      psrdb_file = Env::appendFileName(Env::getDataDir("periodSearch"), "master_pulsardb.fits");
+    }
+
+    // Open the database.
+    PulsarDb database(psrdb_file);
+
+    // Select only ephemerides for this pulsar.
+    database.filterName(psr_name);
+
+    // Load the selected ephemerides.
+    if (eph_style == "DB") computer.loadPulsarEph(database);
+    computer.loadOrbitalEph(database);
+  }
 }
 
 const std::string & PSearchApp::getDataDir() {
