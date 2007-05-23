@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed May 23 12:29:56 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Encapsulate creation of AbsoluteTime inside method of application class.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v6r1, operation: add
 Package: periodSearch
