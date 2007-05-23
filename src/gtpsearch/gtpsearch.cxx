@@ -53,6 +53,12 @@ class PSearchApp : public st_app::StApp {
 
     virtual void prompt(st_app::AppParGroup & pars);
 
+    virtual AbsoluteTime createAbsoluteTime(const std::string & time_format, const std::string & time_system,
+      const std::string & time_value);
+
+    virtual AbsoluteTime createAbsoluteTime(const std::string & time_format, const std::string & time_system,
+      const std::string & time_value, const tip::Header & header);
+
     const std::string & getDataDir();
 
   private:
@@ -181,9 +187,6 @@ void PSearchApp::run() {
   // Make time formats etc. case insensitive.
   for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
-  // Interpret FILE option: match epoch to event time system.
-  if ("FILE" == epoch_time_sys) epoch_time_sys = event_time_sys;
-
   using namespace pulsarDb;
 
   // Ignored but needed for timing model.
@@ -206,22 +209,8 @@ void PSearchApp::run() {
   EphComputer computer(model, chooser);
 
   if (eph_style != "DB") {
-    std::auto_ptr<TimeRep> epoch_rep(0);
-    // Create representation for this time format and time system.
-    if (epoch_time_format == "FILE") {
-      epoch_rep.reset(new MetRep(epoch_time_sys, mjd_ref, 0.));
-    } else if (epoch_time_format == "GLAST") {
-      epoch_rep.reset(new GlastMetRep(epoch_time_sys, 0.));
-    } else if (epoch_time_format == "MJD") {
-      epoch_rep.reset(new MjdRep(epoch_time_sys, 0, 0.));
-    } else {
-      throw std::runtime_error("Time format \"" + epoch_time_format + "\" is not supported for manual ephemeris epoch");
-    }
-
-    // Assign the ephepoch supplied by the user to the representation.
-    epoch_rep->assign(epoch);
-
-    AbsoluteTime abs_epoch(*epoch_rep);
+    
+    AbsoluteTime abs_epoch(createAbsoluteTime(epoch_time_format, epoch_time_sys, epoch, header));
 
     // Handle either period or frequency-style input.
     if (eph_style == "FREQ") {
@@ -333,26 +322,8 @@ void PSearchApp::run() {
     for (std::string::iterator itor = origin_time_format.begin(); itor != origin_time_format.end(); ++itor) *itor = std::toupper(*itor);
     for (std::string::iterator itor = origin_time_sys.begin(); itor != origin_time_sys.end(); ++itor) *itor = std::toupper(*itor);
 
-    // Interpret FILE option: match origin to event time system.
-    if ("FILE" == origin_time_sys) origin_time_sys = event_time_sys;
+    abs_origin = createAbsoluteTime(origin_time_format, origin_time_sys, origin_time, header);
 
-    // Set up the origin using the given time system.
-    std::auto_ptr<TimeRep> origin_rep(0);
-    // Create representation for this time format and time system.
-    if (origin_time_format == "FILE") {
-      origin_rep.reset(new MetRep(origin_time_sys, mjd_ref, 0.));
-    } else if (origin_time_format == "GLAST") {
-      origin_rep.reset(new GlastMetRep(origin_time_sys, 0.));
-    } else if (origin_time_format == "MJD") {
-      origin_rep.reset(new MjdRep(origin_time_sys, 0, 0.));
-    } else {
-      throw std::runtime_error("Time format \"" + origin_time_format + "\" is not supported for user time origin");
-    }
-
-    // Assign the user time supplied by the user to the representation.
-    origin_rep->assign(origin_time);
-
-    abs_origin = *origin_rep;
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
@@ -515,6 +486,52 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
 
   // Save current values of the parameters.
   pars.Save();
+}
+
+AbsoluteTime PSearchApp::createAbsoluteTime(const std::string & time_format, const std::string & time_system,
+  const std::string & time_value) {
+  std::auto_ptr<TimeRep> time_rep(0);
+
+  // Create representation for this time format and time system.
+  if ("GLAST" == time_format) {
+    time_rep.reset(new GlastMetRep(time_system, 0.));
+  } else if ("MJD" == time_format) {
+    time_rep.reset(new MjdRep(time_system, 0, 0.));
+  } else {
+    throw std::runtime_error("Time format \"" + time_format + "\" is not supported for ephemeris time");
+  }
+
+  // Assign the ephtime supplied by the user to the representation.
+  time_rep->assign(time_value);
+
+  return AbsoluteTime(*time_rep);
+}
+
+AbsoluteTime PSearchApp::createAbsoluteTime(const std::string & time_format, const std::string & time_system,
+  const std::string & time_value, const tip::Header & header) {
+  std::auto_ptr<TimeRep> time_rep(0);
+
+  // Make a local modifiable copy.
+  std::string time_system_copy = time_system;
+
+  // First check whether time system should be read from the tip::Header.
+  if ("FILE" == time_system_copy) header["TIMESYS"].get(time_system_copy);
+
+  // Create representation for this time format and time system.
+  if ("FILE" == time_format) {
+    // Get the mjdref from the header, which is not as simple as just reading a single keyword.
+    MjdRefDatabase mjd_ref_db;
+    IntFracPair mjd_ref(mjd_ref_db(header));
+    time_rep.reset(new MetRep(time_system_copy, mjd_ref, 0.));
+  } else {
+    // Delegate to overload that does not use tip.
+    return createAbsoluteTime(time_format, time_system_copy, time_value);
+  }
+
+  // Assign the time supplied by the user to the representation.
+  time_rep->assign(time_value);
+
+  return AbsoluteTime(*time_rep);
 }
 
 const std::string & PSearchApp::getDataDir() {
