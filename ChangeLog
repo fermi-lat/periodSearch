@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed May 23 13:41:52 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change createAbsoluteTime to createTimeRep, make it case insensitive with regard to
+logic of how the TimeRep is created, and clean up a bunch of unneccessary code.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed May 23 12:29:56 PDT 2007
 periodSearch/src/gtpsearch
 
