@@ -42,7 +42,7 @@ namespace periodSearch {
       }
     }
     m_max_chisq = x_cur;
-  };
+  }
 
   std::pair<double,double> ChiSquaredProb::operator() (double chisq, double precision, int max_iteration) const {
     // return 1.0 in trivial cases
