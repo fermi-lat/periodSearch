@@ -17,9 +17,9 @@
 
 #include "fftw/fftw3.h"
 
-namespace periodSearch {
+using namespace periodSearch;
 
-  FourierAnalysis::FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, int /* num_events */):
+  FourierAnalysis::FourierAnalysis(double t_start, double t_stop, double width, PeriodSearch::size_type num_bins, int /* num_events */):
     PeriodSearch(num_bins / 2 + 1), m_index(), m_t_start(t_start), m_t_stop(t_stop),
     m_width(width), m_fourier_res(0.), m_num_segments(0) , m_num_bins(num_bins) {
     if (t_start > t_stop) throw std::runtime_error("FourierAnalysis: start time is > stop time");
@@ -125,4 +125,3 @@ namespace periodSearch {
        << "Probability Distribution: Chi Squared with " << 2 * m_num_segments << " degrees of freedom";
     return os.str();
   }
-}
