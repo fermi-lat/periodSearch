@@ -2,9 +2,11 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.20 2007/03/28 20:39:27 peachey Exp $
+$Id: release.notes,v 1.21 2007/04/16 20:19:44 peachey Exp $
 
 \verbatim
+04-jun-2007    v6r1p1 JP  Move implementation of FourierAnalysis out of periodSearch scope.
+                          This is to match the declaration of FourierAnalysis.
 16-apr-2007      v6r1 JP  Add optional FITS output of search results, controlled by
                           new outfile parameter, for both gtpsearch and gtpspec.
 29-mar-2007        v6 JP  Add FFT-based blind search tool gtpspec. Refactored PeriodTest hierarchy
