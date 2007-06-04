@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Mon Jun  4 13:56:30 PDT 2007
+periodSearch/src
+
+Modified Files:
+	ChiSquaredProb.cxx 
+Log Message:
+Silence a warning; remove unneeded semicolon.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed May 23 14:22:20 PDT 2007
 periodSearch/src/gtpsearch
 
