@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Jun  6 15:21:02 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Minor cleanings: remove unused variable event_time_sys, reordering and regrouping to clarify flow of execution, improve comments, use computeTimeValue method to compute origin (double) variable.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jun  6 14:04:57 PDT 2007
 periodSearch/src/gtpsearch
 
