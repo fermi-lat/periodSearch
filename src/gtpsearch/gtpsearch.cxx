@@ -144,14 +144,6 @@ void PSearchApp::run() {
   // Identify mission and time system from events extension.
   const tip::Header & header(event_table->getHeader());
 
-  std::string telescope;
-  header["TELESCOP"].get(telescope);
-
-  // Make names of time system and mission case insensitive.
-  for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = std::toupper(*itor);
-
-  if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
-
   // Handle leap seconds.
   std::string leap_sec_file = pars["leapsecfile"];
   timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
@@ -375,6 +367,12 @@ std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format
 
   // Create representation for this time format and time system.
   if ("FILE" == time_format_uc) {
+    // Check TELESCOP keyword for supported missions.
+    std::string telescope;
+    header["TELESCOP"].get(telescope);
+    for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = std::toupper(*itor);
+    if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
+
     // Get the mjdref from the header, which is not as simple as just reading a single keyword.
     MjdRefDatabase mjd_ref_db;
     IntFracPair mjd_ref(mjd_ref_db(header));
