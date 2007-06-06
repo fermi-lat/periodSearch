@@ -61,6 +61,12 @@ class PSearchApp : public st_app::StApp {
 
     void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
 
+    AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
+      const tip::Table & gti_table, bool demod_bin, bool cancel_pdot, timeSystem::TimeRep & time_rep,
+      pulsarDb::EphComputer & computer);
+
+    void updateEphComputer(const AbsoluteTime & abs_time, pulsarDb::EphComputer & computer);
+
     void initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
       bool & demod_bin, bool & cancel_pdot);
 
@@ -135,36 +141,13 @@ void PSearchApp::run() {
   // Open the event file.
   std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
 
-  // Read GTI.
-  std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
+  // Identify mission and time system from events extension.
+  const tip::Header & header(event_table->getHeader());
 
-  // Get necessary keywords.
-  double duration = 0.;
-  double tstart = 0.;
-  double tstop = 0.;
   std::string telescope;
   std::string event_time_sys;
-  // Find TELAPSE from GTI extension.
-  gti_table->getHeader()["TELAPSE"].get(duration);
-
-  // Find all other keywords from events extension.
-  const tip::Header & header(event_table->getHeader());
   header["TELESCOP"].get(telescope);
   header["TIMESYS"].get(event_time_sys);
-
-  // If possible, get tstart and tstop from first and last interval in GTI extension.
-  tip::Table::ConstIterator gti_itor = gti_table->begin();
-  if (gti_itor != gti_table->end()) {
-    // TSTART is the start of the first interval.
-    tstart = (*gti_itor)["START"].get();
-    // TSTOP is from the stop of the last interval.
-    gti_itor = gti_table->end();
-    --gti_itor;
-    tstop = (*gti_itor)["STOP"].get();
-  } else {
-    header["TSTART"].get(tstart);
-    header["TSTOP"].get(tstop);
-  }
 
   // Make names of time system and mission case insensitive.
   for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = std::toupper(*itor);
@@ -186,59 +169,25 @@ void PSearchApp::run() {
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool demod_bin = false;
   bool cancel_pdot = false;
+
   initTimeCorrection(pars, computer, demod_bin, cancel_pdot);
 
   // Set up event time representations.
   std::auto_ptr<TimeRep> evt_time_rep(createTimeRep("FILE", "FILE", "0.", header));
 
-  // Set up start time of observation (data set). Apply necessary corrections.
-  AbsoluteTime abs_tstart(applyTimeCorrection(tstart, *evt_time_rep, computer, demod_bin, cancel_pdot));
+  // Read GTI.
+  std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
 
-  // Set up stop time of observation (data set). Apply necessary corrections.
-  AbsoluteTime abs_tstop(applyTimeCorrection(tstop, *evt_time_rep, computer, demod_bin, cancel_pdot));
+  // Find TELAPSE from GTI extension.
+  double duration = 0.;
+  gti_table->getHeader()["TELAPSE"].get(duration);
 
-  // Handle styles of origin input.
-  std::string origin_style = pars["timeorigin"];
-  for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = std::toupper(*itor);
-  AbsoluteTime abs_origin("TDB", Duration(0, 0.), Duration(0, 0.));
-  if (origin_style == "START") {
-    // Get time of origin and its time system from event file.
-    abs_origin = abs_tstart;
-  } else if (origin_style == "STOP") {
-    // Get time of origin and its time system from event file.
-    abs_origin = abs_tstop;
-  } else if (origin_style == "MIDDLE") {
-    // Use the center of the observation as the time origin.
-    tstart = computeTimeValue(abs_tstart, *evt_time_rep);
-    tstop = computeTimeValue(abs_tstop, *evt_time_rep);
-    evt_time_rep->set("TIME", .5 * (tstart + tstop));
-    abs_origin = *evt_time_rep;
-  } else if (origin_style == "USER") {
-    // Get time of origin and its format and system from parameters.
-    std::string origin_time = pars["usertime"];
-    std::string origin_time_format = pars["userformat"];
-    std::string origin_time_sys = pars["usersys"].Value();
+  AbsoluteTime abs_origin = computeTimeOrigin(pars, header, *gti_table, demod_bin, cancel_pdot, *evt_time_rep, computer);
 
-    abs_origin = *createTimeRep(origin_time_format, origin_time_sys, origin_time, header);
+  updateEphComputer(abs_origin, computer);
 
-  } else {
-    throw std::runtime_error("Unsupported origin style " + origin_style);
-  }
-  
-  // Choose which kind of test to create.
-  std::string algorithm = pars["algorithm"];
+  double f_center = computer.choosePulsarEph(abs_origin).f0();
 
-  for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = std::toupper(*itor);
-
-  // Compute an ephemeris at abs_origin to use for the test.
-  std::auto_ptr<PulsarEph> eph(computer.calcPulsarEph(abs_origin).clone());
-
-  // Reset computer to contain only the corrected ephemeris which was just computed.
-  PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-  ephemerides.clear();
-  ephemerides.push_back(eph->clone());
-
-  // Convert absolute origin to the time system demanded by event file.
   *evt_time_rep = abs_origin;
   double origin = 0.;
   evt_time_rep->get("TIME", origin);
@@ -247,13 +196,18 @@ void PSearchApp::run() {
   if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
   double f_step = scan_step / duration;
 
+  // Choose which kind of test to create.
+  std::string algorithm = pars["algorithm"];
+
+  for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = std::toupper(*itor);
+
   // Create the proper test.
   if (algorithm == "CHI2") 
-    m_test = new ChiSquaredTest(eph->f0(), f_step, num_trials, origin, num_bins, duration);
+    m_test = new ChiSquaredTest(f_center, f_step, num_trials, origin, num_bins, duration);
   else if (algorithm == "H") 
-    m_test = new HTest(eph->f0(), f_step, num_trials, origin, num_bins, duration);
+    m_test = new HTest(f_center, f_step, num_trials, origin, num_bins, duration);
   else if (algorithm == "Z2N") 
-    m_test = new Z2nTest(eph->f0(), f_step, num_trials, origin, num_bins, duration);
+    m_test = new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration);
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
   // Iterate over table, filling the search/test object with temporal data.
@@ -511,6 +465,75 @@ void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::He
     if (eph_style == "DB") computer.loadPulsarEph(database);
     computer.loadOrbitalEph(database);
   }
+}
+
+AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
+  const tip::Table & gti_table, bool demod_bin, bool cancel_pdot, timeSystem::TimeRep & time_rep,
+  pulsarDb::EphComputer & computer) {
+  double tstart = 0.;
+  double tstop = 0.;
+
+  // If possible, get tstart and tstop from first and last interval in GTI extension.
+  tip::Table::ConstIterator gti_itor = gti_table.begin();
+  if (gti_itor != gti_table.end()) {
+    // TSTART is the start of the first interval.
+    tstart = (*gti_itor)["START"].get();
+    // TSTOP is from the stop of the last interval.
+    gti_itor = gti_table.end();
+    --gti_itor;
+    tstop = (*gti_itor)["STOP"].get();
+  } else {
+    header["TSTART"].get(tstart);
+    header["TSTOP"].get(tstop);
+  }
+
+  // Set up start time of observation (data set). Apply necessary corrections.
+  AbsoluteTime abs_tstart(applyTimeCorrection(tstart, time_rep, computer, demod_bin, cancel_pdot));
+
+  // Set up stop time of observation (data set). Apply necessary corrections.
+  AbsoluteTime abs_tstop(applyTimeCorrection(tstop, time_rep, computer, demod_bin, cancel_pdot));
+
+  // Handle styles of origin input.
+  std::string origin_style = pars["timeorigin"];
+  for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = std::toupper(*itor);
+  AbsoluteTime abs_origin("TDB", Duration(0, 0.), Duration(0, 0.));
+  if (origin_style == "START") {
+    // Get time of origin and its time system from event file.
+    abs_origin = abs_tstart;
+  } else if (origin_style == "STOP") {
+    // Get time of origin and its time system from event file.
+    abs_origin = abs_tstop;
+  } else if (origin_style == "MIDDLE") {
+    // Use the center of the observation as the time origin.
+    tstart = computeTimeValue(abs_tstart, time_rep);
+    tstop = computeTimeValue(abs_tstop, time_rep);
+    time_rep.set("TIME", .5 * (tstart + tstop));
+    abs_origin = time_rep;
+  } else if (origin_style == "USER") {
+    // Get time of origin and its format and system from parameters.
+    std::string origin_time = pars["usertime"];
+    std::string origin_time_format = pars["userformat"];
+    std::string origin_time_sys = pars["usersys"].Value();
+
+    abs_origin = *createTimeRep(origin_time_format, origin_time_sys, origin_time, header);
+
+  } else {
+    throw std::runtime_error("Unsupported origin style " + origin_style);
+  }
+  
+  return abs_origin;
+}
+
+void PSearchApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::EphComputer & computer) {
+  using namespace pulsarDb;
+
+  // Compute an ephemeris at abs_origin to use for the test.
+  std::auto_ptr<PulsarEph> eph(computer.calcPulsarEph(abs_origin).clone());
+
+  // Reset computer to contain only the corrected ephemeris which was just computed.
+  PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+  ephemerides.clear();
+  ephemerides.push_back(eph->clone());
 }
 
 void PSearchApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
