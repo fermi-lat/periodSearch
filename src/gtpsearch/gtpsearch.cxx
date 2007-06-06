@@ -61,6 +61,14 @@ class PSearchApp : public st_app::StApp {
 
     void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
 
+    void initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
+      bool & demod_bin, bool & cancel_pdot);
+
+    AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer,
+      bool demod_bin, bool cancel_pdot);
+
+    double computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep);
+
     const std::string & getDataDir();
 
   private:
@@ -122,8 +130,6 @@ void PSearchApp::run() {
   std::string time_field = pars["timefield"];
   bool plot = pars["plot"];
   std::string title = pars["title"];
-  bool cancel_pdot = pars["cancelpdot"];
-  std::string demod_binary_string = pars["demodbin"];
   bool clobber = pars["clobber"];
 
   // Open the event file.
@@ -177,46 +183,19 @@ void PSearchApp::run() {
   EphComputer computer(model, chooser);
   initEphComputer(pars, header, computer);
 
-  std::string demod_bin_string = pars["demodbin"];
-  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
-  
-  // Determine whether to perform binary demodulation.
+  // Use user input (parameters) together with computer to determine corrections to apply.
   bool demod_bin = false;
-  if (demod_bin_string != "NO") {
-    // User selected not "no", so attempt to perform demodulation
-    if (!computer.getOrbitalEphCont().empty()) {
-      demod_bin = true;
-    } else if (demod_bin_string == "YES") {
-      throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
-    }
-  }
+  bool cancel_pdot = false;
+  initTimeCorrection(pars, computer, demod_bin, cancel_pdot);
 
   // Set up event time representations.
   std::auto_ptr<TimeRep> evt_time_rep(createTimeRep("FILE", "FILE", "0.", header));
 
   // Set up start time of observation (data set). Apply necessary corrections.
-  evt_time_rep->set("TIME", tstart);
-  AbsoluteTime abs_tstart(*evt_time_rep);
-  if (demod_bin) computer.demodulateBinary(abs_tstart);
-  if (cancel_pdot) computer.cancelPdot(abs_tstart);
-  // Propagate corrected time back to the original tstart variable.
-  *evt_time_rep = abs_tstart;
-  evt_time_rep->get("TIME", tstart);
+  AbsoluteTime abs_tstart(applyTimeCorrection(tstart, *evt_time_rep, computer, demod_bin, cancel_pdot));
 
   // Set up stop time of observation (data set). Apply necessary corrections.
-  evt_time_rep->set("TIME", tstop);
-  AbsoluteTime abs_tstop(*evt_time_rep);
-  if (demod_bin) computer.demodulateBinary(abs_tstop);
-  if (cancel_pdot) computer.cancelPdot(abs_tstop);
-  // Propagate corrected time back to the original tstop variable.
-  *evt_time_rep = abs_tstop;
-  evt_time_rep->get("TIME", tstop);
-
-  // Compute a time to resresent the center of the observation.
-  // It is not necessary to perform binary demodulation or pdot cancellation again because
-  // the tstart and tstop already had these corrections.
-  evt_time_rep->set("TIME", .5 * (tstart + tstop));
-  AbsoluteTime abs_middle(*evt_time_rep);
+  AbsoluteTime abs_tstop(applyTimeCorrection(tstop, *evt_time_rep, computer, demod_bin, cancel_pdot));
 
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
@@ -229,8 +208,11 @@ void PSearchApp::run() {
     // Get time of origin and its time system from event file.
     abs_origin = abs_tstop;
   } else if (origin_style == "MIDDLE") {
-    // Get time of origin and its time system from event file.
-    abs_origin = abs_middle;
+    // Use the center of the observation as the time origin.
+    tstart = computeTimeValue(abs_tstart, *evt_time_rep);
+    tstop = computeTimeValue(abs_tstop, *evt_time_rep);
+    evt_time_rep->set("TIME", .5 * (tstart + tstop));
+    abs_origin = *evt_time_rep;
   } else if (origin_style == "USER") {
     // Get time of origin and its format and system from parameters.
     std::string origin_time = pars["usertime"];
@@ -279,16 +261,9 @@ void PSearchApp::run() {
     // Get value from the table.
     double evt_time = (*itor)[time_field].get();
 
-    evt_time_rep->set("TIME", evt_time);
-    AbsoluteTime abs_evt_time(*evt_time_rep);
-    // Perform binary correction if so desired.
-    if (demod_bin) computer.demodulateBinary(abs_evt_time);
-
-    // Perform pdot correction if so desired.
-    // For efficiency use the TimingModel directly here, instead of using the EphComputer.
-    if (cancel_pdot) computer.cancelPdot(abs_evt_time);
-    *evt_time_rep = abs_evt_time;
-    evt_time_rep->get("TIME", evt_time);
+    // Apply time corrections, convert back out to a double value.
+    AbsoluteTime abs_evt_time(applyTimeCorrection(evt_time, *evt_time_rep, computer, demod_bin, cancel_pdot));
+    evt_time = computeTimeValue(abs_evt_time, *evt_time_rep);
 
     // Fill into the test.
     m_test->fill(evt_time);
@@ -536,6 +511,54 @@ void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::He
     if (eph_style == "DB") computer.loadPulsarEph(database);
     computer.loadOrbitalEph(database);
   }
+}
+
+void PSearchApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
+  bool & demod_bin, bool & cancel_pdot) {
+  std::string demod_bin_string = pars["demodbin"];
+  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
+  
+  // Determine whether to perform binary demodulation.
+  demod_bin = false;
+  if (demod_bin_string != "NO") {
+    // User selected not "no", so attempt to perform demodulation
+    if (!computer.getOrbitalEphCont().empty()) {
+      demod_bin = true;
+    } else if (demod_bin_string == "YES") {
+      throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
+    }
+  }
+
+  // Determine whether to cancel pdot.
+  cancel_pdot = bool(pars["cancelpdot"]);
+
+}
+
+AbsoluteTime PSearchApp::applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer,
+  bool demod_bin, bool cancel_pdot) {
+  // Assign the value to the time representation.
+  time_rep.set("TIME", time_value);
+
+  // Convert TimeRep into AbsoluteTime so that computer can perform the necessary corrections.
+  AbsoluteTime abs_time(time_rep);
+
+  // Apply selected corrections.
+  if (demod_bin) computer.demodulateBinary(abs_time);
+  if (cancel_pdot) computer.cancelPdot(abs_time);
+
+  return abs_time;
+}
+
+double PSearchApp::computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep) {
+  double time_value = 0.;
+
+  // Assign the absolute time to the time representation.
+  time_rep = abs_time;
+
+  // Get value from the time representation.
+  time_rep.get("TIME", time_value);
+
+  return time_value;
 }
 
 const std::string & PSearchApp::getDataDir() {
