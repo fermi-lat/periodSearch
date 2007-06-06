@@ -1,4 +1,16 @@
 ------------------------------------------------------------
+User: peachey  Wed Jun  6 13:09:31 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add helper methods initTimeCorrection, applyTimeCorrection and computeTimeValue to
+encapsulate the application of time corrections and simplify the flow of the main
+application code.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v6r1p1, operation: add
 Package: periodSearch
