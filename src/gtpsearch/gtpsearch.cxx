@@ -145,9 +145,7 @@ void PSearchApp::run() {
   const tip::Header & header(event_table->getHeader());
 
   std::string telescope;
-  std::string event_time_sys;
   header["TELESCOP"].get(telescope);
-  header["TIMESYS"].get(event_time_sys);
 
   // Make names of time system and mission case insensitive.
   for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = std::toupper(*itor);
@@ -158,18 +156,15 @@ void PSearchApp::run() {
   std::string leap_sec_file = pars["leapsecfile"];
   timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
 
-  using namespace pulsarDb;
-
-  // A TimingModel will be needed for several steps below.
-  TimingModel model;
-  SloppyEphChooser chooser;
-  EphComputer computer(model, chooser);
+  // Set up EphComputer for arrival time corrections.
+  pulsarDb::TimingModel model;
+  pulsarDb::SloppyEphChooser chooser;
+  pulsarDb::EphComputer computer(model, chooser);
   initEphComputer(pars, header, computer);
 
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool demod_bin = false;
   bool cancel_pdot = false;
-
   initTimeCorrection(pars, computer, demod_bin, cancel_pdot);
 
   // Set up event time representations.
@@ -178,27 +173,25 @@ void PSearchApp::run() {
   // Read GTI.
   std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
 
-  // Find TELAPSE from GTI extension.
-  double duration = 0.;
-  gti_table->getHeader()["TELAPSE"].get(duration);
-
+  // Compute time origin for periodicity search, both in AbsoluteTime and in double.
   AbsoluteTime abs_origin = computeTimeOrigin(pars, header, *gti_table, demod_bin, cancel_pdot, *evt_time_rep, computer);
+  double origin = computeTimeValue(abs_origin, *evt_time_rep);
 
+  // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
   updateEphComputer(abs_origin, computer);
 
+  // Get central frequency of periodicity search.
   double f_center = computer.choosePulsarEph(abs_origin).f0();
 
-  *evt_time_rep = abs_origin;
-  double origin = 0.;
-  evt_time_rep->get("TIME", origin);
-
-  // Compute frequency step from scan step and the Fourier resolution == 1. / duration.
+  // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
+  // where duration is taken from TELAPSE header keyword value in GTI extension.
+  double duration = 0.;
+  gti_table->getHeader()["TELAPSE"].get(duration);
   if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
   double f_step = scan_step / duration;
 
   // Choose which kind of test to create.
   std::string algorithm = pars["algorithm"];
-
   for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = std::toupper(*itor);
 
   // Create the proper test.
