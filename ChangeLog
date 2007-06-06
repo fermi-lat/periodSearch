@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Jun  6 15:31:02 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Move checking of TELESCOP keyword from run method to createTimeRep method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Jun  6 15:21:02 PDT 2007
 periodSearch/src/gtpsearch
 
