@@ -47,6 +47,8 @@ static const std::string s_cvs_id = "$Name:  $";
 
 class PSearchApp : public st_app::StApp {
   public:
+    typedef std::vector<const tip::Table *> table_cont_type;
+
     PSearchApp();
     virtual ~PSearchApp() throw();
     virtual void run();
@@ -58,6 +60,8 @@ class PSearchApp : public st_app::StApp {
 
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
+
+    void openEventFile(const st_app::AppParGroup & pars, table_cont_type & event_table_cont, table_cont_type & gti_table_cont);
 
     void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
 
@@ -129,7 +133,6 @@ void PSearchApp::run() {
   // Get parameters.
   std::string event_file = pars["evfile"];
   std::string out_file = pars["outfile"];
-  std::string event_extension = pars["evtable"];
   double scan_step = pars["scanstep"];
   long num_trials = pars["numtrials"];
   long num_bins = pars["numbins"];
@@ -138,11 +141,15 @@ void PSearchApp::run() {
   std::string title = pars["title"];
   bool clobber = pars["clobber"];
 
-  // Open the event file.
-  std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
+  // Open the event file(s).
+  table_cont_type event_table_cont;
+  table_cont_type gti_table_cont;
+  openEventFile(pars, event_table_cont, gti_table_cont);
+
+  const tip::Table * reference_table = event_table_cont.at(0);
 
   // Identify mission and time system from events extension.
-  const tip::Header & header(event_table->getHeader());
+  const tip::Header & reference_header(reference_table->getHeader());
 
   // Handle leap seconds.
   std::string leap_sec_file = pars["leapsecfile"];
@@ -152,7 +159,7 @@ void PSearchApp::run() {
   pulsarDb::TimingModel model;
   pulsarDb::SloppyEphChooser chooser;
   pulsarDb::EphComputer computer(model, chooser);
-  initEphComputer(pars, header, computer);
+  initEphComputer(pars, reference_header, computer);
 
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool demod_bin = false;
@@ -160,14 +167,15 @@ void PSearchApp::run() {
   initTimeCorrection(pars, computer, demod_bin, cancel_pdot);
 
   // Set up event time representations.
-  std::auto_ptr<TimeRep> evt_time_rep(createTimeRep("FILE", "FILE", "0.", header));
+  std::auto_ptr<TimeRep> reference_time_rep(createTimeRep("FILE", "FILE", "0.", reference_header));
 
   // Read GTI.
-  std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
+  const tip::Table * gti_table(gti_table_cont.at(0));
 
   // Compute time origin for periodicity search, both in AbsoluteTime and in double.
-  AbsoluteTime abs_origin = computeTimeOrigin(pars, header, *gti_table, demod_bin, cancel_pdot, *evt_time_rep, computer);
-  double origin = computeTimeValue(abs_origin, *evt_time_rep);
+  AbsoluteTime abs_origin = computeTimeOrigin(pars, reference_header, *gti_table, demod_bin, cancel_pdot, *reference_time_rep,
+    computer);
+  double origin = computeTimeValue(abs_origin, *reference_time_rep);
 
   // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
   updateEphComputer(abs_origin, computer);
@@ -187,25 +195,31 @@ void PSearchApp::run() {
   for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = std::toupper(*itor);
 
   // Create the proper test.
-  if (algorithm == "CHI2") 
+  if (algorithm == "CHI2")
     m_test = new ChiSquaredTest(f_center, f_step, num_trials, origin, num_bins, duration);
-  else if (algorithm == "H") 
+  else if (algorithm == "H")
     m_test = new HTest(f_center, f_step, num_trials, origin, num_bins, duration);
-  else if (algorithm == "Z2N") 
+  else if (algorithm == "Z2N")
     m_test = new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration);
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
-  // Iterate over table, filling the search/test object with temporal data.
-  for (tip::Table::ConstIterator itor = event_table->begin(); itor != event_table->end(); ++itor) {
-    // Get value from the table.
-    double evt_time = (*itor)[time_field].get();
+  for (table_cont_type::iterator table_itor = event_table_cont.begin(); table_itor != event_table_cont.end(); ++table_itor) {
+    const tip::Table * event_table = *table_itor;
+    const tip::Header & header(event_table->getHeader());
+    std::auto_ptr<TimeRep> evt_time_rep(createTimeRep("FILE", "FILE", "0.", header));
 
-    // Apply time corrections, convert back out to a double value.
-    AbsoluteTime abs_evt_time(applyTimeCorrection(evt_time, *evt_time_rep, computer, demod_bin, cancel_pdot));
-    evt_time = computeTimeValue(abs_evt_time, *evt_time_rep);
+    // Iterate over table, filling the search/test object with temporal data.
+    for (tip::Table::ConstIterator itor = event_table->begin(); itor != event_table->end(); ++itor) {
+      // Get value from the table.
+      double evt_time = (*itor)[time_field].get();
 
-    // Fill into the test.
-    m_test->fill(evt_time);
+      // Apply time corrections, convert back out to a double value.
+      AbsoluteTime abs_evt_time(applyTimeCorrection(evt_time, *evt_time_rep, computer, demod_bin, cancel_pdot));
+      evt_time = computeTimeValue(abs_evt_time, *evt_time_rep);
+
+      // Fill into the test.
+      m_test->fill(evt_time);
+    }
   }
 
   // Compute the statistics.
@@ -388,6 +402,37 @@ std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format
   return time_rep;
 }
 
+void PSearchApp::openEventFile(const st_app::AppParGroup & pars, table_cont_type & event_table_cont,
+  table_cont_type & gti_table_cont) {
+  std::string event_file = pars["evfile"];
+  std::string event_extension = pars["evtable"];
+
+  // Clear out any gti tables already in gti_table_cont.
+  for (table_cont_type::reverse_iterator itor = gti_table_cont.rbegin(); itor != gti_table_cont.rend(); ++itor) {
+    delete *itor;
+  }
+  gti_table_cont.clear();
+
+  // Clear out any event tables already in event_table_cont.
+  for (table_cont_type::reverse_iterator itor = event_table_cont.rbegin(); itor != event_table_cont.rend(); ++itor) {
+    delete *itor;
+  }
+  event_table_cont.clear();
+
+  // Open the event table.
+  const tip::Table * event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
+
+  // Add the table to the container.
+  event_table_cont.push_back(event_table);
+
+  // Open the GTI table.
+  const tip::Table * gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
+
+  // Add the table to the container.
+  gti_table_cont.push_back(gti_table);
+
+}
+
 void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer) {
   using namespace periodSearch;
   using namespace pulsarDb;
@@ -415,9 +460,9 @@ void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::He
       double f0 = pars["f0"];
       double f1 = pars["f1"];
       double f2 = pars["f2"];
-  
+
       if (0. >= f0) throw std::runtime_error("Frequency must be positive.");
-  
+
       // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
       PulsarEphCont & ephemerides(computer.getPulsarEphCont());
       ephemerides.push_back(FrequencyEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, f0, f1, f2).clone());
@@ -425,9 +470,9 @@ void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::He
       double p0 = pars["p0"];
       double p1 = pars["p1"];
       double p2 = pars["p2"];
-  
+
       if (0. >= p0) throw std::runtime_error("Period must be positive.");
-  
+
       // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
       PulsarEphCont & ephemerides(computer.getPulsarEphCont());
       ephemerides.push_back(PeriodEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, p0, p1, p2).clone());
@@ -511,7 +556,7 @@ AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, con
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
-  
+
   return abs_origin;
 }
 
@@ -531,7 +576,7 @@ void PSearchApp::initTimeCorrection(const st_app::AppParGroup & pars, const puls
   bool & demod_bin, bool & cancel_pdot) {
   std::string demod_bin_string = pars["demodbin"];
   for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
-  
+
   // Determine whether to perform binary demodulation.
   demod_bin = false;
   if (demod_bin_string != "NO") {
