@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Mon Jun 11 13:19:12 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Begin rationalizing event file handling. Add helper method openEventFile.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Jun  6 15:31:02 PDT 2007
 periodSearch/src/gtpsearch
 
