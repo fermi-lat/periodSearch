@@ -1,4 +1,19 @@
 ------------------------------------------------------------
+User: peachey  Mon Jun 18 14:23:56 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Split computeTimeOrigin into computeTimeBoundary (for getting start/stop times
+of data as AbsoluteTime objects) and computeTimeOrigin. Introduce target_time_rep for computing
+the time series to analyze. Use computed time boundaries instead of reading
+TELAPSE keyword in order to compute the duration of the data using the
+target_time_rep. Remove reference_time_rep and instead create time rep inside
+computeTimeBoundary using the correct header information (GTI or event).
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jun 13 13:00:48 PDT 2007
 periodSearch/pfiles
 
