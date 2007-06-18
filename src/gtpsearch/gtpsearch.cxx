@@ -178,6 +178,8 @@ void PSearchApp::run() {
   // Compute time origin for periodicity search, both in AbsoluteTime and in double.
 // START HERE
 // Note: "target time rep" is the common TimeRep used to compute the time series to be analyzed.
+// x replace the first two arguments of computeTimeBoundary method with event_table_cont and gti_table_cont.
+// x remove gti_table variable.
 // o another helper to determine the target TimeRep: always using MetRep using TDB unless no corrections. If no
 //     corrections, require all input files to have same time system and match target to input time system.
   AbsoluteTime abs_tstart(*target_time_rep);
