@@ -65,9 +65,12 @@ class PSearchApp : public st_app::StApp {
 
     void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
 
+    void computeTimeBoundary(const tip::Header & header, const tip::Table & gti_table,
+      bool demod_bin, bool cancel_pdot, pulsarDb::EphComputer & computer,
+      AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
+
     AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
-      const tip::Table & gti_table, bool demod_bin, bool cancel_pdot, timeSystem::TimeRep & time_rep,
-      pulsarDb::EphComputer & computer);
+      const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep);
 
     void updateEphComputer(const AbsoluteTime & abs_time, pulsarDb::EphComputer & computer);
 
@@ -166,16 +169,24 @@ void PSearchApp::run() {
   bool cancel_pdot = false;
   initTimeCorrection(pars, computer, demod_bin, cancel_pdot);
 
-  // Set up event time representations.
-  std::auto_ptr<TimeRep> reference_time_rep(createTimeRep("FILE", "FILE", "0.", reference_header));
+  // Set up target time representation, used to compute the time series to analyze.
+  std::auto_ptr<TimeRep> target_time_rep(createTimeRep("FILE", "FILE", "0.", reference_header));
 
   // Read GTI.
   const tip::Table * gti_table(gti_table_cont.at(0));
 
   // Compute time origin for periodicity search, both in AbsoluteTime and in double.
-  AbsoluteTime abs_origin = computeTimeOrigin(pars, reference_header, *gti_table, demod_bin, cancel_pdot, *reference_time_rep,
-    computer);
-  double origin = computeTimeValue(abs_origin, *reference_time_rep);
+// START HERE
+// Note: "target time rep" is the common TimeRep used to compute the time series to be analyzed.
+// o another helper to determine the target TimeRep: always using MetRep using TDB unless no corrections. If no
+//     corrections, require all input files to have same time system and match target to input time system.
+  AbsoluteTime abs_tstart(*target_time_rep);
+  AbsoluteTime abs_tstop(*target_time_rep);
+
+  computeTimeBoundary(reference_header, *gti_table, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
+
+  AbsoluteTime abs_origin = computeTimeOrigin(pars, reference_header, abs_tstart, abs_tstop, *target_time_rep);
+  double origin = computeTimeValue(abs_origin, *target_time_rep);
 
   // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
   updateEphComputer(abs_origin, computer);
@@ -184,10 +195,7 @@ void PSearchApp::run() {
   double f_center = computer.choosePulsarEph(abs_origin).f0();
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
-  // where duration is taken from TELAPSE header keyword value in GTI extension.
-  double duration = 0.;
-  gti_table->getHeader()["TELAPSE"].get(duration);
-  if (0. >= duration) throw std::runtime_error("TELAPSE for data is not positive!");
+  double duration = computeTimeValue(abs_tstop, *target_time_rep) - computeTimeValue(abs_tstart, *target_time_rep);
   double f_step = scan_step / duration;
 
   // Choose which kind of test to create.
@@ -215,10 +223,10 @@ void PSearchApp::run() {
 
       // Apply time corrections, convert back out to a double value.
       AbsoluteTime abs_evt_time(applyTimeCorrection(evt_time, *evt_time_rep, computer, demod_bin, cancel_pdot));
-      evt_time = computeTimeValue(abs_evt_time, *evt_time_rep);
+      double target_evt_time = computeTimeValue(abs_evt_time, *target_time_rep);
 
       // Fill into the test.
-      m_test->fill(evt_time);
+      m_test->fill(target_evt_time);
     }
   }
 
@@ -503,11 +511,12 @@ void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::He
   }
 }
 
-AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
-  const tip::Table & gti_table, bool demod_bin, bool cancel_pdot, timeSystem::TimeRep & time_rep,
-  pulsarDb::EphComputer & computer) {
+void PSearchApp::computeTimeBoundary(const tip::Header & header, const tip::Table & gti_table,
+  bool demod_bin, bool cancel_pdot, pulsarDb::EphComputer & computer,
+  AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
   double tstart = 0.;
   double tstop = 0.;
+  std::auto_ptr<TimeRep> time_rep(0);
 
   // If possible, get tstart and tstop from first and last interval in GTI extension.
   tip::Table::ConstIterator gti_itor = gti_table.begin();
@@ -518,16 +527,27 @@ AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, con
     gti_itor = gti_table.end();
     --gti_itor;
     tstop = (*gti_itor)["STOP"].get();
+
+    // Set up event time representation using GTI header.
+    time_rep = createTimeRep("FILE", "FILE", "0.", gti_table.getHeader());
+
   } else {
     header["TSTART"].get(tstart);
     header["TSTOP"].get(tstop);
+
+    // Set up event time representation using header.
+    time_rep = createTimeRep("FILE", "FILE", "0.", header);
   }
 
   // Set up start time of observation (data set). Apply necessary corrections.
-  AbsoluteTime abs_tstart(applyTimeCorrection(tstart, time_rep, computer, demod_bin, cancel_pdot));
+  abs_tstart = applyTimeCorrection(tstart, *time_rep, computer, demod_bin, cancel_pdot);
 
   // Set up stop time of observation (data set). Apply necessary corrections.
-  AbsoluteTime abs_tstop(applyTimeCorrection(tstop, time_rep, computer, demod_bin, cancel_pdot));
+  abs_tstop = applyTimeCorrection(tstop, *time_rep, computer, demod_bin, cancel_pdot);
+}
+
+AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
+  const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep) {
 
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
@@ -541,8 +561,8 @@ AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, con
     abs_origin = abs_tstop;
   } else if (origin_style == "MIDDLE") {
     // Use the center of the observation as the time origin.
-    tstart = computeTimeValue(abs_tstart, time_rep);
-    tstop = computeTimeValue(abs_tstop, time_rep);
+    double tstart = computeTimeValue(abs_tstart, time_rep);
+    double tstop = computeTimeValue(abs_tstop, time_rep);
     time_rep.set("TIME", .5 * (tstart + tstop));
     abs_origin = time_rep;
   } else if (origin_style == "USER") {
