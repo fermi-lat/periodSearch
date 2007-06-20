@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Jun 20 13:50:26 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use container of GTIs to determine time boundaries of observation. Do not
+use event extension TSTART/TSTOP.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Jun 18 15:39:42 PDT 2007
 periodSearch/src/gtpsearch
 
