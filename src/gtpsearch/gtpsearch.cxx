@@ -168,19 +168,29 @@ void PSearchApp::run() {
   bool cancel_pdot = false;
   initTimeCorrection(pars, computer, demod_bin, cancel_pdot);
 
-  // Set up target time representation, used to compute the time series to analyze.
-  std::auto_ptr<TimeRep> target_time_rep(createTimeRep("FILE", "FILE", "0.", reference_header));
-
-  // Compute time origin for periodicity search, both in AbsoluteTime and in double.
 // START HERE
 // Note: "target time rep" is the common TimeRep used to compute the time series to be analyzed.
 // o another helper to determine the target TimeRep: always using MetRep using TDB unless no corrections. If no
-//     corrections, require all input files to have same time system and match target to input time system.
-  AbsoluteTime abs_tstart(*target_time_rep);
-  AbsoluteTime abs_tstop(*target_time_rep);
+//     corrections, require all input files to have same time system and match target to input event time system.
 
+  // Determine start/stop of the observation interval in AbsoluteTime.
+  AbsoluteTime abs_tstart("TDB", Duration(0, 0.), Duration(0, 0.));
+  AbsoluteTime abs_tstop("TDB", Duration(0, 0.), Duration(0, 0.));
   computeTimeBoundary(gti_table_cont, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
 
+  // Set up target time representation, used to compute the time series to analyze.
+  std::string target_time_system = "TDB";
+  if (!demod_bin && !cancel_pdot) {
+    // TODO When multiple files are used, check to ensure all have same time system.
+    // For now one event file, automatically self-consistent:
+    reference_header["TIMESYS"].get(target_time_system);
+  }
+  // TODO: compute mjd_ref from abs_tstart.
+  Duration mjd_ref(51910, 64.184);
+  IntFracPair mjd_ref_int_frac = mjd_ref.getValue(Day);
+  std::auto_ptr<TimeRep> target_time_rep(new MetRep(target_time_system, mjd_ref_int_frac, 0.));
+
+  // Compute time origin for periodicity search, both in AbsoluteTime and in double.
   AbsoluteTime abs_origin = computeTimeOrigin(pars, reference_header, abs_tstart, abs_tstop, *target_time_rep);
   double origin = computeTimeValue(abs_origin, *target_time_rep);
 
