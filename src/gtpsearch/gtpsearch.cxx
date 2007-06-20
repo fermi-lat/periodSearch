@@ -65,9 +65,8 @@ class PSearchApp : public st_app::StApp {
 
     void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
 
-    void computeTimeBoundary(const tip::Header & header, const tip::Table & gti_table,
-      bool demod_bin, bool cancel_pdot, pulsarDb::EphComputer & computer,
-      AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
+    void computeTimeBoundary(const table_cont_type & gti_table_cont, bool demod_bin, bool cancel_pdot,
+      pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
 
     AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
       const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep);
@@ -172,20 +171,15 @@ void PSearchApp::run() {
   // Set up target time representation, used to compute the time series to analyze.
   std::auto_ptr<TimeRep> target_time_rep(createTimeRep("FILE", "FILE", "0.", reference_header));
 
-  // Read GTI.
-  const tip::Table * gti_table(gti_table_cont.at(0));
-
   // Compute time origin for periodicity search, both in AbsoluteTime and in double.
 // START HERE
 // Note: "target time rep" is the common TimeRep used to compute the time series to be analyzed.
-// x replace the first two arguments of computeTimeBoundary method with event_table_cont and gti_table_cont.
-// x remove gti_table variable.
 // o another helper to determine the target TimeRep: always using MetRep using TDB unless no corrections. If no
 //     corrections, require all input files to have same time system and match target to input time system.
   AbsoluteTime abs_tstart(*target_time_rep);
   AbsoluteTime abs_tstop(*target_time_rep);
 
-  computeTimeBoundary(reference_header, *gti_table, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
+  computeTimeBoundary(gti_table_cont, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
 
   AbsoluteTime abs_origin = computeTimeOrigin(pars, reference_header, abs_tstart, abs_tstop, *target_time_rep);
   double origin = computeTimeValue(abs_origin, *target_time_rep);
@@ -513,40 +507,48 @@ void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::He
   }
 }
 
-void PSearchApp::computeTimeBoundary(const tip::Header & header, const tip::Table & gti_table,
-  bool demod_bin, bool cancel_pdot, pulsarDb::EphComputer & computer,
-  AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
-  double tstart = 0.;
-  double tstop = 0.;
-  std::auto_ptr<TimeRep> time_rep(0);
+void PSearchApp::computeTimeBoundary(const PSearchApp::table_cont_type & gti_table_cont, bool demod_bin, bool cancel_pdot,
+  pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
+  bool candidate_found = false;
 
-  // If possible, get tstart and tstop from first and last interval in GTI extension.
-  tip::Table::ConstIterator gti_itor = gti_table.begin();
-  if (gti_itor != gti_table.end()) {
-    // TSTART is the start of the first interval.
-    tstart = (*gti_itor)["START"].get();
-    // TSTOP is from the stop of the last interval.
-    gti_itor = gti_table.end();
-    --gti_itor;
-    tstop = (*gti_itor)["STOP"].get();
+  // First, look for first and last times in the GTI.
+  for (table_cont_type::const_iterator itor = gti_table_cont.begin(); itor != gti_table_cont.end(); ++itor) {
+    const tip::Table & gti_table = *(*itor);
 
-    // Set up event time representation using GTI header.
-    time_rep = createTimeRep("FILE", "FILE", "0.", gti_table.getHeader());
+    // If possible, get tstart and tstop from first and last interval in GTI extension.
+    tip::Table::ConstIterator gti_itor = gti_table.begin();
+    if (gti_itor != gti_table.end()) {
+      // Get start of the first interval and stop of last interval in GTI.
+      double gti_start = (*gti_itor)["START"].get();
+      gti_itor = gti_table.end();
+      --gti_itor;
+      double gti_stop = (*gti_itor)["STOP"].get();
 
-  } else {
-    header["TSTART"].get(tstart);
-    header["TSTOP"].get(tstop);
+      // Set up event time representation using GTI header.
+      std::auto_ptr<TimeRep> time_rep(createTimeRep("FILE", "FILE", "0.", gti_table.getHeader()));
 
-    // Set up event time representation using header.
-    time_rep = createTimeRep("FILE", "FILE", "0.", header);
+      // Correct the time.
+      AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep, computer, demod_bin, cancel_pdot);
+      AbsoluteTime abs_gti_stop = applyTimeCorrection(gti_stop, *time_rep, computer, demod_bin, cancel_pdot);
+
+      if (candidate_found) {
+        // See if current interval extends the observation.
+        if (abs_gti_start < abs_tstart) abs_tstart = abs_gti_start;
+        if (abs_gti_stop > abs_tstop) abs_tstop = abs_gti_stop;
+      } else {
+        // First candidate is the current interval.
+        abs_tstart = abs_gti_start;
+        abs_tstop = abs_gti_stop;
+        candidate_found = true;
+      }
+    }
   }
 
-  // Set up start time of observation (data set). Apply necessary corrections.
-  abs_tstart = applyTimeCorrection(tstart, *time_rep, computer, demod_bin, cancel_pdot);
-
-  // Set up stop time of observation (data set). Apply necessary corrections.
-  abs_tstop = applyTimeCorrection(tstop, *time_rep, computer, demod_bin, cancel_pdot);
+  // In the unlikely event that there were no GTI files, no intervals in the GTI, and no event files, this is a
+  // serious problem.
+  if (!candidate_found) throw std::runtime_error("computeTimeBoundary: cannot determine start/stop of the observation interval");
 }
+
 
 AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
   const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep) {
