@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Jun 20 16:05:23 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Rationalizing creation of target_time_rep (need more work to complete).
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Jun 20 13:50:26 PDT 2007
 periodSearch/src/gtpsearch
 
