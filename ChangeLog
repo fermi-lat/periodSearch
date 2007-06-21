@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Jun 21 16:14:18 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Fix a bug in computing a value of the variable named origin, by using the correct TimeRep object.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Jun 21 15:40:13 PDT 2007
 periodSearch/src/gtpsearch
 
