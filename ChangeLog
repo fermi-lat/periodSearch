@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Jun 21 15:40:13 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Finish rationalizing creation of target_time_rep. The behavior of the tool slightly changed because of change in computing double-precision numbers of the time series.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Jun 21 15:29:05 PDT 2007
 periodSearch/src/gtpsearch
 
