@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Jun 21 15:29:05 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Rationalizing creation of target_time_rep(with the behavior of the tool preserved). Add two methods: determineTargetSystem and createMetRep.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Jun 20 16:05:23 PDT 2007
 periodSearch/src/gtpsearch
 
