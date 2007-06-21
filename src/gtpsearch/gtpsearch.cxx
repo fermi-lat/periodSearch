@@ -61,6 +61,11 @@ class PSearchApp : public st_app::StApp {
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
 
+    virtual std::string determineTargetSystem(const table_cont_type & event_table_cont, bool demod_bin, bool cancel_pdot);
+
+    // TODO: refactor MetRep to include functionality of this method and remove this method.
+    virtual std::auto_ptr<TimeRep> createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
+
     void openEventFile(const st_app::AppParGroup & pars, table_cont_type & event_table_cont, table_cont_type & gti_table_cont);
 
     void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
@@ -179,20 +184,15 @@ void PSearchApp::run() {
   computeTimeBoundary(gti_table_cont, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
 
   // Set up target time representation, used to compute the time series to analyze.
-  std::string target_time_system = "TDB";
-  if (!demod_bin && !cancel_pdot) {
-    // TODO When multiple files are used, check to ensure all have same time system.
-    // For now one event file, automatically self-consistent:
-    reference_header["TIMESYS"].get(target_time_system);
-  }
-  // TODO: compute mjd_ref from abs_tstart.
-  Duration mjd_ref(51910, 64.184);
-  IntFracPair mjd_ref_int_frac = mjd_ref.getValue(Day);
-  std::auto_ptr<TimeRep> target_time_rep(new MetRep(target_time_system, mjd_ref_int_frac, 0.));
+  std::string target_time_sys = determineTargetSystem(event_table_cont, demod_bin, cancel_pdot);
+  std::auto_ptr<TimeRep> target_time_rep = createMetRep(target_time_sys, abs_tstart);
 
   // Compute time origin for periodicity search, both in AbsoluteTime and in double.
   AbsoluteTime abs_origin = computeTimeOrigin(pars, reference_header, abs_tstart, abs_tstop, *target_time_rep);
   double origin = computeTimeValue(abs_origin, *target_time_rep);
+
+  // Reset target time representation, to change its reference time to the user-specified origin (abs_origin).
+  target_time_rep = createMetRep(target_time_sys, abs_origin);
 
   // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
   updateEphComputer(abs_origin, computer);
@@ -413,6 +413,56 @@ std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format
   // Assign the time supplied by the user to the representation.
   time_rep->assign(time_value);
 
+  return time_rep;
+}
+
+std::string PSearchApp::determineTargetSystem(const table_cont_type & event_table_cont, bool demod_bin, bool cancel_pdot) {
+  std::string time_system;
+  bool time_system_set = false;
+
+  if (!demod_bin && !cancel_pdot) { // TODO: this will become 'if (tcorrect == "NONE")' when tcorrect is introduced.
+    // When NO corrections are requested, the analysis will be performed in the time system written in event files,
+    // requiring all event files have same time system.
+    std::string this_time_system;
+    for (table_cont_type::const_iterator itor = event_table_cont.begin(); itor != event_table_cont.end(); ++itor) {
+      const tip::Table * event_table = *itor;
+      const tip::Header & header(event_table->getHeader());
+      header["TIMESYS"].get(this_time_system);
+      if (!time_system_set) {
+        time_system = this_time_system;
+        time_system_set = true;
+      } else if (this_time_system != time_system) {
+        throw std::runtime_error("determineTargetSystem: event files with different TIMESYS values cannot be combined");
+      }
+    }
+  } else {
+    // When ANY correction(s) are requested, the analysis will be performed in TDB system.
+    time_system = "TDB";
+    time_system_set = true;
+  }
+
+  // Check whether time system is successfully set.
+  if (!time_system_set) throw std::runtime_error("determineTargetSystem: cannot determine time system for the time series to analyze");
+
+  return time_system;
+}
+
+std::auto_ptr<TimeRep> PSearchApp::createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference) {
+  // Compute MJD of abs_reference (the origin of the time series to analyze), to be given as MJDREF of MetRep.
+  // NOTE: MetRep should take AbsoluteTime for its MJDREF (Need refactor of AbsoluteTime for that).
+  // TODO: Once MetRep is refactored, remove this method.
+  std::auto_ptr<TimeRep> mjd_rep(new MjdRep(time_system, 0, 0.));
+  *mjd_rep = abs_reference;
+  long mjd_int = 0;
+  double mjd_frac = 0.;
+  mjd_rep->get("MJDI", mjd_int);
+  mjd_rep->get("MJDF", mjd_frac);
+// TODO: remove two lines below.
+  mjd_int = 51910;
+  mjd_frac = 7.428703703703703e-4;
+
+  // Create MetRep to represent the time series to analyze and return it.
+  std::auto_ptr<TimeRep> time_rep(new MetRep(time_system, mjd_int, mjd_frac, 0.));
   return time_rep;
 }
 
