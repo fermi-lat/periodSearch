@@ -187,12 +187,14 @@ void PSearchApp::run() {
   std::string target_time_sys = determineTargetSystem(event_table_cont, demod_bin, cancel_pdot);
   std::auto_ptr<TimeRep> target_time_rep = createMetRep(target_time_sys, abs_tstart);
 
-  // Compute time origin for periodicity search, both in AbsoluteTime and in double.
+  // Compute time origin for periodicity search in AbsoluteTime.
   AbsoluteTime abs_origin = computeTimeOrigin(pars, reference_header, abs_tstart, abs_tstop, *target_time_rep);
-  double origin = computeTimeValue(abs_origin, *target_time_rep);
 
   // Reset target time representation, to change its reference time to the user-specified origin (abs_origin).
   target_time_rep = createMetRep(target_time_sys, abs_origin);
+
+  // Compute time origin for periodicity search in double.
+  double origin = computeTimeValue(abs_origin, *target_time_rep);
 
   // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
   updateEphComputer(abs_origin, computer);
