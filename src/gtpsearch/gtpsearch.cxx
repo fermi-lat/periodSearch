@@ -457,9 +457,6 @@ std::auto_ptr<TimeRep> PSearchApp::createMetRep(const std::string & time_system,
   double mjd_frac = 0.;
   mjd_rep->get("MJDI", mjd_int);
   mjd_rep->get("MJDF", mjd_frac);
-// TODO: remove two lines below.
-  mjd_int = 51910;
-  mjd_frac = 7.428703703703703e-4;
 
   // Create MetRep to represent the time series to analyze and return it.
   std::auto_ptr<TimeRep> time_rep(new MetRep(time_system, mjd_int, mjd_frac, 0.));
