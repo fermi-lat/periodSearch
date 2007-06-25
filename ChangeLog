@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Jun 25 13:56:59 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add place holders for barycentering-on-the-fly feature to be implmented in the future: request_bary and correct_bary variables, cheking of event and gti header for TIMEREF keyword value.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Jun 21 16:14:18 PDT 2007
 periodSearch/src/gtpsearch
 
