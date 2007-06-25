@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Jun 25 16:03:10 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add new method needBaryCorrection to eliminate duplicated checking of TIMEREF keyword value.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Jun 25 13:56:59 PDT 2007
 periodSearch/src/gtpsearch
 
