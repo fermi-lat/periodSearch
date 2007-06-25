@@ -79,6 +79,8 @@ class PSearchApp : public st_app::StApp {
 
     void updateEphComputer(const AbsoluteTime & abs_time, pulsarDb::EphComputer & computer);
 
+    bool needBaryCorrection(const tip::Header & header);
+
     void initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
       bool & request_bary, bool & demod_bin, bool & cancel_pdot);
 
@@ -227,10 +229,7 @@ void PSearchApp::run() {
     std::auto_ptr<TimeRep> evt_time_rep(createTimeRep("FILE", "FILE", "0.", header));
 
     // Determine whether to perform barycentric correction.
-    // TODO: Remove duplication of the following codes.
-    std::string time_ref;
-    header["TIMEREF"].get(time_ref);
-    bool correct_bary = request_bary && ("SOLARSYSTEM" != time_ref);
+    bool correct_bary = request_bary && needBaryCorrection(header);
 
     // Iterate over table, filling the search/test object with temporal data.
     for (tip::Table::ConstIterator itor = event_table->begin(); itor != event_table->end(); ++itor) {
@@ -597,10 +596,7 @@ void PSearchApp::computeTimeBoundary(const PSearchApp::table_cont_type & gti_tab
       std::auto_ptr<TimeRep> time_rep(createTimeRep("FILE", "FILE", "0.", header));
 
       // Determine whether to perform barycentric correction.
-      // TODO: Remove duplication of the following codes.
-      std::string time_ref;
-      header["TIMEREF"].get(time_ref);
-      bool correct_bary = request_bary && ("SOLARSYSTEM" != time_ref);
+      bool correct_bary = request_bary && needBaryCorrection(header);
 
       // Correct the time.
       AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep, computer, correct_bary, demod_bin, cancel_pdot);
@@ -669,6 +665,15 @@ void PSearchApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::Ep
   PulsarEphCont & ephemerides(computer.getPulsarEphCont());
   ephemerides.clear();
   ephemerides.push_back(eph->clone());
+}
+
+bool PSearchApp::needBaryCorrection(const tip::Header & header) {
+  // Read TIMEREF keyword value.
+  std::string time_ref;
+  header["TIMEREF"].get(time_ref);
+
+  // Return true if file with this header needs barycenteric corrections when requested.
+  return ("SOLARSYSTEM" != time_ref);
 }
 
 void PSearchApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
