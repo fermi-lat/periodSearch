@@ -61,7 +61,8 @@ class PSearchApp : public st_app::StApp {
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
 
-    virtual std::string determineTargetSystem(const table_cont_type & event_table_cont, bool demod_bin, bool cancel_pdot);
+    virtual std::string determineTargetSystem(const table_cont_type & event_table_cont, bool request_bary, bool demod_bin,
+      bool cancel_pdot);
 
     // TODO: refactor MetRep to include functionality of this method and remove this method.
     virtual std::auto_ptr<TimeRep> createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
@@ -70,7 +71,7 @@ class PSearchApp : public st_app::StApp {
 
     void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
 
-    void computeTimeBoundary(const table_cont_type & gti_table_cont, bool demod_bin, bool cancel_pdot,
+    void computeTimeBoundary(const table_cont_type & gti_table_cont, bool request_bary, bool demod_bin, bool cancel_pdot,
       pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
 
     AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
@@ -79,10 +80,10 @@ class PSearchApp : public st_app::StApp {
     void updateEphComputer(const AbsoluteTime & abs_time, pulsarDb::EphComputer & computer);
 
     void initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
-      bool & demod_bin, bool & cancel_pdot);
+      bool & request_bary, bool & demod_bin, bool & cancel_pdot);
 
     AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer,
-      bool demod_bin, bool cancel_pdot);
+      bool correct_bary, bool demod_bin, bool cancel_pdot);
 
     double computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep);
 
@@ -169,9 +170,10 @@ void PSearchApp::run() {
   initEphComputer(pars, reference_header, computer);
 
   // Use user input (parameters) together with computer to determine corrections to apply.
+  bool request_bary = false;
   bool demod_bin = false;
   bool cancel_pdot = false;
-  initTimeCorrection(pars, computer, demod_bin, cancel_pdot);
+  initTimeCorrection(pars, computer, request_bary, demod_bin, cancel_pdot);
 
 // START HERE
 // Note: "target time rep" is the common TimeRep used to compute the time series to be analyzed.
@@ -181,10 +183,10 @@ void PSearchApp::run() {
   // Determine start/stop of the observation interval in AbsoluteTime.
   AbsoluteTime abs_tstart("TDB", Duration(0, 0.), Duration(0, 0.));
   AbsoluteTime abs_tstop("TDB", Duration(0, 0.), Duration(0, 0.));
-  computeTimeBoundary(gti_table_cont, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
+  computeTimeBoundary(gti_table_cont, request_bary, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
 
   // Set up target time representation, used to compute the time series to analyze.
-  std::string target_time_sys = determineTargetSystem(event_table_cont, demod_bin, cancel_pdot);
+  std::string target_time_sys = determineTargetSystem(event_table_cont, request_bary, demod_bin, cancel_pdot);
   std::auto_ptr<TimeRep> target_time_rep = createMetRep(target_time_sys, abs_tstart);
 
   // Compute time origin for periodicity search in AbsoluteTime.
@@ -224,13 +226,19 @@ void PSearchApp::run() {
     const tip::Header & header(event_table->getHeader());
     std::auto_ptr<TimeRep> evt_time_rep(createTimeRep("FILE", "FILE", "0.", header));
 
+    // Determine whether to perform barycentric correction.
+    // TODO: Remove duplication of the following codes.
+    std::string time_ref;
+    header["TIMEREF"].get(time_ref);
+    bool correct_bary = request_bary && ("SOLARSYSTEM" != time_ref);
+
     // Iterate over table, filling the search/test object with temporal data.
     for (tip::Table::ConstIterator itor = event_table->begin(); itor != event_table->end(); ++itor) {
       // Get value from the table.
       double evt_time = (*itor)[time_field].get();
 
       // Apply time corrections, convert back out to a double value.
-      AbsoluteTime abs_evt_time(applyTimeCorrection(evt_time, *evt_time_rep, computer, demod_bin, cancel_pdot));
+      AbsoluteTime abs_evt_time(applyTimeCorrection(evt_time, *evt_time_rep, computer, correct_bary, demod_bin, cancel_pdot));
       double target_evt_time = computeTimeValue(abs_evt_time, *target_time_rep);
 
       // Fill into the test.
@@ -418,11 +426,12 @@ std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format
   return time_rep;
 }
 
-std::string PSearchApp::determineTargetSystem(const table_cont_type & event_table_cont, bool demod_bin, bool cancel_pdot) {
+std::string PSearchApp::determineTargetSystem(const table_cont_type & event_table_cont, bool request_bary, bool demod_bin,
+  bool cancel_pdot) {
   std::string time_system;
   bool time_system_set = false;
 
-  if (!demod_bin && !cancel_pdot) { // TODO: this will become 'if (tcorrect == "NONE")' when tcorrect is introduced.
+  if (!request_bary && !demod_bin && !cancel_pdot) { // TODO: this will become 'if (tcorrect == "NONE")' when tcorrect is introduced.
     // When NO corrections are requested, the analysis will be performed in the time system written in event files,
     // requiring all event files have same time system.
     std::string this_time_system;
@@ -566,13 +575,14 @@ void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::He
   }
 }
 
-void PSearchApp::computeTimeBoundary(const PSearchApp::table_cont_type & gti_table_cont, bool demod_bin, bool cancel_pdot,
-  pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
+void PSearchApp::computeTimeBoundary(const PSearchApp::table_cont_type & gti_table_cont, bool request_bary, bool demod_bin,
+  bool cancel_pdot, pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
   bool candidate_found = false;
 
   // First, look for first and last times in the GTI.
   for (table_cont_type::const_iterator itor = gti_table_cont.begin(); itor != gti_table_cont.end(); ++itor) {
     const tip::Table & gti_table = *(*itor);
+    const tip::Header & header(gti_table.getHeader());
 
     // If possible, get tstart and tstop from first and last interval in GTI extension.
     tip::Table::ConstIterator gti_itor = gti_table.begin();
@@ -584,11 +594,17 @@ void PSearchApp::computeTimeBoundary(const PSearchApp::table_cont_type & gti_tab
       double gti_stop = (*gti_itor)["STOP"].get();
 
       // Set up event time representation using GTI header.
-      std::auto_ptr<TimeRep> time_rep(createTimeRep("FILE", "FILE", "0.", gti_table.getHeader()));
+      std::auto_ptr<TimeRep> time_rep(createTimeRep("FILE", "FILE", "0.", header));
+
+      // Determine whether to perform barycentric correction.
+      // TODO: Remove duplication of the following codes.
+      std::string time_ref;
+      header["TIMEREF"].get(time_ref);
+      bool correct_bary = request_bary && ("SOLARSYSTEM" != time_ref);
 
       // Correct the time.
-      AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep, computer, demod_bin, cancel_pdot);
-      AbsoluteTime abs_gti_stop = applyTimeCorrection(gti_stop, *time_rep, computer, demod_bin, cancel_pdot);
+      AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep, computer, correct_bary, demod_bin, cancel_pdot);
+      AbsoluteTime abs_gti_stop = applyTimeCorrection(gti_stop, *time_rep, computer, correct_bary, demod_bin, cancel_pdot);
 
       if (candidate_found) {
         // See if current interval extends the observation.
@@ -656,7 +672,11 @@ void PSearchApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::Ep
 }
 
 void PSearchApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
-  bool & demod_bin, bool & cancel_pdot) {
+  bool & request_bary, bool & demod_bin, bool & cancel_pdot) {
+  // Determine whether to request barycentric correction.
+  // TODO: Read tcorrect parameter and set request_bary unless tcorrect == NONE.
+  request_bary = false;
+
   std::string demod_bin_string = pars["demodbin"];
   for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
 
@@ -677,7 +697,7 @@ void PSearchApp::initTimeCorrection(const st_app::AppParGroup & pars, const puls
 }
 
 AbsoluteTime PSearchApp::applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer,
-  bool demod_bin, bool cancel_pdot) {
+  bool correct_bary, bool demod_bin, bool cancel_pdot) {
   // Assign the value to the time representation.
   time_rep.set("TIME", time_value);
 
@@ -685,6 +705,7 @@ AbsoluteTime PSearchApp::applyTimeCorrection(double time_value, TimeRep & time_r
   AbsoluteTime abs_time(time_rep);
 
   // Apply selected corrections.
+  if (correct_bary) throw std::runtime_error("Automatic barycentric correction not implemented.");
   if (demod_bin) computer.demodulateBinary(abs_time);
   if (cancel_pdot) computer.cancelPdot(abs_time);
 
