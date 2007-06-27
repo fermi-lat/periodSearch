@@ -59,18 +59,17 @@ class PToolApp : public st_app::StApp {
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
 
-    virtual std::string determineTargetSystem(const table_cont_type & event_table_cont, bool request_bary, bool demod_bin,
-      bool cancel_pdot);
+    virtual std::string determineTargetSystem(bool request_bary, bool demod_bin, bool cancel_pdot);
 
     // TODO: refactor MetRep to include functionality of this method and remove this method.
     virtual std::auto_ptr<TimeRep> createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
 
-    void openEventFile(const st_app::AppParGroup & pars, table_cont_type & event_table_cont, table_cont_type & gti_table_cont);
+    void openEventFile(const st_app::AppParGroup & pars);
 
     void initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphComputer & computer);
 
-    void computeTimeBoundary(const table_cont_type & gti_table_cont, bool request_bary, bool demod_bin, bool cancel_pdot,
-      pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
+    void computeTimeBoundary(bool request_bary, bool demod_bin, bool cancel_pdot, pulsarDb::EphComputer & computer,
+      AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
 
     AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop,
       timeSystem::TimeRep & time_rep);
@@ -87,15 +86,17 @@ class PToolApp : public st_app::StApp {
 
     double computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep);
 
-    void setFirstEvent(table_cont_type & event_table_cont, const std::string & time_field, bool & request_bary);
+    void setFirstEvent(const std::string & time_field, bool & request_bary);
 
-    void setNextEvent(table_cont_type & event_table_cont, bool & request_bary);
+    void setNextEvent(bool & request_bary);
 
-    bool isEndOfEventList(table_cont_type & event_table_cont);
+    bool isEndOfEventList();
 
     AbsoluteTime getEventTime(const pulsarDb::EphComputer & computer, bool & demod_bin, bool & cancel_pdot);
 
   private:
+    table_cont_type m_event_table_cont;
+    table_cont_type m_gti_table_cont;
     const tip::Header * m_reference_header;
 
     table_cont_type::iterator m_table_itor;
@@ -105,7 +106,7 @@ class PToolApp : public st_app::StApp {
     std::auto_ptr<TimeRep> m_event_time_rep;
     bool m_correct_bary;
 
-    void setupEventTable(table_cont_type & event_table, bool & request_bary);
+    void setupEventTable(bool & request_bary);
 };
 
 class PSearchApp : public PToolApp {
@@ -182,9 +183,7 @@ void PSearchApp::run() {
   bool clobber = pars["clobber"];
 
   // Open the event file(s).
-  table_cont_type event_table_cont;
-  table_cont_type gti_table_cont;
-  openEventFile(pars, event_table_cont, gti_table_cont);
+  openEventFile(pars);
 
   // Handle leap seconds.
   std::string leap_sec_file = pars["leapsecfile"];
@@ -210,10 +209,10 @@ void PSearchApp::run() {
   // Determine start/stop of the observation interval in AbsoluteTime.
   AbsoluteTime abs_tstart("TDB", Duration(0, 0.), Duration(0, 0.));
   AbsoluteTime abs_tstop("TDB", Duration(0, 0.), Duration(0, 0.));
-  computeTimeBoundary(gti_table_cont, request_bary, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
+  computeTimeBoundary(request_bary, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
 
   // Set up target time representation, used to compute the time series to analyze.
-  std::string target_time_sys = determineTargetSystem(event_table_cont, request_bary, demod_bin, cancel_pdot);
+  std::string target_time_sys = determineTargetSystem(request_bary, demod_bin, cancel_pdot);
   std::auto_ptr<TimeRep> target_time_rep = createMetRep(target_time_sys, abs_tstart);
 
   // Compute time origin for periodicity search in AbsoluteTime.
@@ -248,8 +247,7 @@ void PSearchApp::run() {
     m_test = new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration);
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
-  for (setFirstEvent(event_table_cont, time_field, request_bary); !isEndOfEventList(event_table_cont);
-       setNextEvent(event_table_cont, request_bary)) {
+  for (setFirstEvent(time_field, request_bary); !isEndOfEventList(); setNextEvent(request_bary)) {
     // Get event time as AbsoluteTime.
     AbsoluteTime abs_evt_time(getEventTime(computer, demod_bin, cancel_pdot));
 
@@ -446,8 +444,7 @@ std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, 
   return time_rep;
 }
 
-std::string PToolApp::determineTargetSystem(const table_cont_type & event_table_cont, bool request_bary, bool demod_bin,
-  bool cancel_pdot) {
+std::string PToolApp::determineTargetSystem(bool request_bary, bool demod_bin, bool cancel_pdot) {
   std::string time_system;
   bool time_system_set = false;
 
@@ -455,7 +452,7 @@ std::string PToolApp::determineTargetSystem(const table_cont_type & event_table_
     // When NO corrections are requested, the analysis will be performed in the time system written in event files,
     // requiring all event files have same time system.
     std::string this_time_system;
-    for (table_cont_type::const_iterator itor = event_table_cont.begin(); itor != event_table_cont.end(); ++itor) {
+    for (table_cont_type::const_iterator itor = m_event_table_cont.begin(); itor != m_event_table_cont.end(); ++itor) {
       const tip::Table * event_table = *itor;
       const tip::Header & header(event_table->getHeader());
       header["TIMESYS"].get(this_time_system);
@@ -494,37 +491,36 @@ std::auto_ptr<TimeRep> PToolApp::createMetRep(const std::string & time_system, c
   return time_rep;
 }
 
-void PToolApp::openEventFile(const st_app::AppParGroup & pars, table_cont_type & event_table_cont,
-  table_cont_type & gti_table_cont) {
+void PToolApp::openEventFile(const st_app::AppParGroup & pars) {
   std::string event_file = pars["evfile"];
   std::string event_extension = pars["evtable"];
 
   // Clear out any gti tables already in gti_table_cont.
-  for (table_cont_type::reverse_iterator itor = gti_table_cont.rbegin(); itor != gti_table_cont.rend(); ++itor) {
+  for (table_cont_type::reverse_iterator itor = m_gti_table_cont.rbegin(); itor != m_gti_table_cont.rend(); ++itor) {
     delete *itor;
   }
-  gti_table_cont.clear();
+  m_gti_table_cont.clear();
 
   // Clear out any event tables already in event_table_cont.
-  for (table_cont_type::reverse_iterator itor = event_table_cont.rbegin(); itor != event_table_cont.rend(); ++itor) {
+  for (table_cont_type::reverse_iterator itor = m_event_table_cont.rbegin(); itor != m_event_table_cont.rend(); ++itor) {
     delete *itor;
   }
-  event_table_cont.clear();
+  m_event_table_cont.clear();
 
   // Open the event table.
   const tip::Table * event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
 
   // Add the table to the container.
-  event_table_cont.push_back(event_table);
+  m_event_table_cont.push_back(event_table);
 
   // Open the GTI table.
   const tip::Table * gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
 
   // Add the table to the container.
-  gti_table_cont.push_back(gti_table);
+  m_gti_table_cont.push_back(gti_table);
 
   // Select and set reference header.
-  const tip::Table * reference_table = event_table_cont.at(0);
+  const tip::Table * reference_table = m_event_table_cont.at(0);
   m_reference_header = &(reference_table->getHeader());
 }
 
@@ -598,12 +594,12 @@ void PToolApp::initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphCo
   }
 }
 
-void PToolApp::computeTimeBoundary(const PToolApp::table_cont_type & gti_table_cont, bool request_bary, bool demod_bin,
-  bool cancel_pdot, pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
+void PToolApp::computeTimeBoundary(bool request_bary, bool demod_bin, bool cancel_pdot, pulsarDb::EphComputer & computer,
+  AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
   bool candidate_found = false;
 
   // First, look for first and last times in the GTI.
-  for (table_cont_type::const_iterator itor = gti_table_cont.begin(); itor != gti_table_cont.end(); ++itor) {
+  for (table_cont_type::const_iterator itor = m_gti_table_cont.begin(); itor != m_gti_table_cont.end(); ++itor) {
     const tip::Table & gti_table = *(*itor);
     const tip::Header & header(gti_table.getHeader());
 
@@ -753,21 +749,18 @@ double PToolApp::computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_
   return time_value;
 }
 
-void PToolApp::setFirstEvent(table_cont_type & event_table_cont, const std::string & time_field, bool & request_bary) {
-  // Terminate if no event table is given.
-  if (event_table_cont.empty()) throw std::runtime_error("No event table given");
-
+void PToolApp::setFirstEvent(const std::string & time_field, bool & request_bary) {
   // Set event table iterator.
-  m_table_itor = event_table_cont.begin();
+  m_table_itor = m_event_table_cont.begin();
 
   // Setup current event table.
-  setupEventTable(event_table_cont, request_bary);
+  setupEventTable(request_bary);
 
   // Set name of TIME column to analyze.
   m_time_field = time_field;
 }
 
-void PToolApp::setNextEvent(table_cont_type & event_table_cont, bool & request_bary) {
+void PToolApp::setNextEvent(bool & request_bary) {
   // Increment event record iterator.
   ++m_event_itor;
 
@@ -777,12 +770,12 @@ void PToolApp::setNextEvent(table_cont_type & event_table_cont, bool & request_b
     ++m_table_itor;
 
     // Setup new event table.
-    setupEventTable(event_table_cont, request_bary);
+    setupEventTable(request_bary);
   }
 }
 
-bool PToolApp::isEndOfEventList(table_cont_type & event_table_cont) {
-  return (m_table_itor == event_table_cont.end());
+bool PToolApp::isEndOfEventList() {
+  return (m_table_itor == m_event_table_cont.end());
 }
 
 AbsoluteTime PToolApp::getEventTime(const pulsarDb::EphComputer & computer, bool & demod_bin, bool & cancel_pdot) {
@@ -793,9 +786,9 @@ AbsoluteTime PToolApp::getEventTime(const pulsarDb::EphComputer & computer, bool
   return AbsoluteTime(applyTimeCorrection(event_time, *m_event_time_rep, computer, m_correct_bary, demod_bin, cancel_pdot));
 }
 
-void PToolApp::setupEventTable(table_cont_type & event_table_cont, bool & request_bary) {
+void PToolApp::setupEventTable(bool & request_bary) {
   // Check whether event table iterator reaches to the end of table.
-  if (m_table_itor != event_table_cont.end()) {
+  if (m_table_itor != m_event_table_cont.end()) {
     // Get current event table and its header.
     const tip::Table * event_table = *m_table_itor;
     const tip::Header & header(event_table->getHeader());
