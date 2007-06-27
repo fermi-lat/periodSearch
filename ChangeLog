@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Jun 27 13:53:36 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add methods for event looping (and their helper methods) to PToolApp, to encapsulate handling of raw event time in PToolApp class.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Jun 27 10:25:21 PDT 2007
 periodSearch/src/gtpsearch
 
