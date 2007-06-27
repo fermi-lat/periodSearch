@@ -45,15 +45,17 @@ using namespace timeSystem;
 
 static const std::string s_cvs_id = "$Name:  $";
 
-class PSearchApp : public st_app::StApp {
+class PToolApp : public st_app::StApp {
   public:
     typedef std::vector<const tip::Table *> table_cont_type;
 
-    PSearchApp();
-    virtual ~PSearchApp() throw();
+#if 0
+    PToolApp();
+    virtual ~PToolApp() throw();
     virtual void run();
 
     virtual void prompt(st_app::AppParGroup & pars);
+#endif
 
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value);
@@ -88,6 +90,15 @@ class PSearchApp : public st_app::StApp {
       bool correct_bary, bool demod_bin, bool cancel_pdot);
 
     double computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep);
+};
+
+class PSearchApp : public PToolApp {
+  public:
+    PSearchApp();
+    virtual ~PSearchApp() throw();
+    virtual void run();
+
+    virtual void prompt(st_app::AppParGroup & pars);
 
     const std::string & getDataDir();
 
@@ -359,7 +370,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Save();
 }
 
-std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format, const std::string & time_system,
+std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, const std::string & time_system,
   const std::string & time_value) {
   std::auto_ptr<TimeRep> time_rep(0);
 
@@ -385,7 +396,7 @@ std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format
   return time_rep;
 }
 
-std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format, const std::string & time_system,
+std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, const std::string & time_system,
   const std::string & time_value, const tip::Header & header) {
   std::auto_ptr<TimeRep> time_rep(0);
 
@@ -425,7 +436,7 @@ std::auto_ptr<TimeRep> PSearchApp::createTimeRep(const std::string & time_format
   return time_rep;
 }
 
-std::string PSearchApp::determineTargetSystem(const table_cont_type & event_table_cont, bool request_bary, bool demod_bin,
+std::string PToolApp::determineTargetSystem(const table_cont_type & event_table_cont, bool request_bary, bool demod_bin,
   bool cancel_pdot) {
   std::string time_system;
   bool time_system_set = false;
@@ -457,7 +468,7 @@ std::string PSearchApp::determineTargetSystem(const table_cont_type & event_tabl
   return time_system;
 }
 
-std::auto_ptr<TimeRep> PSearchApp::createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference) {
+std::auto_ptr<TimeRep> PToolApp::createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference) {
   // Compute MJD of abs_reference (the origin of the time series to analyze), to be given as MJDREF of MetRep.
   // NOTE: MetRep should take AbsoluteTime for its MJDREF (Need refactor of AbsoluteTime for that).
   // TODO: Once MetRep is refactored, remove this method.
@@ -473,7 +484,7 @@ std::auto_ptr<TimeRep> PSearchApp::createMetRep(const std::string & time_system,
   return time_rep;
 }
 
-void PSearchApp::openEventFile(const st_app::AppParGroup & pars, table_cont_type & event_table_cont,
+void PToolApp::openEventFile(const st_app::AppParGroup & pars, table_cont_type & event_table_cont,
   table_cont_type & gti_table_cont) {
   std::string event_file = pars["evfile"];
   std::string event_extension = pars["evtable"];
@@ -504,7 +515,7 @@ void PSearchApp::openEventFile(const st_app::AppParGroup & pars, table_cont_type
 
 }
 
-void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer) {
+void PToolApp::initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer) {
   using namespace periodSearch;
   using namespace pulsarDb;
 
@@ -574,7 +585,7 @@ void PSearchApp::initEphComputer(const st_app::AppParGroup & pars, const tip::He
   }
 }
 
-void PSearchApp::computeTimeBoundary(const PSearchApp::table_cont_type & gti_table_cont, bool request_bary, bool demod_bin,
+void PToolApp::computeTimeBoundary(const PToolApp::table_cont_type & gti_table_cont, bool request_bary, bool demod_bin,
   bool cancel_pdot, pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
   bool candidate_found = false;
 
@@ -621,7 +632,7 @@ void PSearchApp::computeTimeBoundary(const PSearchApp::table_cont_type & gti_tab
 }
 
 
-AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
+AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
   const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep) {
 
   // Handle styles of origin input.
@@ -655,7 +666,7 @@ AbsoluteTime PSearchApp::computeTimeOrigin(const st_app::AppParGroup & pars, con
   return abs_origin;
 }
 
-void PSearchApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::EphComputer & computer) {
+void PToolApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::EphComputer & computer) {
   using namespace pulsarDb;
 
   // Compute an ephemeris at abs_origin to use for the test.
@@ -667,7 +678,7 @@ void PSearchApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::Ep
   ephemerides.push_back(eph->clone());
 }
 
-bool PSearchApp::needBaryCorrection(const tip::Header & header) {
+bool PToolApp::needBaryCorrection(const tip::Header & header) {
   // Read TIMEREF keyword value.
   std::string time_ref;
   header["TIMEREF"].get(time_ref);
@@ -676,7 +687,7 @@ bool PSearchApp::needBaryCorrection(const tip::Header & header) {
   return ("SOLARSYSTEM" != time_ref);
 }
 
-void PSearchApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
+void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
   bool & request_bary, bool & demod_bin, bool & cancel_pdot) {
   // Determine whether to request barycentric correction.
   // TODO: Read tcorrect parameter and set request_bary unless tcorrect == NONE.
@@ -701,7 +712,7 @@ void PSearchApp::initTimeCorrection(const st_app::AppParGroup & pars, const puls
 
 }
 
-AbsoluteTime PSearchApp::applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer,
+AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer,
   bool correct_bary, bool demod_bin, bool cancel_pdot) {
   // Assign the value to the time representation.
   time_rep.set("TIME", time_value);
@@ -717,7 +728,7 @@ AbsoluteTime PSearchApp::applyTimeCorrection(double time_value, TimeRep & time_r
   return abs_time;
 }
 
-double PSearchApp::computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep) {
+double PToolApp::computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep) {
   double time_value = 0.;
 
   // Assign the absolute time to the time representation.
