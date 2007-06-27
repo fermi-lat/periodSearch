@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Jun 27 15:17:58 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Move event_table_cont and gti_table_cont variables from PSearchApp::run method to PToolApp data members.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Jun 27 14:16:51 PDT 2007
 periodSearch/src/gtpsearch
 
