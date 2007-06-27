@@ -67,13 +67,13 @@ class PToolApp : public st_app::StApp {
 
     void openEventFile(const st_app::AppParGroup & pars, table_cont_type & event_table_cont, table_cont_type & gti_table_cont);
 
-    void initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer);
+    void initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphComputer & computer);
 
     void computeTimeBoundary(const table_cont_type & gti_table_cont, bool request_bary, bool demod_bin, bool cancel_pdot,
       pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
 
-    AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
-      const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep);
+    AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop,
+      timeSystem::TimeRep & time_rep);
 
     void updateEphComputer(const AbsoluteTime & abs_time, pulsarDb::EphComputer & computer);
 
@@ -96,6 +96,8 @@ class PToolApp : public st_app::StApp {
     AbsoluteTime getEventTime(const pulsarDb::EphComputer & computer, bool & demod_bin, bool & cancel_pdot);
 
   private:
+    const tip::Header * m_reference_header;
+
     table_cont_type::iterator m_table_itor;
     tip::Table::ConstIterator m_event_itor;
     std::string m_time_field;
@@ -184,11 +186,6 @@ void PSearchApp::run() {
   table_cont_type gti_table_cont;
   openEventFile(pars, event_table_cont, gti_table_cont);
 
-  const tip::Table * reference_table = event_table_cont.at(0);
-
-  // Identify mission and time system from events extension.
-  const tip::Header & reference_header(reference_table->getHeader());
-
   // Handle leap seconds.
   std::string leap_sec_file = pars["leapsecfile"];
   timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
@@ -197,7 +194,7 @@ void PSearchApp::run() {
   pulsarDb::TimingModel model;
   pulsarDb::SloppyEphChooser chooser;
   pulsarDb::EphComputer computer(model, chooser);
-  initEphComputer(pars, reference_header, computer);
+  initEphComputer(pars, computer);
 
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool request_bary = false;
@@ -220,7 +217,7 @@ void PSearchApp::run() {
   std::auto_ptr<TimeRep> target_time_rep = createMetRep(target_time_sys, abs_tstart);
 
   // Compute time origin for periodicity search in AbsoluteTime.
-  AbsoluteTime abs_origin = computeTimeOrigin(pars, reference_header, abs_tstart, abs_tstop, *target_time_rep);
+  AbsoluteTime abs_origin = computeTimeOrigin(pars, abs_tstart, abs_tstop, *target_time_rep);
 
   // Reset target time representation, to change its reference time to the user-specified origin (abs_origin).
   target_time_rep = createMetRep(target_time_sys, abs_origin);
@@ -377,7 +374,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Save();
 }
 
-PToolApp::PToolApp(): m_time_field(""), m_event_time_rep(0), m_correct_bary(false) {}
+PToolApp::PToolApp(): m_reference_header(0), m_time_field(""), m_event_time_rep(0), m_correct_bary(false) {}
 
 PToolApp::~PToolApp() throw() {
 //  delete m_event_time_rep;
@@ -526,9 +523,12 @@ void PToolApp::openEventFile(const st_app::AppParGroup & pars, table_cont_type &
   // Add the table to the container.
   gti_table_cont.push_back(gti_table);
 
+  // Select and set reference header.
+  const tip::Table * reference_table = event_table_cont.at(0);
+  m_reference_header = &(reference_table->getHeader());
 }
 
-void PToolApp::initEphComputer(const st_app::AppParGroup & pars, const tip::Header & header, pulsarDb::EphComputer & computer) {
+void PToolApp::initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphComputer & computer) {
   using namespace periodSearch;
   using namespace pulsarDb;
 
@@ -548,7 +548,7 @@ void PToolApp::initEphComputer(const st_app::AppParGroup & pars, const tip::Head
   if (eph_style != "DB") {
     std::string epoch_time_format = pars["timeformat"];
     std::string epoch = pars["ephepoch"];
-    AbsoluteTime abs_epoch(*createTimeRep(epoch_time_format, epoch_time_sys, epoch, header));
+    AbsoluteTime abs_epoch(*createTimeRep(epoch_time_format, epoch_time_sys, epoch, *m_reference_header));
 
     // Handle either period or frequency-style input.
     if (eph_style == "FREQ") {
@@ -645,8 +645,8 @@ void PToolApp::computeTimeBoundary(const PToolApp::table_cont_type & gti_table_c
 }
 
 
-AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const tip::Header & header,
-  const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep) {
+AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart,
+  const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep) {
 
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
@@ -670,7 +670,7 @@ AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const
     std::string origin_time_format = pars["userformat"];
     std::string origin_time_sys = pars["usersys"].Value();
 
-    abs_origin = *createTimeRep(origin_time_format, origin_time_sys, origin_time, header);
+    abs_origin = *createTimeRep(origin_time_format, origin_time_sys, origin_time, *m_reference_header);
 
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
