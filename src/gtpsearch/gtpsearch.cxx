@@ -83,7 +83,7 @@ class PToolApp : public st_app::StApp {
 
     double computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep);
 
-    void setFirstEvent(const std::string & time_field);
+    void setFirstEvent(const st_app::AppParGroup & pars);
 
     void setNextEvent();
 
@@ -173,12 +173,10 @@ void PSearchApp::run() {
   prompt(pars);
 
   // Get parameters.
-  std::string event_file = pars["evfile"];
   std::string out_file = pars["outfile"];
   double scan_step = pars["scanstep"];
   long num_trials = pars["numtrials"];
   long num_bins = pars["numbins"];
-  std::string time_field = pars["timefield"];
   bool plot = pars["plot"];
   std::string title = pars["title"];
   bool clobber = pars["clobber"];
@@ -244,7 +242,7 @@ void PSearchApp::run() {
     m_test = new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration);
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
-  for (setFirstEvent(time_field); !isEndOfEventList(); setNextEvent()) {
+  for (setFirstEvent(pars); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
     AbsoluteTime abs_evt_time(getEventTime());
 
@@ -297,6 +295,7 @@ void PSearchApp::run() {
   // Write details of test result if chatter is high enough.
   viewer.writeData(m_os.info(eAllDetails)) << std::endl;
 
+  // TODO: Remove the following TODO.  The time unit is now determined by target_time_rep, not an input file.
   // TODO: When tip supports getting units from a column, replace the following:
   std::string unit = "(Hz)";
   // with:
@@ -753,7 +752,7 @@ double PToolApp::computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_
   return time_value;
 }
 
-void PToolApp::setFirstEvent(const std::string & time_field) {
+void PToolApp::setFirstEvent(const st_app::AppParGroup & pars) {
   // Set event table iterator.
   m_table_itor = m_event_table_cont.begin();
 
@@ -761,7 +760,7 @@ void PToolApp::setFirstEvent(const std::string & time_field) {
   setupEventTable();
 
   // Set name of TIME column to analyze.
-  m_time_field = time_field;
+  if (m_time_field.empty()) m_time_field = pars["timefield"].Value();
 }
 
 void PToolApp::setNextEvent() {
