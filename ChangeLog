@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Jun 28 13:51:11 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change updateEphComputer method to return a reference to PulsarEph object that is computed in the method, and use the return value to set to the center of a periodicity search.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Jun 28 13:15:32 PDT 2007
 periodSearch/src/gtpsearch
 
