@@ -66,20 +66,20 @@ class PToolApp : public st_app::StApp {
 
     void openEventFile(const st_app::AppParGroup & pars);
 
-    void initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphComputer & computer);
+    void initEphComputer(const st_app::AppParGroup & pars, const pulsarDb::TimingModel & model, const pulsarDb::EphChooser & chooser);
 
-    void computeTimeBoundary(pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
+    void computeTimeBoundary(AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
 
     AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop,
       timeSystem::TimeRep & time_rep);
 
-    pulsarDb::PulsarEph & updateEphComputer(const AbsoluteTime & abs_time, pulsarDb::EphComputer & computer);
+    pulsarDb::PulsarEph & updateEphComputer(const AbsoluteTime & abs_time);
 
     bool needBaryCorrection(const tip::Header & header);
 
-    void initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer);
+    void initTimeCorrection(const st_app::AppParGroup & pars);
 
-    AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer);
+    AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep);
 
     double computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep);
 
@@ -89,12 +89,13 @@ class PToolApp : public st_app::StApp {
 
     bool isEndOfEventList();
 
-    AbsoluteTime getEventTime(const pulsarDb::EphComputer & computer);
+    AbsoluteTime getEventTime();
 
   private:
     table_cont_type m_event_table_cont;
     table_cont_type m_gti_table_cont;
     const tip::Header * m_reference_header;
+    pulsarDb::EphComputer * m_computer;
     bool m_request_bary;
     bool m_demod_bin;
     bool m_cancel_pdot;
@@ -192,11 +193,10 @@ void PSearchApp::run() {
   // Set up EphComputer for arrival time corrections.
   pulsarDb::TimingModel model;
   pulsarDb::SloppyEphChooser chooser;
-  pulsarDb::EphComputer computer(model, chooser);
-  initEphComputer(pars, computer);
+  initEphComputer(pars, model, chooser);
 
   // Use user input (parameters) together with computer to determine corrections to apply.
-  initTimeCorrection(pars, computer);
+  initTimeCorrection(pars);
 
 // START HERE
 // Note: "target time rep" is the common TimeRep used to compute the time series to be analyzed.
@@ -206,7 +206,7 @@ void PSearchApp::run() {
   // Determine start/stop of the observation interval in AbsoluteTime.
   AbsoluteTime abs_tstart("TDB", Duration(0, 0.), Duration(0, 0.));
   AbsoluteTime abs_tstop("TDB", Duration(0, 0.), Duration(0, 0.));
-  computeTimeBoundary(computer, abs_tstart, abs_tstop);
+  computeTimeBoundary(abs_tstart, abs_tstop);
 
   // Set up target time representation, used to compute the time series to analyze.
   std::string target_time_sys = determineTargetSystem();
@@ -222,7 +222,7 @@ void PSearchApp::run() {
   double origin = computeTimeValue(abs_origin, *target_time_rep);
 
   // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
-  pulsarDb::PulsarEph & pulsar_eph = updateEphComputer(abs_origin, computer);
+  pulsarDb::PulsarEph & pulsar_eph = updateEphComputer(abs_origin);
 
   // Get central frequency of periodicity search.
   double f_center = pulsar_eph.f0();
@@ -246,7 +246,7 @@ void PSearchApp::run() {
 
   for (setFirstEvent(time_field); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
-    AbsoluteTime abs_evt_time(getEventTime(computer));
+    AbsoluteTime abs_evt_time(getEventTime());
 
     // Convert event time to target time representation.
     double target_evt_time = computeTimeValue(abs_evt_time, *target_time_rep);
@@ -369,10 +369,11 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Save();
 }
 
-PToolApp::PToolApp(): m_reference_header(0), m_request_bary(false), m_demod_bin(false), m_cancel_pdot(false), m_time_field(""),
-  m_event_time_rep(0), m_correct_bary(false) {}
+PToolApp::PToolApp(): m_reference_header(0), m_computer(0), m_request_bary(false), m_demod_bin(false), m_cancel_pdot(false),
+  m_time_field(""), m_event_time_rep(0), m_correct_bary(false) {}
 
 PToolApp::~PToolApp() throw() {
+  if (m_computer) delete m_computer;
 //  delete m_event_time_rep;
 }
 
@@ -523,9 +524,13 @@ void PToolApp::openEventFile(const st_app::AppParGroup & pars) {
   m_reference_header = &(reference_table->getHeader());
 }
 
-void PToolApp::initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphComputer & computer) {
+void PToolApp::initEphComputer(const st_app::AppParGroup & pars, const pulsarDb::TimingModel & model, 
+  const pulsarDb::EphChooser & chooser) {
   using namespace periodSearch;
   using namespace pulsarDb;
+
+  // Create ephemeris computer.
+  m_computer = new EphComputer(model, chooser);
 
   std::string eph_style = pars["ephstyle"];
   for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
@@ -554,7 +559,7 @@ void PToolApp::initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphCo
       if (0. >= f0) throw std::runtime_error("Frequency must be positive.");
 
       // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
-      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+      PulsarEphCont & ephemerides(m_computer->getPulsarEphCont());
       ephemerides.push_back(FrequencyEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, f0, f1, f2).clone());
     } else if (eph_style == "PER") {
       double p0 = pars["p0"];
@@ -564,7 +569,7 @@ void PToolApp::initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphCo
       if (0. >= p0) throw std::runtime_error("Period must be positive.");
 
       // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
-      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+      PulsarEphCont & ephemerides(m_computer->getPulsarEphCont());
       ephemerides.push_back(PeriodEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, p0, p1, p2).clone());
     }
   }
@@ -588,13 +593,12 @@ void PToolApp::initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphCo
     database.filterName(psr_name);
 
     // Load the selected ephemerides.
-    if (eph_style == "DB") computer.loadPulsarEph(database);
-    computer.loadOrbitalEph(database);
+    if (eph_style == "DB") m_computer->loadPulsarEph(database);
+    m_computer->loadOrbitalEph(database);
   }
 }
 
-void PToolApp::computeTimeBoundary(pulsarDb::EphComputer & computer,
-  AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
+void PToolApp::computeTimeBoundary(AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
   bool candidate_found = false;
 
   // First, look for first and last times in the GTI.
@@ -618,8 +622,8 @@ void PToolApp::computeTimeBoundary(pulsarDb::EphComputer & computer,
       m_correct_bary = m_request_bary && needBaryCorrection(header);
 
       // Correct the time.
-      AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep, computer);
-      AbsoluteTime abs_gti_stop = applyTimeCorrection(gti_stop, *time_rep, computer);
+      AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep);
+      AbsoluteTime abs_gti_stop = applyTimeCorrection(gti_stop, *time_rep);
 
       if (candidate_found) {
         // See if current interval extends the observation.
@@ -674,14 +678,14 @@ AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const
   return abs_origin;
 }
 
-pulsarDb::PulsarEph & PToolApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::EphComputer & computer) {
+pulsarDb::PulsarEph & PToolApp::updateEphComputer(const AbsoluteTime & abs_origin) {
   using namespace pulsarDb;
 
   // Compute an ephemeris at abs_origin to use for the test.
-  PulsarEph * eph(computer.calcPulsarEph(abs_origin).clone());
+  PulsarEph * eph(m_computer->calcPulsarEph(abs_origin).clone());
 
   // Reset computer to contain only the corrected ephemeris which was just computed.
-  PulsarEphCont & ephemerides(computer.getPulsarEphCont());
+  PulsarEphCont & ephemerides(m_computer->getPulsarEphCont());
   ephemerides.clear();
   ephemerides.push_back(eph);
 
@@ -698,7 +702,7 @@ bool PToolApp::needBaryCorrection(const tip::Header & header) {
   return ("SOLARSYSTEM" != time_ref);
 }
 
-void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer) {
+void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars) {
   // Determine whether to request barycentric correction.
   // TODO: Read tcorrect parameter and set m_request_bary unless tcorrect == NONE.
   m_request_bary = false;
@@ -710,7 +714,7 @@ void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsar
   m_demod_bin = false;
   if (demod_bin_string != "NO") {
     // User selected not "no", so attempt to perform demodulation
-    if (!computer.getOrbitalEphCont().empty()) {
+    if (!m_computer->getOrbitalEphCont().empty()) {
       m_demod_bin = true;
     } else if (demod_bin_string == "YES") {
       throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
@@ -722,7 +726,7 @@ void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsar
 
 }
 
-AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer) {
+AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep) {
   // Assign the value to the time representation.
   time_rep.set("TIME", time_value);
 
@@ -731,8 +735,8 @@ AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep
 
   // Apply selected corrections.
   if (m_correct_bary) throw std::runtime_error("Automatic barycentric correction not implemented.");
-  if (m_demod_bin) computer.demodulateBinary(abs_time);
-  if (m_cancel_pdot) computer.cancelPdot(abs_time);
+  if (m_demod_bin) m_computer->demodulateBinary(abs_time);
+  if (m_cancel_pdot) m_computer->cancelPdot(abs_time);
 
   return abs_time;
 }
@@ -778,12 +782,12 @@ bool PToolApp::isEndOfEventList() {
   return (m_table_itor == m_event_table_cont.end());
 }
 
-AbsoluteTime PToolApp::getEventTime(const pulsarDb::EphComputer & computer) {
+AbsoluteTime PToolApp::getEventTime() {
   // Get value from the table.
   double event_time = (*m_event_itor)[m_time_field].get();
 
   // Apply time corrections, convert back out to a double value.
-  return AbsoluteTime(applyTimeCorrection(event_time, *m_event_time_rep, computer));
+  return AbsoluteTime(applyTimeCorrection(event_time, *m_event_time_rep));
 }
 
 void PToolApp::setupEventTable() {
