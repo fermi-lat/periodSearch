@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Jun 28 14:25:21 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Move computer variable from PSearchApp::run method to PToolApp data members.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Jun 28 13:51:11 PDT 2007
 periodSearch/src/gtpsearch
 
