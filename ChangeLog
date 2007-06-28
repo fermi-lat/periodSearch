@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Jun 28 16:38:45 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Read timefield parameter in PToolApp::setFirstEvent method, not in PSearchApp:run method. Remove event_file variable from PSearchApp::run method (unused).
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Jun 28 14:25:21 PDT 2007
 periodSearch/src/gtpsearch
 
