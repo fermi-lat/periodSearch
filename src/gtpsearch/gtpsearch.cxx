@@ -59,7 +59,7 @@ class PToolApp : public st_app::StApp {
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
 
-    virtual std::string determineTargetSystem(bool request_bary, bool demod_bin, bool cancel_pdot);
+    virtual std::string determineTargetSystem();
 
     // TODO: refactor MetRep to include functionality of this method and remove this method.
     virtual std::auto_ptr<TimeRep> createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
@@ -68,8 +68,7 @@ class PToolApp : public st_app::StApp {
 
     void initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphComputer & computer);
 
-    void computeTimeBoundary(bool request_bary, bool demod_bin, bool cancel_pdot, pulsarDb::EphComputer & computer,
-      AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
+    void computeTimeBoundary(pulsarDb::EphComputer & computer, AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
 
     AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop,
       timeSystem::TimeRep & time_rep);
@@ -78,26 +77,27 @@ class PToolApp : public st_app::StApp {
 
     bool needBaryCorrection(const tip::Header & header);
 
-    void initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
-      bool & request_bary, bool & demod_bin, bool & cancel_pdot);
+    void initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer);
 
-    AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer,
-      bool correct_bary, bool demod_bin, bool cancel_pdot);
+    AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer);
 
     double computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep);
 
-    void setFirstEvent(const std::string & time_field, bool & request_bary);
+    void setFirstEvent(const std::string & time_field);
 
-    void setNextEvent(bool & request_bary);
+    void setNextEvent();
 
     bool isEndOfEventList();
 
-    AbsoluteTime getEventTime(const pulsarDb::EphComputer & computer, bool & demod_bin, bool & cancel_pdot);
+    AbsoluteTime getEventTime(const pulsarDb::EphComputer & computer);
 
   private:
     table_cont_type m_event_table_cont;
     table_cont_type m_gti_table_cont;
     const tip::Header * m_reference_header;
+    bool m_request_bary;
+    bool m_demod_bin;
+    bool m_cancel_pdot;
 
     table_cont_type::iterator m_table_itor;
     tip::Table::ConstIterator m_event_itor;
@@ -106,7 +106,7 @@ class PToolApp : public st_app::StApp {
     std::auto_ptr<TimeRep> m_event_time_rep;
     bool m_correct_bary;
 
-    void setupEventTable(bool & request_bary);
+    void setupEventTable();
 };
 
 class PSearchApp : public PToolApp {
@@ -196,10 +196,7 @@ void PSearchApp::run() {
   initEphComputer(pars, computer);
 
   // Use user input (parameters) together with computer to determine corrections to apply.
-  bool request_bary = false;
-  bool demod_bin = false;
-  bool cancel_pdot = false;
-  initTimeCorrection(pars, computer, request_bary, demod_bin, cancel_pdot);
+  initTimeCorrection(pars, computer);
 
 // START HERE
 // Note: "target time rep" is the common TimeRep used to compute the time series to be analyzed.
@@ -209,10 +206,10 @@ void PSearchApp::run() {
   // Determine start/stop of the observation interval in AbsoluteTime.
   AbsoluteTime abs_tstart("TDB", Duration(0, 0.), Duration(0, 0.));
   AbsoluteTime abs_tstop("TDB", Duration(0, 0.), Duration(0, 0.));
-  computeTimeBoundary(request_bary, demod_bin, cancel_pdot, computer, abs_tstart, abs_tstop);
+  computeTimeBoundary(computer, abs_tstart, abs_tstop);
 
   // Set up target time representation, used to compute the time series to analyze.
-  std::string target_time_sys = determineTargetSystem(request_bary, demod_bin, cancel_pdot);
+  std::string target_time_sys = determineTargetSystem();
   std::auto_ptr<TimeRep> target_time_rep = createMetRep(target_time_sys, abs_tstart);
 
   // Compute time origin for periodicity search in AbsoluteTime.
@@ -247,9 +244,9 @@ void PSearchApp::run() {
     m_test = new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration);
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
-  for (setFirstEvent(time_field, request_bary); !isEndOfEventList(); setNextEvent(request_bary)) {
+  for (setFirstEvent(time_field); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
-    AbsoluteTime abs_evt_time(getEventTime(computer, demod_bin, cancel_pdot));
+    AbsoluteTime abs_evt_time(getEventTime(computer));
 
     // Convert event time to target time representation.
     double target_evt_time = computeTimeValue(abs_evt_time, *target_time_rep);
@@ -372,7 +369,8 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Save();
 }
 
-PToolApp::PToolApp(): m_reference_header(0), m_time_field(""), m_event_time_rep(0), m_correct_bary(false) {}
+PToolApp::PToolApp(): m_reference_header(0), m_request_bary(false), m_demod_bin(false), m_cancel_pdot(false), m_time_field(""),
+  m_event_time_rep(0), m_correct_bary(false) {}
 
 PToolApp::~PToolApp() throw() {
 //  delete m_event_time_rep;
@@ -444,11 +442,12 @@ std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, 
   return time_rep;
 }
 
-std::string PToolApp::determineTargetSystem(bool request_bary, bool demod_bin, bool cancel_pdot) {
+std::string PToolApp::determineTargetSystem() {
   std::string time_system;
   bool time_system_set = false;
 
-  if (!request_bary && !demod_bin && !cancel_pdot) { // TODO: this will become 'if (tcorrect == "NONE")' when tcorrect is introduced.
+  // TODO: the following if-statement will become 'if (tcorrect == "NONE")' when tcorrect is introduced.
+  if (!m_request_bary && !m_demod_bin && !m_cancel_pdot) {
     // When NO corrections are requested, the analysis will be performed in the time system written in event files,
     // requiring all event files have same time system.
     std::string this_time_system;
@@ -594,7 +593,7 @@ void PToolApp::initEphComputer(const st_app::AppParGroup & pars, pulsarDb::EphCo
   }
 }
 
-void PToolApp::computeTimeBoundary(bool request_bary, bool demod_bin, bool cancel_pdot, pulsarDb::EphComputer & computer,
+void PToolApp::computeTimeBoundary(pulsarDb::EphComputer & computer,
   AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop) {
   bool candidate_found = false;
 
@@ -616,11 +615,11 @@ void PToolApp::computeTimeBoundary(bool request_bary, bool demod_bin, bool cance
       std::auto_ptr<TimeRep> time_rep(createTimeRep("FILE", "FILE", "0.", header));
 
       // Determine whether to perform barycentric correction.
-      bool correct_bary = request_bary && needBaryCorrection(header);
+      m_correct_bary = m_request_bary && needBaryCorrection(header);
 
       // Correct the time.
-      AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep, computer, correct_bary, demod_bin, cancel_pdot);
-      AbsoluteTime abs_gti_stop = applyTimeCorrection(gti_stop, *time_rep, computer, correct_bary, demod_bin, cancel_pdot);
+      AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep, computer);
+      AbsoluteTime abs_gti_stop = applyTimeCorrection(gti_stop, *time_rep, computer);
 
       if (candidate_found) {
         // See if current interval extends the observation.
@@ -696,33 +695,31 @@ bool PToolApp::needBaryCorrection(const tip::Header & header) {
   return ("SOLARSYSTEM" != time_ref);
 }
 
-void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer,
-  bool & request_bary, bool & demod_bin, bool & cancel_pdot) {
+void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars, const pulsarDb::EphComputer & computer) {
   // Determine whether to request barycentric correction.
-  // TODO: Read tcorrect parameter and set request_bary unless tcorrect == NONE.
-  request_bary = false;
+  // TODO: Read tcorrect parameter and set m_request_bary unless tcorrect == NONE.
+  m_request_bary = false;
 
   std::string demod_bin_string = pars["demodbin"];
   for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
 
   // Determine whether to perform binary demodulation.
-  demod_bin = false;
+  m_demod_bin = false;
   if (demod_bin_string != "NO") {
     // User selected not "no", so attempt to perform demodulation
     if (!computer.getOrbitalEphCont().empty()) {
-      demod_bin = true;
+      m_demod_bin = true;
     } else if (demod_bin_string == "YES") {
       throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
     }
   }
 
   // Determine whether to cancel pdot.
-  cancel_pdot = bool(pars["cancelpdot"]);
+  m_cancel_pdot = bool(pars["cancelpdot"]);
 
 }
 
-AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer,
-  bool correct_bary, bool demod_bin, bool cancel_pdot) {
+AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep, const pulsarDb::EphComputer & computer) {
   // Assign the value to the time representation.
   time_rep.set("TIME", time_value);
 
@@ -730,9 +727,9 @@ AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep
   AbsoluteTime abs_time(time_rep);
 
   // Apply selected corrections.
-  if (correct_bary) throw std::runtime_error("Automatic barycentric correction not implemented.");
-  if (demod_bin) computer.demodulateBinary(abs_time);
-  if (cancel_pdot) computer.cancelPdot(abs_time);
+  if (m_correct_bary) throw std::runtime_error("Automatic barycentric correction not implemented.");
+  if (m_demod_bin) computer.demodulateBinary(abs_time);
+  if (m_cancel_pdot) computer.cancelPdot(abs_time);
 
   return abs_time;
 }
@@ -749,18 +746,18 @@ double PToolApp::computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_
   return time_value;
 }
 
-void PToolApp::setFirstEvent(const std::string & time_field, bool & request_bary) {
+void PToolApp::setFirstEvent(const std::string & time_field) {
   // Set event table iterator.
   m_table_itor = m_event_table_cont.begin();
 
   // Setup current event table.
-  setupEventTable(request_bary);
+  setupEventTable();
 
   // Set name of TIME column to analyze.
   m_time_field = time_field;
 }
 
-void PToolApp::setNextEvent(bool & request_bary) {
+void PToolApp::setNextEvent() {
   // Increment event record iterator.
   ++m_event_itor;
 
@@ -770,7 +767,7 @@ void PToolApp::setNextEvent(bool & request_bary) {
     ++m_table_itor;
 
     // Setup new event table.
-    setupEventTable(request_bary);
+    setupEventTable();
   }
 }
 
@@ -778,15 +775,15 @@ bool PToolApp::isEndOfEventList() {
   return (m_table_itor == m_event_table_cont.end());
 }
 
-AbsoluteTime PToolApp::getEventTime(const pulsarDb::EphComputer & computer, bool & demod_bin, bool & cancel_pdot) {
+AbsoluteTime PToolApp::getEventTime(const pulsarDb::EphComputer & computer) {
   // Get value from the table.
   double event_time = (*m_event_itor)[m_time_field].get();
 
   // Apply time corrections, convert back out to a double value.
-  return AbsoluteTime(applyTimeCorrection(event_time, *m_event_time_rep, computer, m_correct_bary, demod_bin, cancel_pdot));
+  return AbsoluteTime(applyTimeCorrection(event_time, *m_event_time_rep, computer));
 }
 
-void PToolApp::setupEventTable(bool & request_bary) {
+void PToolApp::setupEventTable() {
   // Check whether event table iterator reaches to the end of table.
   if (m_table_itor != m_event_table_cont.end()) {
     // Get current event table and its header.
@@ -800,7 +797,7 @@ void PToolApp::setupEventTable(bool & request_bary) {
     m_event_time_rep = createTimeRep("FILE", "FILE", "0.", header);
 
     // Determine whether to perform barycentric correction for this event table.
-    m_correct_bary = request_bary && needBaryCorrection(header);
+    m_correct_bary = m_request_bary && needBaryCorrection(header);
   }
 }
 
