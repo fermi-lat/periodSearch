@@ -73,7 +73,7 @@ class PToolApp : public st_app::StApp {
     AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop,
       timeSystem::TimeRep & time_rep);
 
-    void updateEphComputer(const AbsoluteTime & abs_time, pulsarDb::EphComputer & computer);
+    pulsarDb::PulsarEph & updateEphComputer(const AbsoluteTime & abs_time, pulsarDb::EphComputer & computer);
 
     bool needBaryCorrection(const tip::Header & header);
 
@@ -222,10 +222,10 @@ void PSearchApp::run() {
   double origin = computeTimeValue(abs_origin, *target_time_rep);
 
   // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
-  updateEphComputer(abs_origin, computer);
+  pulsarDb::PulsarEph & pulsar_eph = updateEphComputer(abs_origin, computer);
 
   // Get central frequency of periodicity search.
-  double f_center = computer.choosePulsarEph(abs_origin).f0();
+  double f_center = pulsar_eph.f0();
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
   double duration = computeTimeValue(abs_tstop, *target_time_rep) - computeTimeValue(abs_tstart, *target_time_rep);
@@ -674,16 +674,19 @@ AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const
   return abs_origin;
 }
 
-void PToolApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::EphComputer & computer) {
+pulsarDb::PulsarEph & PToolApp::updateEphComputer(const AbsoluteTime & abs_origin, pulsarDb::EphComputer & computer) {
   using namespace pulsarDb;
 
   // Compute an ephemeris at abs_origin to use for the test.
-  std::auto_ptr<PulsarEph> eph(computer.calcPulsarEph(abs_origin).clone());
+  PulsarEph * eph(computer.calcPulsarEph(abs_origin).clone());
 
   // Reset computer to contain only the corrected ephemeris which was just computed.
   PulsarEphCont & ephemerides(computer.getPulsarEphCont());
   ephemerides.clear();
-  ephemerides.push_back(eph->clone());
+  ephemerides.push_back(eph);
+
+  // Return reference to the computed ephemeris.
+  return *eph;
 }
 
 bool PToolApp::needBaryCorrection(const tip::Header & header) {
