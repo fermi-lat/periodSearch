@@ -58,10 +58,10 @@ class PToolApp : public st_app::StApp {
 
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
-
+private:
     // TODO: refactor MetRep to include functionality of this method and remove this method.
-    virtual std::auto_ptr<TimeRep> createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
-
+    TimeRep * createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
+public:
     void openEventFile(const st_app::AppParGroup & pars);
 
     void initEphComputer(const st_app::AppParGroup & pars, const pulsarDb::TimingModel & model, const pulsarDb::EphChooser & chooser);
@@ -97,7 +97,7 @@ public:
     bool m_demod_bin;
     bool m_cancel_pdot;
     // TODO: change std::auto_ptr<TimeRep> to TimeRep * (if possible).
-    std::auto_ptr<TimeRep> m_target_time_rep;
+    TimeRep * m_target_time_rep;
 
     table_cont_type::iterator m_table_itor;
     tip::Table::ConstIterator m_event_itor;
@@ -365,7 +365,7 @@ PToolApp::PToolApp(): m_reference_header(0), m_computer(0), m_request_bary(false
 
 PToolApp::~PToolApp() throw() {
   if (m_computer) delete m_computer;
-//  if (m_target_time_rep) delete m_target_time_rep;
+  if (m_target_time_rep) delete m_target_time_rep;
 //  if (m_event_time_rep) delete m_event_time_rep;
 }
 
@@ -435,7 +435,7 @@ std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, 
   return time_rep;
 }
 
-std::auto_ptr<TimeRep> PToolApp::createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference) {
+TimeRep * PToolApp::createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference) {
   // Compute MJD of abs_reference (the origin of the time series to analyze), to be given as MJDREF of MetRep.
   // NOTE: MetRep should take AbsoluteTime for its MJDREF (Need refactor of AbsoluteTime for that).
   // TODO: Once MetRep is refactored, remove this method.
@@ -447,8 +447,7 @@ std::auto_ptr<TimeRep> PToolApp::createMetRep(const std::string & time_system, c
   mjd_rep->get("MJDF", mjd_frac);
 
   // Create MetRep to represent the time series to analyze and return it.
-  std::auto_ptr<TimeRep> time_rep(new MetRep(time_system, mjd_int, mjd_frac, 0.));
-  return time_rep;
+  return new MetRep(time_system, mjd_int, mjd_frac, 0.);
 }
 
 void PToolApp::openEventFile(const st_app::AppParGroup & pars) {
