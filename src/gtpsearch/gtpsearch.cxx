@@ -70,8 +70,7 @@ class PToolApp : public st_app::StApp {
 
     void computeTimeBoundary(AbsoluteTime & abs_tstart, AbsoluteTime & abs_tstop);
 
-    AbsoluteTime computeTimeOrigin(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop,
-      timeSystem::TimeRep & time_rep);
+    AbsoluteTime initTargetTime(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop);
 
     pulsarDb::PulsarEph & updateEphComputer(const AbsoluteTime & abs_time);
 
@@ -81,7 +80,7 @@ class PToolApp : public st_app::StApp {
 
     AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep);
 
-    double computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep);
+    double computeElapsedSecond(const AbsoluteTime & abs_time);
 
     void setFirstEvent(const st_app::AppParGroup & pars);
 
@@ -99,6 +98,8 @@ class PToolApp : public st_app::StApp {
     bool m_request_bary;
     bool m_demod_bin;
     bool m_cancel_pdot;
+    // TODO: change std::auto_ptr<TimeRep> to TimeRep * (if possible).
+    std::auto_ptr<TimeRep> m_target_time_rep;
 
     table_cont_type::iterator m_table_itor;
     tip::Table::ConstIterator m_event_itor;
@@ -206,18 +207,11 @@ void PSearchApp::run() {
   AbsoluteTime abs_tstop("TDB", Duration(0, 0.), Duration(0, 0.));
   computeTimeBoundary(abs_tstart, abs_tstop);
 
-  // Set up target time representation, used to compute the time series to analyze.
-  std::string target_time_sys = determineTargetSystem();
-  std::auto_ptr<TimeRep> target_time_rep = createMetRep(target_time_sys, abs_tstart);
-
   // Compute time origin for periodicity search in AbsoluteTime.
-  AbsoluteTime abs_origin = computeTimeOrigin(pars, abs_tstart, abs_tstop, *target_time_rep);
-
-  // Reset target time representation, to change its reference time to the user-specified origin (abs_origin).
-  target_time_rep = createMetRep(target_time_sys, abs_origin);
+  AbsoluteTime abs_origin = initTargetTime(pars, abs_tstart, abs_tstop);
 
   // Compute time origin for periodicity search in double.
-  double origin = computeTimeValue(abs_origin, *target_time_rep);
+  double origin = computeElapsedSecond(abs_origin);
 
   // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
   pulsarDb::PulsarEph & pulsar_eph = updateEphComputer(abs_origin);
@@ -226,7 +220,7 @@ void PSearchApp::run() {
   double f_center = pulsar_eph.f0();
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
-  double duration = computeTimeValue(abs_tstop, *target_time_rep) - computeTimeValue(abs_tstart, *target_time_rep);
+  double duration = computeElapsedSecond(abs_tstop) - computeElapsedSecond(abs_tstart);
   double f_step = scan_step / duration;
 
   // Choose which kind of test to create.
@@ -247,7 +241,7 @@ void PSearchApp::run() {
     AbsoluteTime abs_evt_time(getEventTime());
 
     // Convert event time to target time representation.
-    double target_evt_time = computeTimeValue(abs_evt_time, *target_time_rep);
+    double target_evt_time = computeElapsedSecond(abs_evt_time);
 
     // Fill into the test.
     m_test->fill(target_evt_time);
@@ -369,11 +363,12 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
 }
 
 PToolApp::PToolApp(): m_reference_header(0), m_computer(0), m_request_bary(false), m_demod_bin(false), m_cancel_pdot(false),
-  m_time_field(""), m_event_time_rep(0), m_correct_bary(false) {}
+  m_target_time_rep(0), m_time_field(""), m_event_time_rep(0), m_correct_bary(false) {}
 
 PToolApp::~PToolApp() throw() {
   if (m_computer) delete m_computer;
-//  delete m_event_time_rep;
+//  if (m_target_time_rep) delete m_target_time_rep;
+//  if (m_event_time_rep) delete m_event_time_rep;
 }
 
 std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, const std::string & time_system,
@@ -642,9 +637,11 @@ void PToolApp::computeTimeBoundary(AbsoluteTime & abs_tstart, AbsoluteTime & abs
   if (!candidate_found) throw std::runtime_error("computeTimeBoundary: cannot determine start/stop of the observation interval");
 }
 
-
-AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart,
-  const AbsoluteTime & abs_tstop, timeSystem::TimeRep & time_rep) {
+AbsoluteTime PToolApp::initTargetTime(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart,
+  const AbsoluteTime & abs_tstop) {
+  // Set up target time representation, used to compute the time series to analyze.
+  std::string target_time_sys = determineTargetSystem();
+  m_target_time_rep = createMetRep(target_time_sys, abs_tstart);
 
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
@@ -658,10 +655,10 @@ AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const
     abs_origin = abs_tstop;
   } else if (origin_style == "MIDDLE") {
     // Use the center of the observation as the time origin.
-    double tstart = computeTimeValue(abs_tstart, time_rep);
-    double tstop = computeTimeValue(abs_tstop, time_rep);
-    time_rep.set("TIME", .5 * (tstart + tstop));
-    abs_origin = time_rep;
+    double tstart = computeElapsedSecond(abs_tstart);
+    double tstop = computeElapsedSecond(abs_tstop);
+    m_target_time_rep->set("TIME", .5 * (tstart + tstop));
+    abs_origin = *m_target_time_rep;
   } else if (origin_style == "USER") {
     // Get time of origin and its format and system from parameters.
     std::string origin_time = pars["usertime"];
@@ -673,6 +670,9 @@ AbsoluteTime PToolApp::computeTimeOrigin(const st_app::AppParGroup & pars, const
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
+
+  // Reset target time representation, to change its reference time to the user-specified origin (abs_origin).
+  m_target_time_rep = createMetRep(target_time_sys, abs_origin);
 
   return abs_origin;
 }
@@ -740,14 +740,14 @@ AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep
   return abs_time;
 }
 
-double PToolApp::computeTimeValue(const AbsoluteTime & abs_time, TimeRep & time_rep) {
+double PToolApp::computeElapsedSecond(const AbsoluteTime & abs_time) {
   double time_value = 0.;
 
   // Assign the absolute time to the time representation.
-  time_rep = abs_time;
+  *m_target_time_rep = abs_time;
 
   // Get value from the time representation.
-  time_rep.get("TIME", time_value);
+  m_target_time_rep->get("TIME", time_value);
 
   return time_value;
 }
