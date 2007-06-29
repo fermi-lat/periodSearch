@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Jun 29 14:07:10 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change types of m_target_time_rep variable and return value of createMetRep method from auto_ptr<TimeRep> to a regular pointer to TimeRep.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Jun 29 13:57:20 PDT 2007
 periodSearch/src/gtpsearch
 
