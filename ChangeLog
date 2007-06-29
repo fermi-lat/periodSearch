@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Jun 29 14:25:07 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change types of m_event_time_rep variable and return value of createTimeRep methods (all of overloaded ones). Introduce auto_ptr<TimeRep> variables to accept a return value of createTimeRep methods where necessary.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Jun 29 14:07:10 PDT 2007
 periodSearch/src/gtpsearch
 
