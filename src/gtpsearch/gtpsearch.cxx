@@ -71,13 +71,9 @@ public:
     AbsoluteTime initTargetTime(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop);
 
     pulsarDb::PulsarEph & updateEphComputer(const AbsoluteTime & abs_time);
-private:
-    bool needBaryCorrection(const tip::Header & header);
-public:
+
     void initTimeCorrection(const st_app::AppParGroup & pars);
-private:
-    AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep);
-public:
+
     double computeElapsedSecond(const AbsoluteTime & abs_time);
 
     void setFirstEvent(const st_app::AppParGroup & pars);
@@ -92,21 +88,19 @@ public:
     table_cont_type m_event_table_cont;
     table_cont_type m_gti_table_cont;
     const tip::Header * m_reference_header;
+    std::map<const tip::Table *, TimeRep *> m_time_rep_dict;
+    std::map<const tip::Table *, bool> m_need_bary_dict;
     pulsarDb::EphComputer * m_computer;
     bool m_request_bary;
     bool m_demod_bin;
     bool m_cancel_pdot;
-    // TODO: change std::auto_ptr<TimeRep> to TimeRep * (if possible).
     TimeRep * m_target_time_rep;
 
     table_cont_type::iterator m_table_itor;
     tip::Table::ConstIterator m_event_itor;
     std::string m_time_field;
-    // TODO: change std::auto_ptr<TimeRep> to TimeRep * (if possible).
-    TimeRep * m_event_time_rep;
-    bool m_correct_bary;
 
-    void setupEventTable();
+    AbsoluteTime readTimeColumn(const tip::Table & table, tip::ConstTableRecord & record, const std::string & column_name);
 };
 
 class PSearchApp : public PToolApp {
@@ -361,12 +355,14 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
 }
 
 PToolApp::PToolApp(): m_reference_header(0), m_computer(0), m_request_bary(false), m_demod_bin(false), m_cancel_pdot(false),
-  m_target_time_rep(0), m_time_field(""), m_event_time_rep(0), m_correct_bary(false) {}
+  m_target_time_rep(0), m_time_field("") {}
 
 PToolApp::~PToolApp() throw() {
   if (m_computer) delete m_computer;
   if (m_target_time_rep) delete m_target_time_rep;
-  if (m_event_time_rep) delete m_event_time_rep;
+  for (std::map<const tip::Table *, TimeRep *>::iterator itor = m_time_rep_dict.begin(); itor != m_time_rep_dict.end(); ++itor) {
+    delete itor->second;
+  }
 }
 
 TimeRep * PToolApp::createTimeRep(const std::string & time_format, const std::string & time_system,
@@ -466,17 +462,35 @@ void PToolApp::openEventFile(const st_app::AppParGroup & pars) {
   }
   m_event_table_cont.clear();
 
+  // List all event tables and GTI tables.
+  table_cont_type all_table_cont;
+
   // Open the event table.
   const tip::Table * event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
 
   // Add the table to the container.
   m_event_table_cont.push_back(event_table);
+  all_table_cont.push_back(event_table);
 
   // Open the GTI table.
   const tip::Table * gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
 
   // Add the table to the container.
   m_gti_table_cont.push_back(gti_table);
+  all_table_cont.push_back(gti_table);
+
+  // Analyze all event tables and GTI tables, and set the results to internal variables.
+  for (table_cont_type::const_iterator itor = all_table_cont.begin(); itor != all_table_cont.end(); ++itor) {
+    const tip::Table * table = *itor;
+    const tip::Header & header(table->getHeader());
+    // Create and store TimeRep for this table.
+    m_time_rep_dict[table] = createTimeRep("FILE", "FILE", "0.", header);
+
+    // Check whether this table needs barycentering or not, and store it.
+    std::string time_ref;
+    header["TIMEREF"].get(time_ref);
+    m_need_bary_dict[table] = ("SOLARSYSTEM" != time_ref);
+  }
 
   // Select and set reference header.
   const tip::Table * reference_table = m_event_table_cont.at(0);
@@ -564,26 +578,15 @@ void PToolApp::computeTimeBoundary(AbsoluteTime & abs_tstart, AbsoluteTime & abs
   // First, look for first and last times in the GTI.
   for (table_cont_type::const_iterator itor = m_gti_table_cont.begin(); itor != m_gti_table_cont.end(); ++itor) {
     const tip::Table & gti_table = *(*itor);
-    const tip::Header & header(gti_table.getHeader());
 
     // If possible, get tstart and tstop from first and last interval in GTI extension.
     tip::Table::ConstIterator gti_itor = gti_table.begin();
     if (gti_itor != gti_table.end()) {
       // Get start of the first interval and stop of last interval in GTI.
-      double gti_start = (*gti_itor)["START"].get();
+      AbsoluteTime abs_gti_start = readTimeColumn(gti_table, *gti_itor, "START");
       gti_itor = gti_table.end();
       --gti_itor;
-      double gti_stop = (*gti_itor)["STOP"].get();
-
-      // Set up event time representation using GTI header.
-      std::auto_ptr<TimeRep> time_rep(createTimeRep("FILE", "FILE", "0.", header));
-
-      // Determine whether to perform barycentric correction.
-      m_correct_bary = m_request_bary && needBaryCorrection(header);
-
-      // Correct the time.
-      AbsoluteTime abs_gti_start = applyTimeCorrection(gti_start, *time_rep);
-      AbsoluteTime abs_gti_stop = applyTimeCorrection(gti_stop, *time_rep);
+      AbsoluteTime abs_gti_stop = readTimeColumn(gti_table, *gti_itor, "STOP");
 
       if (candidate_found) {
         // See if current interval extends the observation.
@@ -690,15 +693,6 @@ pulsarDb::PulsarEph & PToolApp::updateEphComputer(const AbsoluteTime & abs_origi
   return *eph;
 }
 
-bool PToolApp::needBaryCorrection(const tip::Header & header) {
-  // Read TIMEREF keyword value.
-  std::string time_ref;
-  header["TIMEREF"].get(time_ref);
-
-  // Return true if file with this header needs barycenteric corrections when requested.
-  return ("SOLARSYSTEM" != time_ref);
-}
-
 void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars) {
   // Determine whether to request barycentric correction.
   // TODO: Read tcorrect parameter and set m_request_bary unless tcorrect == NONE.
@@ -723,21 +717,6 @@ void PToolApp::initTimeCorrection(const st_app::AppParGroup & pars) {
 
 }
 
-AbsoluteTime PToolApp::applyTimeCorrection(double time_value, TimeRep & time_rep) {
-  // Assign the value to the time representation.
-  time_rep.set("TIME", time_value);
-
-  // Convert TimeRep into AbsoluteTime so that computer can perform the necessary corrections.
-  AbsoluteTime abs_time(time_rep);
-
-  // Apply selected corrections.
-  if (m_correct_bary) throw std::runtime_error("Automatic barycentric correction not implemented.");
-  if (m_demod_bin) m_computer->demodulateBinary(abs_time);
-  if (m_cancel_pdot) m_computer->cancelPdot(abs_time);
-
-  return abs_time;
-}
-
 double PToolApp::computeElapsedSecond(const AbsoluteTime & abs_time) {
   double time_value = 0.;
 
@@ -755,7 +734,7 @@ void PToolApp::setFirstEvent(const st_app::AppParGroup & pars) {
   m_table_itor = m_event_table_cont.begin();
 
   // Setup current event table.
-  setupEventTable();
+  if (m_table_itor != m_event_table_cont.end()) m_event_itor = (*m_table_itor)->begin();
 
   // Set name of TIME column to analyze.
   if (m_time_field.empty()) m_time_field = pars["timefield"].Value();
@@ -771,7 +750,7 @@ void PToolApp::setNextEvent() {
     ++m_table_itor;
 
     // Setup new event table.
-    setupEventTable();
+    if (m_table_itor != m_event_table_cont.end()) m_event_itor = (*m_table_itor)->begin();
   }
 }
 
@@ -780,29 +759,29 @@ bool PToolApp::isEndOfEventList() {
 }
 
 AbsoluteTime PToolApp::getEventTime() {
-  // Get value from the table.
-  double event_time = (*m_event_itor)[m_time_field].get();
-
-  // Apply time corrections, convert back out to a double value.
-  return AbsoluteTime(applyTimeCorrection(event_time, *m_event_time_rep));
+  return AbsoluteTime(readTimeColumn(**m_table_itor, *m_event_itor, m_time_field));
 }
 
-void PToolApp::setupEventTable() {
-  // Check whether event table iterator reaches to the end of table.
-  if (m_table_itor != m_event_table_cont.end()) {
-    // Get current event table and its header.
-    const tip::Table * event_table = *m_table_itor;
-    const tip::Header & header(event_table->getHeader());
+AbsoluteTime PToolApp::readTimeColumn(const tip::Table & table, tip::ConstTableRecord & record, const std::string & column_name) {
+  // Get time value from given record.
+  double time_value = record[column_name].get();
 
-    // Set event record iterator.
-    m_event_itor = event_table->begin();
+  // Get TimeRep for this table.
+  TimeRep * time_rep(m_time_rep_dict[&table]);
 
-    // Create TimeRep object to interpret event times in current table.
-    m_event_time_rep = createTimeRep("FILE", "FILE", "0.", header);
+  // Assign the value to the time representation.
+  time_rep->set("TIME", time_value);
 
-    // Determine whether to perform barycentric correction for this event table.
-    m_correct_bary = m_request_bary && needBaryCorrection(header);
-  }
+  // Convert TimeRep into AbsoluteTime so that computer can perform the necessary corrections.
+  AbsoluteTime abs_time(*time_rep);
+
+  // Apply selected corrections.
+  bool correct_bary = m_request_bary && m_need_bary_dict[&table];
+  if (correct_bary) throw std::runtime_error("Automatic barycentric correction not implemented.");
+  if (m_demod_bin) m_computer->demodulateBinary(abs_time);
+  if (m_cancel_pdot) m_computer->cancelPdot(abs_time);
+
+  return abs_time;
 }
 
 const std::string & PSearchApp::getDataDir() {
