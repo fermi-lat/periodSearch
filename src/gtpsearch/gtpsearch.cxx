@@ -58,10 +58,7 @@ class PToolApp : public st_app::StApp {
 
     virtual TimeRep * createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
-private:
-    // TODO: refactor MetRep to include functionality of this method and remove this method.
-    TimeRep * createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
-public:
+
     void openEventFile(const st_app::AppParGroup & pars);
 
     void initEphComputer(const st_app::AppParGroup & pars, const pulsarDb::TimingModel & model, const pulsarDb::EphChooser & chooser);
@@ -95,10 +92,13 @@ public:
     bool m_demod_bin;
     bool m_cancel_pdot;
     TimeRep * m_target_time_rep;
+    std::string m_time_field;
 
     table_cont_type::iterator m_table_itor;
     tip::Table::ConstIterator m_event_itor;
-    std::string m_time_field;
+
+    // TODO: refactor MetRep to include functionality of this method and remove this method.
+    TimeRep * createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
 
     AbsoluteTime readTimeColumn(const tip::Table & table, tip::ConstTableRecord & record, const std::string & column_name);
 };
