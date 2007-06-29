@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Jun 29 16:31:13 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Unify time column reading (TIME of EVENTS extension and START/STOP of GTI) in new method readTimeColumn. Create TimeRep objects for all EVENTS/GTI tables upon opening and store them in m_time_rep_dict. Examine barycentering status of EVENTS/GTI tables upon opening and store them in m_need_bary_dict. Remove applyTimeCorrection method, needBaryCorrection method, setupEventTable method, m_correct_bary variable, and m_event_time_rep variable.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Jun 29 14:25:07 PDT 2007
 periodSearch/src/gtpsearch
 
