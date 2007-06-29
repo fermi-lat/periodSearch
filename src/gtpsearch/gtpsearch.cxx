@@ -53,10 +53,10 @@ class PToolApp : public st_app::StApp {
     virtual ~PToolApp() throw();
     virtual void run() = 0;
 
-    virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
+    virtual TimeRep * createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value);
 
-    virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
+    virtual TimeRep * createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
 private:
     // TODO: refactor MetRep to include functionality of this method and remove this method.
@@ -103,7 +103,7 @@ public:
     tip::Table::ConstIterator m_event_itor;
     std::string m_time_field;
     // TODO: change std::auto_ptr<TimeRep> to TimeRep * (if possible).
-    std::auto_ptr<TimeRep> m_event_time_rep;
+    TimeRep * m_event_time_rep;
     bool m_correct_bary;
 
     void setupEventTable();
@@ -366,12 +366,12 @@ PToolApp::PToolApp(): m_reference_header(0), m_computer(0), m_request_bary(false
 PToolApp::~PToolApp() throw() {
   if (m_computer) delete m_computer;
   if (m_target_time_rep) delete m_target_time_rep;
-//  if (m_event_time_rep) delete m_event_time_rep;
+  if (m_event_time_rep) delete m_event_time_rep;
 }
 
-std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, const std::string & time_system,
+TimeRep * PToolApp::createTimeRep(const std::string & time_format, const std::string & time_system,
   const std::string & time_value) {
-  std::auto_ptr<TimeRep> time_rep(0);
+  TimeRep * time_rep(0);
 
   // Make upper case copies of input for case insensitive comparisons.
   std::string time_format_uc(time_format);
@@ -382,9 +382,9 @@ std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, 
 
   // Create representation for this time format and time system.
   if ("GLAST" == time_format_uc) {
-    time_rep.reset(new GlastMetRep(time_system, 0.));
+    time_rep = new GlastMetRep(time_system, 0.);
   } else if ("MJD" == time_format_uc) {
-    time_rep.reset(new MjdRep(time_system, 0, 0.));
+    time_rep = new MjdRep(time_system, 0, 0.);
   } else {
     throw std::runtime_error("Time format \"" + time_format + "\" is not supported for ephemeris time");
   }
@@ -395,9 +395,9 @@ std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, 
   return time_rep;
 }
 
-std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, const std::string & time_system,
+TimeRep * PToolApp::createTimeRep(const std::string & time_format, const std::string & time_system,
   const std::string & time_value, const tip::Header & header) {
-  std::auto_ptr<TimeRep> time_rep(0);
+  TimeRep * time_rep(0);
 
   // Make upper case copies of input for case insensitive comparisons.
   std::string time_format_uc(time_format);
@@ -423,7 +423,7 @@ std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, 
     // Get the mjdref from the header, which is not as simple as just reading a single keyword.
     MjdRefDatabase mjd_ref_db;
     IntFracPair mjd_ref(mjd_ref_db(header));
-    time_rep.reset(new MetRep(time_system_rat, mjd_ref, 0.));
+    time_rep = new MetRep(time_system_rat, mjd_ref, 0.);
   } else {
     // Delegate to overload that does not use tip.
     return createTimeRep(time_format, time_system_rat, time_value);
@@ -507,7 +507,8 @@ void PToolApp::initEphComputer(const st_app::AppParGroup & pars, const pulsarDb:
   if (eph_style != "DB") {
     std::string epoch_time_format = pars["timeformat"];
     std::string epoch = pars["ephepoch"];
-    AbsoluteTime abs_epoch(*createTimeRep(epoch_time_format, epoch_time_sys, epoch, *m_reference_header));
+    std::auto_ptr<TimeRep> time_rep(createTimeRep(epoch_time_format, epoch_time_sys, epoch, *m_reference_header));
+    AbsoluteTime abs_epoch(*time_rep);
 
     // Handle either period or frequency-style input.
     if (eph_style == "FREQ") {
@@ -642,22 +643,27 @@ AbsoluteTime PToolApp::initTargetTime(const st_app::AppParGroup & pars, const Ab
   if (origin_style == "START") {
     // Get time of origin and its time system from event file.
     abs_origin = abs_tstart;
+
   } else if (origin_style == "STOP") {
     // Get time of origin and its time system from event file.
     abs_origin = abs_tstop;
+
   } else if (origin_style == "MIDDLE") {
     // Use the center of the observation as the time origin.
     double tstart = computeElapsedSecond(abs_tstart);
     double tstop = computeElapsedSecond(abs_tstop);
     m_target_time_rep->set("TIME", .5 * (tstart + tstop));
     abs_origin = *m_target_time_rep;
+
   } else if (origin_style == "USER") {
     // Get time of origin and its format and system from parameters.
     std::string origin_time = pars["usertime"];
     std::string origin_time_format = pars["userformat"];
     std::string origin_time_sys = pars["usersys"].Value();
 
-    abs_origin = *createTimeRep(origin_time_format, origin_time_sys, origin_time, *m_reference_header);
+    // Convert user-specified time into AbsoluteTime.
+    std::auto_ptr<TimeRep> time_rep(createTimeRep(origin_time_format, origin_time_sys, origin_time, *m_reference_header));
+    abs_origin = *time_rep;
 
   } else {
     throw std::runtime_error("Unsupported origin style " + origin_style);
