@@ -59,8 +59,6 @@ class PToolApp : public st_app::StApp {
     virtual std::auto_ptr<TimeRep> createTimeRep(const std::string & time_format, const std::string & time_system,
       const std::string & time_value, const tip::Header & header);
 
-    virtual std::string determineTargetSystem();
-
     // TODO: refactor MetRep to include functionality of this method and remove this method.
     virtual std::auto_ptr<TimeRep> createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference);
 
@@ -73,13 +71,13 @@ class PToolApp : public st_app::StApp {
     AbsoluteTime initTargetTime(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart, const AbsoluteTime & abs_tstop);
 
     pulsarDb::PulsarEph & updateEphComputer(const AbsoluteTime & abs_time);
-
+private:
     bool needBaryCorrection(const tip::Header & header);
-
+public:
     void initTimeCorrection(const st_app::AppParGroup & pars);
-
+private:
     AbsoluteTime applyTimeCorrection(double time_value, TimeRep & time_rep);
-
+public:
     double computeElapsedSecond(const AbsoluteTime & abs_time);
 
     void setFirstEvent(const st_app::AppParGroup & pars);
@@ -437,38 +435,6 @@ std::auto_ptr<TimeRep> PToolApp::createTimeRep(const std::string & time_format, 
   return time_rep;
 }
 
-std::string PToolApp::determineTargetSystem() {
-  std::string time_system;
-  bool time_system_set = false;
-
-  // TODO: the following if-statement will become 'if (tcorrect == "NONE")' when tcorrect is introduced.
-  if (!m_request_bary && !m_demod_bin && !m_cancel_pdot) {
-    // When NO corrections are requested, the analysis will be performed in the time system written in event files,
-    // requiring all event files have same time system.
-    std::string this_time_system;
-    for (table_cont_type::const_iterator itor = m_event_table_cont.begin(); itor != m_event_table_cont.end(); ++itor) {
-      const tip::Table * event_table = *itor;
-      const tip::Header & header(event_table->getHeader());
-      header["TIMESYS"].get(this_time_system);
-      if (!time_system_set) {
-        time_system = this_time_system;
-        time_system_set = true;
-      } else if (this_time_system != time_system) {
-        throw std::runtime_error("determineTargetSystem: event files with different TIMESYS values cannot be combined");
-      }
-    }
-  } else {
-    // When ANY correction(s) are requested, the analysis will be performed in TDB system.
-    time_system = "TDB";
-    time_system_set = true;
-  }
-
-  // Check whether time system is successfully set.
-  if (!time_system_set) throw std::runtime_error("determineTargetSystem: cannot determine time system for the time series to analyze");
-
-  return time_system;
-}
-
 std::auto_ptr<TimeRep> PToolApp::createMetRep(const std::string & time_system, const AbsoluteTime & abs_reference) {
   // Compute MJD of abs_reference (the origin of the time series to analyze), to be given as MJDREF of MetRep.
   // NOTE: MetRep should take AbsoluteTime for its MJDREF (Need refactor of AbsoluteTime for that).
@@ -639,8 +605,35 @@ void PToolApp::computeTimeBoundary(AbsoluteTime & abs_tstart, AbsoluteTime & abs
 
 AbsoluteTime PToolApp::initTargetTime(const st_app::AppParGroup & pars, const AbsoluteTime & abs_tstart,
   const AbsoluteTime & abs_tstop) {
+  std::string target_time_sys;
+  bool time_system_set = false;
+
+  // TODO: the following if-statement will become 'if (tcorrect == "NONE")' when tcorrect is introduced.
+  if (!m_request_bary && !m_demod_bin && !m_cancel_pdot) {
+    // When NO corrections are requested, the analysis will be performed in the time system written in event files,
+    // requiring all event files have same time system.
+    std::string this_time_system;
+    for (table_cont_type::const_iterator itor = m_event_table_cont.begin(); itor != m_event_table_cont.end(); ++itor) {
+      const tip::Table * event_table = *itor;
+      const tip::Header & header(event_table->getHeader());
+      header["TIMESYS"].get(this_time_system);
+      if (!time_system_set) {
+        target_time_sys = this_time_system;
+        time_system_set = true;
+      } else if (this_time_system != target_time_sys) {
+        throw std::runtime_error("event files with different TIMESYS values cannot be combined");
+      }
+    }
+  } else {
+    // When ANY correction(s) are requested, the analysis will be performed in TDB system.
+    target_time_sys = "TDB";
+    time_system_set = true;
+  }
+
+  // Check whether time system is successfully set.
+  if (!time_system_set) throw std::runtime_error("cannot determine time system for the time series to analyze");
+
   // Set up target time representation, used to compute the time series to analyze.
-  std::string target_time_sys = determineTargetSystem();
   m_target_time_rep = createMetRep(target_time_sys, abs_tstart);
 
   // Handle styles of origin input.
