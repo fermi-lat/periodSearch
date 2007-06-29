@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Jun 29 13:42:37 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Move target_time_rep variable from PSearchApp::run method to PToolApp data members. Add creation of m_target_time_rep to computeTimeOrigin and rename it to initTargetTime. Rename computeTimeValue to computeElapsedSecond.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Jun 28 16:38:45 PDT 2007
 periodSearch/src/gtpsearch
 
