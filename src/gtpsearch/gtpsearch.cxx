@@ -636,9 +636,6 @@ AbsoluteTime PToolApp::initTargetTime(const st_app::AppParGroup & pars, const Ab
   // Check whether time system is successfully set.
   if (!time_system_set) throw std::runtime_error("cannot determine time system for the time series to analyze");
 
-  // Set up target time representation, used to compute the time series to analyze.
-  m_target_time_rep = createMetRep(target_time_sys, abs_tstart);
-
   // Handle styles of origin input.
   std::string origin_style = pars["timeorigin"];
   for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = std::toupper(*itor);
@@ -655,8 +652,9 @@ AbsoluteTime PToolApp::initTargetTime(const st_app::AppParGroup & pars, const Ab
     // Use the center of the observation as the time origin.
     double tstart = computeElapsedSecond(abs_tstart);
     double tstop = computeElapsedSecond(abs_tstop);
-    m_target_time_rep->set("TIME", .5 * (tstart + tstop));
-    abs_origin = *m_target_time_rep;
+    std::auto_ptr<TimeRep> time_rep(createMetRep(target_time_sys, abs_tstart));
+    time_rep->set("TIME", .5 * (tstart + tstop));
+    abs_origin = *time_rep;
 
   } else if (origin_style == "USER") {
     // Get time of origin and its format and system from parameters.
@@ -672,7 +670,7 @@ AbsoluteTime PToolApp::initTargetTime(const st_app::AppParGroup & pars, const Ab
     throw std::runtime_error("Unsupported origin style " + origin_style);
   }
 
-  // Reset target time representation, to change its reference time to the user-specified origin (abs_origin).
+  // Set up target time representation, used to compute the time series to analyze.
   m_target_time_rep = createMetRep(target_time_sys, abs_origin);
 
   return abs_origin;
