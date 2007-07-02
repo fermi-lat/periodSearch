@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Mon Jul  2 13:32:43 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use localized TimeRep when computing the origin from the middle of the observation.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Jun 29 16:40:55 PDT 2007
 periodSearch/src/gtpsearch
 
