@@ -163,7 +163,7 @@ void PSearchApp::run() {
     search.reset(new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration));
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
-  for (setFirstEvent(pars); !isEndOfEventList(); setNextEvent()) {
+  for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
     AbsoluteTime abs_evt_time(getEventTime());
 
