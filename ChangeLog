@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Tue Jul  3 15:17:15 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Change m_test (a data member of PSearchApp) to search (a regular variable in PSearchApp::run method). Remove unnecessary TODO markers.
+
+    *
+------------------------------------------------------------
 User: peachey  Mon Jul  2 14:14:30 PDT 2007
 periodSearch/src/gtpsearch
 
