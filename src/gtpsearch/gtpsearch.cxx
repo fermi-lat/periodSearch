@@ -61,11 +61,9 @@ class PSearchApp : public pulsarDb::PulsarToolApp {
     st_stream::StreamFormatter m_os;
     // TODO: check whether m_data_dir is necessary.
     std::string m_data_dir;
-    // TODO: check whether m_test is necessary.
-    PeriodSearch * m_test;
 };
 
-PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
+PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir() {
   st_app::AppParGroup & pars(getParGroup("gtpsearch"));
 
   setName("gtpsearch");
@@ -97,9 +95,7 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir(), m_test(0) {
   pars.setCase("timeorigin", "USER", "usersys");
 }
 
-PSearchApp::~PSearchApp() throw() {
-  delete m_test;
-}
+PSearchApp::~PSearchApp() throw() {}
 
 void PSearchApp::run() {
   m_os.setMethod("run()");
@@ -132,11 +128,6 @@ void PSearchApp::run() {
   // Use user input (parameters) together with computer to determine corrections to apply.
   initTimeCorrection(pars);
 
-// START HERE
-// Note: "target time rep" is the common TimeRep used to compute the time series to be analyzed.
-// o another helper to determine the target TimeRep: always using MetRep using TDB unless no corrections. If no
-//     corrections, require all input files to have same time system and match target to input event time system.
-
   // Determine start/stop of the observation interval in AbsoluteTime.
   AbsoluteTime abs_tstart("TDB", Duration(0, 0.), Duration(0, 0.));
   AbsoluteTime abs_tstop("TDB", Duration(0, 0.), Duration(0, 0.));
@@ -163,12 +154,13 @@ void PSearchApp::run() {
   for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = std::toupper(*itor);
 
   // Create the proper test.
+  std::auto_ptr<PeriodSearch> search(0);
   if (algorithm == "CHI2")
-    m_test = new ChiSquaredTest(f_center, f_step, num_trials, origin, num_bins, duration);
+    search.reset(new ChiSquaredTest(f_center, f_step, num_trials, origin, num_bins, duration));
   else if (algorithm == "H")
-    m_test = new HTest(f_center, f_step, num_trials, origin, num_bins, duration);
+    search.reset(new HTest(f_center, f_step, num_trials, origin, num_bins, duration));
   else if (algorithm == "Z2N")
-    m_test = new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration);
+    search.reset(new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration));
   else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
 
   for (setFirstEvent(pars); !isEndOfEventList(); setNextEvent()) {
@@ -179,11 +171,11 @@ void PSearchApp::run() {
     double target_evt_time = computeElapsedSecond(abs_evt_time);
 
     // Fill into the test.
-    m_test->fill(target_evt_time);
+    search->fill(target_evt_time);
   }
 
   // Compute the statistics.
-  m_test->computeStats();
+  search->computeStats();
 
   enum ChatLevel {
     eIncludeSummary= 2,
@@ -194,7 +186,7 @@ void PSearchApp::run() {
   if (title == "DEFAULT") title = "Folding Analysis: " + algorithm + " Test";
 
   // Create a viewer for plotting and writing output.
-  periodSearch::PeriodSearchViewer viewer(*m_test);
+  periodSearch::PeriodSearchViewer viewer(*search);
 
   // Interpret output file parameter.
   std::string out_file_uc = out_file;
@@ -224,13 +216,8 @@ void PSearchApp::run() {
   // Write details of test result if chatter is high enough.
   viewer.writeData(m_os.info(eAllDetails)) << std::endl;
 
-  // TODO: Remove the following TODO.  The time unit is now determined by target_time_rep, not an input file.
-  // TODO: When tip supports getting units from a column, replace the following:
-  std::string unit = "(Hz)";
-  // with:
-  // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
-  if (plot) viewer.plot(title, unit);
+  if (plot) viewer.plot(title, "(Hz)");
 }
 
 void PSearchApp::prompt(st_app::AppParGroup & pars) {
