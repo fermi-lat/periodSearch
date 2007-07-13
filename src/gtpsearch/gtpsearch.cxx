@@ -129,12 +129,14 @@ void PSearchApp::run() {
   initTimeCorrection(pars);
 
   // Determine start/stop of the observation interval in AbsoluteTime.
-  AbsoluteTime abs_tstart("TDB", Duration(0, 0.), Duration(0, 0.));
-  AbsoluteTime abs_tstop("TDB", Duration(0, 0.), Duration(0, 0.));
-  computeTimeBoundary(abs_tstart, abs_tstop);
+  AbsoluteTime abs_tstart(getStartTime());
+  AbsoluteTime abs_tstop(getStopTime());
+
+  // Initialize the time series to analyze.
+  initTargetTime(pars);
 
   // Compute time origin for periodicity search in AbsoluteTime.
-  AbsoluteTime abs_origin = initTargetTime(pars, abs_tstart, abs_tstop);
+  AbsoluteTime abs_origin = getTimeOrigin(pars);
 
   // Compute time origin for periodicity search in double.
   double origin = computeElapsedSecond(abs_origin);
