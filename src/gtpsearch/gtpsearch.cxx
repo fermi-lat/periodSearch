@@ -128,9 +128,6 @@ void PSearchApp::run() {
   // Use user input (parameters) together with computer to determine corrections to apply.
   initTimeCorrection(pars);
 
-  // Initialize the time series to analyze.
-  initTargetTime(pars);
-
   // Compute central frequency of periodicity search, which is an expected pulse frequency at the time origin for the search.
   AbsoluteTime abs_origin = getTimeOrigin(pars);
   double f_center = getEphComputer().calcPulsarEph(abs_origin).f0();
