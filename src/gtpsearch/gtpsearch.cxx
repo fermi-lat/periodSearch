@@ -128,9 +128,6 @@ void PSearchApp::run() {
   // Use user input (parameters) together with computer to determine corrections to apply.
   initTimeCorrection(pars);
 
-  // Determine start/stop of the observation interval in AbsoluteTime.
-  AbsoluteTime abs_tstart(getStartTime());
-  AbsoluteTime abs_tstop(getStopTime());
 
   // Initialize the time series to analyze.
   initTargetTime(pars);
@@ -148,7 +145,8 @@ void PSearchApp::run() {
   double f_center = pulsar_eph.f0();
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
-  double duration = computeElapsedSecond(abs_tstop) - computeElapsedSecond(abs_tstart);
+  // using start/stop of the observation interval with all corrections applied.
+  double duration = computeElapsedSecond(getStopTime()) - computeElapsedSecond(getStartTime());
   double f_step = scan_step / duration;
 
   // Choose which kind of test to create.
