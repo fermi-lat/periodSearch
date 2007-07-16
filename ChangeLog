@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Jul 16 15:49:51 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use PulsarToolApp::getEphComputer method to compute the scan center (f_center). Remove call of PulsarToolApp::updateEphComputer, which is now a part of initTimeCorrection.
+
+    *
+------------------------------------------------------------
 User: peachey  Mon Jul 16 13:40:52 PDT 2007
 periodSearch/src/gtpsearch
 
