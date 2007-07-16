@@ -128,7 +128,6 @@ void PSearchApp::run() {
   // Use user input (parameters) together with computer to determine corrections to apply.
   initTimeCorrection(pars);
 
-
   // Initialize the time series to analyze.
   initTargetTime(pars);
 
@@ -138,11 +137,8 @@ void PSearchApp::run() {
   // Compute time origin for periodicity search in double.
   double origin = computeElapsedSecond(abs_origin);
 
-  // Compute spin ephemeris to be used in periodicity search and pdot cancellation, and replace PulsarEph in EphComputer with it.
-  pulsarDb::PulsarEph & pulsar_eph = updateEphComputer(abs_origin);
-
   // Get central frequency of periodicity search.
-  double f_center = pulsar_eph.f0();
+  double f_center = getEphComputer().calcPulsarEph(abs_origin).f0();
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
   // using start/stop of the observation interval with all corrections applied.
