@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Jul 16 15:59:58 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Set origin (double variable) to a hard-coded zero.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Jul 16 15:49:51 PDT 2007
 periodSearch/src/gtpsearch
 
