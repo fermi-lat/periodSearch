@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Jul 16 16:11:46 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Remove call of PulsarToolApp::initTargetTime method, which is now a part of PulsarToolApp::initTimeCorrection method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Jul 16 15:59:58 PDT 2007
 periodSearch/src/gtpsearch
 
