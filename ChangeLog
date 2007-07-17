@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Tue Jul 17 14:35:43 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add new argument (guess_pdot) when calling PulsarToolApp::initTimeCorrection method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Jul 16 16:11:46 PDT 2007
 periodSearch/src/gtpsearch
 
