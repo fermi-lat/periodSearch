@@ -126,7 +126,8 @@ void PSearchApp::run() {
   initEphComputer(pars, model, chooser);
 
   // Use user input (parameters) together with computer to determine corrections to apply.
-  initTimeCorrection(pars);
+  bool guess_pdot = true;
+  initTimeCorrection(pars, guess_pdot);
 
   // Compute central frequency of periodicity search, which is an expected pulse frequency at the time origin for the search.
   AbsoluteTime abs_origin = getTimeOrigin(pars);
