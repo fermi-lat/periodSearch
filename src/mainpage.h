@@ -2,7 +2,7 @@
     \mainpage periodSearch package
 
     \author  Masaharu Hirayama hirayama@jca.umbc.edu
-    \author  James Peachey peachey@milkyway.gsfc.nasa.gov
+    \author  James Peachey James.Peachey-1@nasa.gov
 
     \section synopsis Synopsis
     This package contains a library and application gtpsearch which searches for pulsation frequencies
