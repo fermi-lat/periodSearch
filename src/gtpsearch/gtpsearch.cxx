@@ -120,6 +120,9 @@ void PSearchApp::run() {
   std::string leap_sec_file = pars["leapsecfile"];
   timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
 
+  // Setup time correction mode.
+  selectTimeCorrectionMode(pars);
+
   // Set up EphComputer for arrival time corrections.
   pulsarDb::TimingModel model;
   pulsarDb::SloppyEphChooser chooser;
