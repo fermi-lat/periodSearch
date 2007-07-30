@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Jul 30 12:37:27 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Prepare for tcorrect parameter, which replaces cancelpdot and demodbin parameters soon.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Jul 27 14:04:42 PDT 2007
 periodSearch/src/gtpsearch
 
