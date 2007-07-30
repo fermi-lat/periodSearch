@@ -121,6 +121,12 @@ void PSearchApp::run() {
   timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
 
   // Setup time correction mode.
+  defineTimeCorrectionMode("NONE", SUPPRESSED, SUPPRESSED, SUPPRESSED);
+  defineTimeCorrectionMode("AUTO", ALLOWED,    ALLOWED,    ALLOWED);
+  defineTimeCorrectionMode("BARY", REQUIRED,   SUPPRESSED, SUPPRESSED);
+  defineTimeCorrectionMode("BIN",  REQUIRED,   REQUIRED,   SUPPRESSED);
+  defineTimeCorrectionMode("PDOT", REQUIRED,   SUPPRESSED, REQUIRED);
+  defineTimeCorrectionMode("ALL",  REQUIRED,   REQUIRED,   REQUIRED);
   selectTimeCorrectionMode(pars);
 
   // Set up EphComputer for arrival time corrections.
