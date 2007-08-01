@@ -139,7 +139,8 @@ void PSearchApp::run() {
   initTimeCorrection(pars, guess_pdot);
 
   // Compute central frequency of periodicity search, which is an expected pulse frequency at the time origin for the search.
-  AbsoluteTime abs_origin = getTimeOrigin(pars);
+  double origin = 0.;
+  AbsoluteTime abs_origin = computeAbsoluteTime(origin);
   double f_center = getEphComputer().calcPulsarEph(abs_origin).f0();
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
@@ -153,7 +154,6 @@ void PSearchApp::run() {
 
   // Create the proper test.
   std::auto_ptr<PeriodSearch> search(0);
-  double origin = 0.;
   if (algorithm == "CHI2")
     search.reset(new ChiSquaredTest(f_center, f_step, num_trials, origin, num_bins, duration));
   else if (algorithm == "H")
