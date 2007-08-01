@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Aug  1 14:36:19 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Replace PulsarToolApp::getTimeOrigin method with more generic, new method PulsarToolApp::computeAbsoluteTime.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Jul 30 12:37:27 PDT 2007
 periodSearch/src/gtpsearch
 
