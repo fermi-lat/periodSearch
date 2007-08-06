@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Aug  6 16:19:09 PDT 2007
+periodSearch/pfiles
+
+Modified Files:
+	gtpspec.par 
+Log Message:
+Fix the bug reported as JIRA PULS-35.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Aug  6 15:16:54 PDT 2007
 periodSearch/src
 
