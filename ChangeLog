@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Mon Aug  6 16:19:09 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Fix the bug reported as JIRA PULS-35.
+
+    *
+------------------------------------------------------------
+User: hirayama  Mon Aug  6 16:19:09 PDT 2007
 periodSearch/pfiles
 
 Modified Files:
