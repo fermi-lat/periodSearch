@@ -6,7 +6,7 @@
 #ifndef periodSearch_PowerSpectrumApp_h
 #define periodSearch_PowerSpectrumApp_h
 
-#include "st_app/StApp.h"
+#include "pulsarDb/PulsarToolApp.h"
 
 #include "st_stream/StreamFormatter.h"
 
@@ -18,7 +18,7 @@ namespace st_app {
 
 class FourierAnalysis;
 
-class PowerSpectrumApp : public st_app::StApp {
+class PowerSpectrumApp : public pulsarDb::PulsarToolApp {
   public:
     PowerSpectrumApp();
     virtual ~PowerSpectrumApp() throw();

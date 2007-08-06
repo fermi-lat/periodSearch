@@ -78,190 +78,43 @@ void PowerSpectrumApp::run() {
   prompt(pars);
 
   // Get parameters.
-  std::string event_file = pars["evfile"];
   std::string out_file = pars["outfile"];
-  std::string event_extension = pars["evtable"];
-  std::string epoch = pars["ephepoch"];
-  std::string epoch_time_format = pars["timeformat"];
   long num_bins = pars["numbins"];
   double low_f_cut = pars["lowfcut"];
-  std::string time_field = pars["timefield"];
   bool plot = pars["plot"];
   std::string title = pars["title"];
-  bool cancel_pdot = pars["cancelpdot"];
-  std::string demod_binary_string = pars["demodbin"];
-  std::string eph_style = pars["ephstyle"];
   bool clobber = pars["clobber"];
 
-  // Open the event file.
-  std::auto_ptr<const tip::Table> event_table(tip::IFileSvc::instance().readTable(event_file, event_extension));
-
-  // Read GTI.
-  std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
-
-  // Get necessary keywords.
-  double tstart = 0.;
-  double tstop = 0.;
-  std::string telescope;
-  std::string event_time_sys;
-
-  // Find all other keywords from events extension.
-  const tip::Header & header(event_table->getHeader());
-  header["TELESCOP"].get(telescope);
-  header["TIMESYS"].get(event_time_sys);
-
-  // If possible, get tstart and tstop from first and last interval in GTI extension.
-  tip::Table::ConstIterator gti_itor = gti_table->begin();
-  if (gti_itor != gti_table->end()) {
-    // TSTART is the start of the first interval.
-    tstart = (*gti_itor)["START"].get();
-    // TSTOP is from the stop of the last interval.
-    gti_itor = gti_table->end();
-    --gti_itor;
-    tstop = (*gti_itor)["STOP"].get();
-  } else {
-    header["TSTART"].get(tstart);
-    header["TSTOP"].get(tstop);
-  }
-
-  // Get the mjdref from the header, which is not as simple as just reading a single keyword.
-  MjdRefDatabase mjd_ref_db;
-  IntFracPair mjd_ref(mjd_ref_db(header));
-
-  // Make names of time system and mission case insensitive.
-  for (std::string::iterator itor = telescope.begin(); itor != telescope.end(); ++itor) *itor = std::toupper(*itor);
-  for (std::string::iterator itor = event_time_sys.begin(); itor != event_time_sys.end(); ++itor) *itor = std::toupper(*itor);
-
-  if (telescope != "GLAST") throw std::runtime_error("Only GLAST supported for now");
+  // Open the event file(s).
+  openEventFile(pars);
 
   // Handle leap seconds.
   std::string leap_sec_file = pars["leapsecfile"];
   timeSystem::TimeSystem::setDefaultLeapSecFileName(leap_sec_file);
 
-  // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = epoch_time_format.begin(); itor != epoch_time_format.end(); ++itor) *itor = std::toupper(*itor);
-  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
+  // Setup time correction mode.
+  defineTimeCorrectionMode("NONE", SUPPRESSED, SUPPRESSED, SUPPRESSED);
+  defineTimeCorrectionMode("AUTO", ALLOWED,    ALLOWED,    ALLOWED);
+  defineTimeCorrectionMode("BARY", REQUIRED,   SUPPRESSED, SUPPRESSED);
+  defineTimeCorrectionMode("BIN",  REQUIRED,   REQUIRED,   SUPPRESSED);
+  defineTimeCorrectionMode("PDOT", REQUIRED,   SUPPRESSED, REQUIRED);
+  defineTimeCorrectionMode("ALL",  REQUIRED,   REQUIRED,   REQUIRED);
+  selectTimeCorrectionMode(pars);
 
-  // Determine the time system used for the ephemeris epoch.
-  std::string epoch_time_sys;
-  if (eph_style == "DB") epoch_time_sys = "TDB";
-  else epoch_time_sys = pars["timesys"].Value();
+  // Set up EphComputer for arrival time corrections.
+  pulsarDb::TimingModel model;
+  pulsarDb::SloppyEphChooser chooser;
+  initEphComputer(pars, model, chooser);
 
-  // Make time formats etc. case insensitive.
-  for (std::string::iterator itor = epoch_time_sys.begin(); itor != epoch_time_sys.end(); ++itor) *itor = std::toupper(*itor);
+  // Use user input (parameters) together with computer to determine corrections to apply.
+  bool guess_pdot = false;
+  initTimeCorrection(pars, guess_pdot, "MIDDLE");
+  // TODO: Uncomment below and remove above once origin-related parameters are introduced to fix the bug reported as JIRA PULS-35.
+//  initTimeCorrection(pars, guess_pdot);
 
-  // Interpret FILE option: match epoch to event time system.
-  if ("FILE" == epoch_time_sys) epoch_time_sys = event_time_sys;
-
-  using namespace pulsarDb;
-
-  // Ignored but needed for timing model.
-  double phi0 = 0.;
-
-  std::string psr_name = pars["psrname"];
-  std::string demod_bin_string = pars["demodbin"];
-  for (std::string::iterator itor = demod_bin_string.begin(); itor != demod_bin_string.end(); ++itor) *itor = std::toupper(*itor);
-
-  std::string evt_time_sys;
-  header["TIMESYS"].get(evt_time_sys);
-
-  // A TimingModel will be needed for several steps below.
-  TimingModel model;
-  SloppyEphChooser chooser;
-  EphComputer computer(model, chooser);
-
-  if (eph_style != "DB") {
-    std::auto_ptr<TimeRep> epoch_rep(0);
-    // Create representation for this time format and time system.
-    if (epoch_time_format == "FILE") {
-      epoch_rep.reset(new MetRep(epoch_time_sys, mjd_ref, 0.));
-    } else if (epoch_time_format == "GLAST") {
-      epoch_rep.reset(new GlastMetRep(epoch_time_sys, 0.));
-    } else if (epoch_time_format == "MJD") {
-      epoch_rep.reset(new MjdRep(epoch_time_sys, 0, 0.));
-    } else {
-      throw std::runtime_error("Time format \"" + epoch_time_format + "\" is not supported for manual ephemeris epoch");
-    }
-
-    // Assign the ephepoch supplied by the user to the representation.
-    epoch_rep->assign(epoch);
-
-    AbsoluteTime abs_epoch(*epoch_rep);
-
-    // Handle either period or frequency-style input.
-    if (eph_style == "FREQ") {
-      double f0 = pars["f0"];
-      double f1 = pars["f1"];
-      double f2 = pars["f2"];
-
-      if (0. >= f0) throw std::runtime_error("Frequency must be positive.");
-
-      // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
-      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-      ephemerides.push_back(FrequencyEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, f0, f1, f2).clone());
-    } else if (eph_style == "PER") {
-      double p0 = pars["p0"];
-      double p1 = pars["p1"];
-      double p2 = pars["p2"];
-
-      if (0. >= p0) throw std::runtime_error("Period must be positive.");
-
-      // Override any ephemerides which may have been found in the database with the ephemeris the user provided.
-      PulsarEphCont & ephemerides(computer.getPulsarEphCont());
-      ephemerides.push_back(PeriodEph(epoch_time_sys, abs_epoch, abs_epoch, abs_epoch, phi0, p0, p1, p2).clone());
-    }
-  }
-
-  if (eph_style == "DB" || demod_bin_string != "NO") {
-    // Find the pulsar database.
-    std::string psrdb_file = pars["psrdbfile"];
-    std::string psrdb_file_uc = psrdb_file;
-    for (std::string::iterator itor = psrdb_file_uc.begin(); itor != psrdb_file_uc.end(); ++itor) *itor = std::toupper(*itor);
-    if ("DEFAULT" == psrdb_file_uc) {
-      using namespace st_facilities;
-      psrdb_file = Env::appendFileName(Env::getDataDir("periodSearch"), "master_pulsardb.fits");
-    }
-
-    // Open the database.
-    PulsarDb database(psrdb_file);
-
-    // Select only ephemerides for this pulsar.
-    database.filterName(psr_name);
-
-    // Load the selected ephemerides.
-    if (eph_style == "DB") computer.loadPulsarEph(database);
-    computer.loadOrbitalEph(database);
-  }
-
-  // Determine whether to perform binary demodulation.
-  bool demod_bin = false;
-  if (demod_bin_string != "NO") {
-    // User selected not "no", so attempt to perform demodulation
-    if (!computer.getOrbitalEphCont().empty()) {
-      demod_bin = true;
-    } else if (demod_bin_string == "YES") {
-      throw std::runtime_error("Binary demodulation was required by user, but no orbital ephemeris was found");
-    }
-  }
-
-  // Set up event time representation.
-  MetRep evt_time_rep(evt_time_sys, mjd_ref, 0.);
-
-  // Apply arrival time correction to TSTART.
-  evt_time_rep.setValue(tstart);
-  AbsoluteTime abs_tstart(evt_time_rep);
-  if (demod_bin) computer.demodulateBinary(abs_tstart);
-  if (cancel_pdot) computer.cancelPdot(abs_tstart);
-  evt_time_rep = abs_tstart;
-  tstart = evt_time_rep.getValue();
-
-  // Apply arrival time correction to TSTOP.
-  evt_time_rep.setValue(tstop);
-  AbsoluteTime abs_tstop(evt_time_rep);
-  if (demod_bin) computer.demodulateBinary(abs_tstop);
-  if (cancel_pdot) computer.cancelPdot(abs_tstop);
-  evt_time_rep = abs_tstop;
-  tstop = evt_time_rep.getValue();
+  // Compute start time of the data set.
+  double tstart = computeElapsedSecond(getStartTime());
+  double tstop = computeElapsedSecond(getStopTime());
 
   // Get binwidth parameter.
   double bin_width = pars["binwidth"];
@@ -269,24 +122,15 @@ void PowerSpectrumApp::run() {
   // Create the proper test.
   m_test = new FourierAnalysis(tstart, tstop, bin_width, num_bins);
 
-  // Iterate over table, filling the search/test object with temporal data.
-  for (tip::Table::ConstIterator itor = event_table->begin(); itor != event_table->end(); ++itor) {
-    // Get value from the table.
-    double evt_time = (*itor)[time_field].get();
+  for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
+    // Get event time as AbsoluteTime.
+    AbsoluteTime abs_evt_time(getEventTime());
 
-    evt_time_rep.setValue(evt_time);
-    AbsoluteTime abs_evt_time(evt_time_rep);
-    // Perform binary correction if so desired.
-    if (demod_bin) computer.demodulateBinary(abs_evt_time);
-
-    // Perform pdot correction if so desired.
-    // For efficiency use the TimingModel directly here, instead of using the EphComputer.
-    if (cancel_pdot) computer.cancelPdot(abs_evt_time);
-    evt_time_rep = abs_evt_time;
-    evt_time = evt_time_rep.getValue();
+    // Convert event time to target time representation.
+    double target_evt_time = computeElapsedSecond(abs_evt_time);
 
     // Fill into the test.
-    m_test->fill(evt_time);
+    m_test->fill(target_evt_time);
   }
 
   // Compute the statistics.
@@ -331,12 +175,8 @@ void PowerSpectrumApp::run() {
   // Write details of test result if chatter is high enough.
   viewer.writeData(m_os.info(eAllDetails)) << std::endl;
 
-  // TODO: When tip supports getting units from a column, replace the following:
-  std::string unit = "(Hz)";
-  // with:
-  // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
   // Display a plot, if desired.
-  if (plot) viewer.plot(title, unit);
+  if (plot) viewer.plot(title, "(Hz)");
 }
 
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
