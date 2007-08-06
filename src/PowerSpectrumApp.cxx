@@ -43,6 +43,8 @@ using namespace timeSystem;
 static const std::string s_cvs_id = "$Name:  $";
 
 PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2), m_data_dir(), m_test(0) {
+  // TODO: Do we need something similar to the below?
+#if 0
   st_app::AppParGroup & pars(getParGroup("gtpspec"));
   pars.setSwitch("ephstyle");
   pars.setSwitch("cancelpdot");
@@ -64,6 +66,7 @@ PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2), m_data_di
   pars.setCase("cancelpdot", "true", "p1");
   pars.setCase("ephstyle", "PER", "p2");
   pars.setCase("ephstyle", "DB", "psrname");
+#endif
 }
 
 PowerSpectrumApp::~PowerSpectrumApp() throw() {
@@ -104,13 +107,11 @@ void PowerSpectrumApp::run() {
   // Set up EphComputer for arrival time corrections.
   pulsarDb::TimingModel model;
   pulsarDb::SloppyEphChooser chooser;
-  initEphComputer(pars, model, chooser);
+  initEphComputer(pars, model, chooser, "DB");
 
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool guess_pdot = false;
-  initTimeCorrection(pars, guess_pdot, "MIDDLE");
-  // TODO: Uncomment below and remove above once origin-related parameters are introduced to fix the bug reported as JIRA PULS-35.
-//  initTimeCorrection(pars, guess_pdot);
+  initTimeCorrection(pars, guess_pdot);
 
   // Compute start time of the data set.
   double tstart = computeElapsedSecond(getStartTime());
@@ -180,6 +181,8 @@ void PowerSpectrumApp::run() {
 }
 
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
+  // TODO: Check the order of the prompts below.
+
   // Prompt for most parameters automatically.
   pars.Prompt("evfile");
   pars.Prompt("outfile");
@@ -192,34 +195,20 @@ void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
   pars.Prompt("ephstyle");
   pars.Prompt("demodbin");
 
-  std::string eph_style = pars["ephstyle"];
-  if (eph_style == "FREQ") {
-    pars.Prompt("ephepoch");
-    pars.Prompt("timeformat");
-    pars.Prompt("timesys");
-    pars.Prompt("f0");
-  } else if (eph_style == "PER") {
-    pars.Prompt("ephepoch");
-    pars.Prompt("timeformat");
-    pars.Prompt("timesys");
-    pars.Prompt("p0");
-  } else if (eph_style == "DB") {
-    // No action needed.
-  } else
-    throw std::runtime_error("Unknown ephemeris style " + eph_style);
-
   pars.Prompt("cancelpdot");
 
   // Only prompt for f1 & f2 / p1 & p2 if pdot correction is selected.
   if (true == bool(pars["cancelpdot"])) {
+    std::string eph_style = pars["ephstyle"];
     if (eph_style == "FREQ") {
-      pars.Prompt("f1");
-      pars.Prompt("f2");
+      pars.Prompt("f1f0ratio");
+      pars.Prompt("f2f0ratio");
     } else if (eph_style == "PER") {
-      pars.Prompt("p1");
-      pars.Prompt("p2");
+      pars.Prompt("p1p0ratio");
+      pars.Prompt("p2p0ratio");
+    } else {
+      throw std::runtime_error("Unknown ephemeris style " + eph_style);
     }
-    // if eph_style == "DB", coeffs will be determined.
   }
 
   pars.Prompt("timefield");
