@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Tue Aug  7 12:33:39 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Organize new parameters in the GUI panel.
+
+    *
+------------------------------------------------------------
 User: hirayama  Tue Aug  7 12:15:55 PDT 2007
 periodSearch/src
 
