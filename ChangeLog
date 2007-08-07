@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Tue Aug  7 12:15:55 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Rationalize the order of prompt. Add prompting new parameters.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Aug  6 16:19:09 PDT 2007
 periodSearch/src
 
