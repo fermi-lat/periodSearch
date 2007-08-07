@@ -181,21 +181,14 @@ void PowerSpectrumApp::run() {
 }
 
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
-  // TODO: Check the order of the prompts below.
-
   // Prompt for most parameters automatically.
   pars.Prompt("evfile");
   pars.Prompt("outfile");
   pars.Prompt("evtable");
-  pars.Prompt("psrdbfile");
-  pars.Prompt("psrname");
   pars.Prompt("binwidth");
   pars.Prompt("numbins");
   pars.Prompt("lowfcut");
   pars.Prompt("ephstyle");
-  pars.Prompt("demodbin");
-
-  pars.Prompt("cancelpdot");
 
   // Only prompt for f1 & f2 / p1 & p2 if pdot correction is selected.
   if (true == bool(pars["cancelpdot"])) {
@@ -209,6 +202,20 @@ void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
     } else {
       throw std::runtime_error("Unknown ephemeris style " + eph_style);
     }
+  }
+
+  pars.Prompt("psrdbfile");
+  pars.Prompt("psrname");
+  pars.Prompt("cancelpdot");
+  pars.Prompt("demodbin");
+
+  pars.Prompt("timeorigin");
+  std::string origin_style = pars["timeorigin"];
+  for (std::string::iterator itor = origin_style.begin(); itor != origin_style.end(); ++itor) *itor = std::toupper(*itor);
+  if (origin_style == "USER") {
+    pars.Prompt("usertime");
+    pars.Prompt("userformat");
+    pars.Prompt("usersys");
   }
 
   pars.Prompt("timefield");
