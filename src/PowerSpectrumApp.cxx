@@ -43,30 +43,14 @@ using namespace timeSystem;
 static const std::string s_cvs_id = "$Name:  $";
 
 PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2), m_data_dir(), m_test(0) {
-  // TODO: Do we need something similar to the below?
-#if 0
   st_app::AppParGroup & pars(getParGroup("gtpspec"));
   pars.setSwitch("ephstyle");
-  pars.setSwitch("cancelpdot");
-  pars.setCase("ephstyle", "FREQ", "f0");
-  pars.setCase("ephstyle", "DB", "cancelpdot");
   pars.setCase("ephstyle", "FREQ", "cancelpdot");
   pars.setCase("ephstyle", "PER", "cancelpdot");
-  pars.setCase("cancelpdot", "true", "f1");
-  pars.setCase("ephstyle", "FREQ", "f1");
-  pars.setCase("ephstyle", "FREQ", "f2");
-  pars.setCase("ephstyle", "FREQ", "ephepoch");
-  pars.setCase("ephstyle", "FREQ", "timeformat");
-  pars.setCase("ephstyle", "FREQ", "timesys");
-  pars.setCase("ephstyle", "PER", "p0");
-  pars.setCase("ephstyle", "PER", "p1");
-  pars.setCase("ephstyle", "PER", "ephepoch");
-  pars.setCase("ephstyle", "PER", "timeformat");
-  pars.setCase("ephstyle", "PER", "timesys");
-  pars.setCase("cancelpdot", "true", "p1");
-  pars.setCase("ephstyle", "PER", "p2");
-  pars.setCase("ephstyle", "DB", "psrname");
-#endif
+  pars.setCase("ephstyle", "FREQ", "f1f0ratio");
+  pars.setCase("ephstyle", "FREQ", "f2f0ratio");
+  pars.setCase("ephstyle", "PER", "p1p0ratio");
+  pars.setCase("ephstyle", "PER", "p2p0ratio");
 }
 
 PowerSpectrumApp::~PowerSpectrumApp() throw() {
