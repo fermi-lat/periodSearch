@@ -1,5 +1,16 @@
 ------------------------------------------------------------
 User: peachey  Wed Aug  8 13:42:05 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Clean up: eliminate some TODO items and clear out some unneeded
+variables and methods.
+
+    *
+------------------------------------------------------------
+User: peachey  Wed Aug  8 13:42:05 PDT 2007
 periodSearch/src
 
 Modified Files:
