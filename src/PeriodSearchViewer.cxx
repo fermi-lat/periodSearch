@@ -46,8 +46,6 @@ namespace periodSearch {
       typedef st_graph::ValueSequence<std::vector<double>::const_iterator> ValueSeq_t;
 
       // Impose range limits.
-      // TODO Move interpretation of min/max frequency into constructor and store the selected index locating
-      // the min and max to avoid recomputing min/max index each time this is called.
       std::pair<size_type, size_type> indices = m_search->getRangeIndex(m_min_freq, m_max_freq);
       size_type begin_index = indices.first;
       size_type end_index = indices.second;
@@ -105,8 +103,6 @@ namespace periodSearch {
     os << "Frequency\tStatistic";
 
     // Impose range limits.
-    // TODO Move interpretation of min/max frequency into constructor and store the selected index locating
-    // the min and max to avoid recomputing min/max index each time this is called.
     std::pair<PeriodSearch::size_type, PeriodSearch::size_type> indices = m_search->getRangeIndex(m_min_freq, m_max_freq);
     PeriodSearch::size_type begin_index = indices.first;
     PeriodSearch::size_type end_index = indices.second;
@@ -125,8 +121,6 @@ namespace periodSearch {
 
   tip::Table & PeriodSearchViewer::writeData(tip::Table & table) const {
     // Impose range limits.
-    // TODO Move interpretation of min/max frequency into constructor and store the selected index locating
-    // the min and max to avoid recomputing min/max index each time this is called.
     std::pair<PeriodSearch::size_type, PeriodSearch::size_type> indices = m_search->getRangeIndex(m_min_freq, m_max_freq);
     PeriodSearch::size_type begin_index = indices.first;
     PeriodSearch::size_type end_index = indices.second;

@@ -62,10 +62,6 @@ namespace periodSearch {
       */
       virtual tip::Table & writeData(tip::Table & table) const;
 
-      // TODO Add fits file output method.
-      //  o Summary goes to COMMENT header keywords (human readable).
-      //  o Data goes to FITS columns (FREQUENCY and POWER, to match Xronos? How do we handle errors?).
-
     private:
       const PeriodSearch * m_search;
       double m_min_freq;

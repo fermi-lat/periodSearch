@@ -42,7 +42,7 @@ using namespace timeSystem;
 
 static const std::string s_cvs_id = "$Name:  $";
 
-PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2), m_data_dir(), m_test(0) {
+PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2) {
   st_app::AppParGroup & pars(getParGroup("gtpspec"));
   pars.setSwitch("ephstyle");
   pars.setCase("ephstyle", "FREQ", "cancelpdot");
@@ -54,7 +54,6 @@ PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2), m_data_di
 }
 
 PowerSpectrumApp::~PowerSpectrumApp() throw() {
-  delete m_test;
 }
 
 void PowerSpectrumApp::run() {
@@ -105,7 +104,7 @@ void PowerSpectrumApp::run() {
   double bin_width = pars["binwidth"];
 
   // Create the proper test.
-  m_test = new FourierAnalysis(tstart, tstop, bin_width, num_bins);
+  std::auto_ptr<FourierAnalysis> test(new FourierAnalysis(tstart, tstop, bin_width, num_bins));
 
   for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
@@ -115,11 +114,11 @@ void PowerSpectrumApp::run() {
     double target_evt_time = computeElapsedSecond(abs_evt_time);
 
     // Fill into the test.
-    m_test->fill(target_evt_time);
+    test->fill(target_evt_time);
   }
 
   // Compute the statistics.
-  m_test->computeStats();
+  test->computeStats();
 
   enum ChatLevel {
     eIncludeSummary= 2,
@@ -130,7 +129,7 @@ void PowerSpectrumApp::run() {
   if (title == "DEFAULT") title = "Fourier Analysis: Power Spectrum";
 
   // Create a viewer for plotting and writing output.
-  periodSearch::PeriodSearchViewer viewer(*m_test, low_f_cut);
+  periodSearch::PeriodSearchViewer viewer(*test, low_f_cut);
 
   // Interpret output file parameter.
   std::string out_file_uc = out_file;
@@ -210,9 +209,4 @@ void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
 
   // Save current values of the parameters.
   pars.Save();
-}
-
-const std::string & PowerSpectrumApp::getDataDir() {
-  m_data_dir = st_facilities::Env::getDataDir("periodSearch");
-  return m_data_dir;
 }

@@ -10,13 +10,9 @@
 
 #include "st_stream/StreamFormatter.h"
 
-#include <string>
-
 namespace st_app {
   class AppParGroup;
 }
-
-class FourierAnalysis;
 
 class PowerSpectrumApp : public pulsarDb::PulsarToolApp {
   public:
@@ -26,12 +22,8 @@ class PowerSpectrumApp : public pulsarDb::PulsarToolApp {
 
     virtual void prompt(st_app::AppParGroup & pars);
 
-    const std::string & getDataDir();
-
   private:
     st_stream::StreamFormatter m_os;
-    std::string m_data_dir;
-    FourierAnalysis * m_test;
 };
 
 #endif

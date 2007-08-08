@@ -48,7 +48,7 @@ using namespace periodSearch;
 class PSearchTestApp : public st_app::StApp {
   public:
 
-    PSearchTestApp(): m_os("PSearchTestApp", "", 2), m_data_dir(), m_failed(false) {
+    PSearchTestApp(): m_os("PSearchTestApp", "", 2), m_failed(false) {
       setName("test_stpsearch");
       setVersion(s_cvs_id);
     }
@@ -66,8 +66,6 @@ class PSearchTestApp : public st_app::StApp {
 
     void testChanceProb();
 
-    const std::string & getDataDir();
-
     std::string findFile(const std::string & file_name);
 
   private:
@@ -76,7 +74,6 @@ class PSearchTestApp : public st_app::StApp {
       bool plot, double min_freq = -1., double max_freq = -1.);
 
     st_stream::StreamFormatter m_os;
-    std::string m_data_dir;
     bool m_failed;
 };
 
@@ -127,10 +124,8 @@ void PSearchTestApp::run() {
   // Read some real data.
   std::auto_ptr<const tip::Table> evt_table(tip::IFileSvc::instance().readTable(findFile("step-01.fits"), "EVENTS"));
 
-  // Read telapse for duration from GTI.
+  // Get gti_table.
   std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(findFile("step-01.fits"), "GTI"));
-  duration = 0.;
-  gti_table->getHeader()["TELAPSE"].get(duration);
 
   // Make the array big enough to hold these events.
   fake_evts.resize(evt_table->getNumRecords());
@@ -386,13 +381,10 @@ void PSearchTestApp::testChanceProb() {
   }
 }
 
-const std::string & PSearchTestApp::getDataDir() {
-  m_data_dir = st_facilities::Env::getDataDir("periodSearch");
-  return m_data_dir;
-}
 
 std::string PSearchTestApp::findFile(const std::string & file_name) {
-  return st_facilities::Env::appendFileName(getDataDir(), file_name);
+  using namespace st_facilities;
+  return Env::appendFileName(Env::getDataDir("periodSearch"), file_name);
 }
 
 void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search,
@@ -410,8 +402,7 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   search.computeStats();
 
   // Find the template file.
-  using namespace st_facilities;
-  std::string template_file = Env::appendFileName(Env::getDataDir("periodSearch"), "period-search-out.tpl");
+  std::string template_file = findFile("period-search-out.tpl");
 
   // Create output file.
   tip::IFileSvc::instance().createFile(out_file, template_file, true);
@@ -436,12 +427,7 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   // Write details of test result if chatter is high enough.
   viewer.writeData(m_os.info(eAllDetails)) << std::endl;
 
-  // TODO: When tip supports getting units from a column, replace the following:
-  std::string unit = "(Hz)";
-  // with:
-  // std::string unit = "(/" + event_table->getColumn(time_field)->getUnit() + ")";
-  // Display a plot, if desired.
-  if (plot) viewer.plot(plot_title, unit);
+  if (plot) viewer.plot(plot_title, "(Hz)");
 }
 
 st_app::StAppFactory<PSearchTestApp> g_factory("test_periodSearch");
