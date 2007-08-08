@@ -54,16 +54,11 @@ class PSearchApp : public pulsarDb::PulsarToolApp {
 
     virtual void prompt(st_app::AppParGroup & pars);
 
-    // TODO: check whether getDataDir is necessary.
-    const std::string & getDataDir();
-
   private:
     st_stream::StreamFormatter m_os;
-    // TODO: check whether m_data_dir is necessary.
-    std::string m_data_dir;
 };
 
-PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2), m_data_dir() {
+PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
   st_app::AppParGroup & pars(getParGroup("gtpsearch"));
 
   setName("gtpsearch");
@@ -127,6 +122,8 @@ void PSearchApp::run() {
   defineTimeCorrectionMode("BIN",  REQUIRED,   REQUIRED,   SUPPRESSED);
   defineTimeCorrectionMode("PDOT", REQUIRED,   SUPPRESSED, REQUIRED);
   defineTimeCorrectionMode("ALL",  REQUIRED,   REQUIRED,   REQUIRED);
+
+  
   selectTimeCorrectionMode(pars);
 
   // Set up EphComputer for arrival time corrections.
@@ -281,11 +278,6 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
 
   // Save current values of the parameters.
   pars.Save();
-}
-
-const std::string & PSearchApp::getDataDir() {
-  m_data_dir = st_facilities::Env::getDataDir("periodSearch");
-  return m_data_dir;
 }
 
 st_app::StAppFactory<PSearchApp> g_factory("gtpsearch");

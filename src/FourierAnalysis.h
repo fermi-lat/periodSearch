@@ -25,7 +25,6 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
                         may be an upper limit on the actual number of bins used.
         \param num_events Hint giving the anticipated number of events to be filled.
     */
-    // TODO: put minimum frequency in constructor low_freq_cutoff.
     FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, int num_events = 0);
 
     /** \brief Fill given time into histograms.
