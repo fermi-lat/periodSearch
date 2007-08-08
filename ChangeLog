@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug  8 13:48:38 PDT 2007
+periodSearch/pfiles
+
+Modified Files:
+	gtpspec.par 
+Log Message:
+Remove default for outfile parameter.
+
+    *
+------------------------------------------------------------
 User: peachey  Wed Aug  8 13:42:05 PDT 2007
 periodSearch/src/test
 
