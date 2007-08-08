@@ -1,6 +1,6 @@
 algorithm,      s, a, Chi2, Chi2|Z2n|H, , "Type of statistical test to perform (Chi2 - Chi squared, Z2n - Z2n/Rayleigh test, H - H test)"
 evfile,         f, a, , , , "Event data file name"
-outfile,        f, a, gtpsearch-out.fits, , , "Output FITS file name (NONE for no FITS output)"
+outfile,        f, a, , , , "Output FITS file name (NONE for no FITS output)"
 psrname,        s, a, "ANY", , , "Pulsar name"
 ephstyle,       s, a, DB, DB|FREQ|PER, , "How will spin ephemeris be specified?"
 f0,             r, a, 1., 0., , "Pulse frequency at the epoch of the spin ephemeris"

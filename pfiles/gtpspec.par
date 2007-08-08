@@ -1,5 +1,5 @@
 evfile,         f, a, , , , "Event data file name"
-outfile,        f, a, gtpspec-out.fits, , , "Output FITS file name (NONE for no FITS output)"
+outfile,        f, a, , , , "Output FITS file name (NONE for no FITS output)"
 binwidth,       r, a, 1.e-2, 0., , "Width of time bins, in seconds"
 numbins,        i, a, 1000000, , , "Number of time bins to be transformed at once"
 lowfcut,        r, h, .01, 0., , "Low frequency cut-off for chance probability computation"
