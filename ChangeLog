@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: peachey  Wed Aug  8 13:42:05 PDT 2007
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearchViewer.h 
+Log Message:
+Clean up: eliminate some TODO items and clear out some unneeded
+variables and methods.
+
+    *
+------------------------------------------------------------
 User: hirayama  Tue Aug  7 12:33:39 PDT 2007
 periodSearch/src
 
