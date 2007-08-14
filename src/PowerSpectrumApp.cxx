@@ -57,6 +57,9 @@ PowerSpectrumApp::~PowerSpectrumApp() throw() {
 }
 
 void PowerSpectrumApp::run() {
+  // Clean up from any previous runs.
+  resetApp();
+
   m_os.setMethod("run()");
   st_app::AppParGroup & pars(getParGroup("gtpspec"));
 

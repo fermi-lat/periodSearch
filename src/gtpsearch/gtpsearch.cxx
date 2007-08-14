@@ -93,6 +93,9 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
 PSearchApp::~PSearchApp() throw() {}
 
 void PSearchApp::run() {
+  // Clean up from any previous runs.
+  resetApp();
+
   m_os.setMethod("run()");
   st_app::AppParGroup & pars(getParGroup("gtpsearch"));
 
