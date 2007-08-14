@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Tue Aug 14 14:06:50 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Call resetApp first thing in the run() method.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v7, operation: add
 Package: periodSearch
