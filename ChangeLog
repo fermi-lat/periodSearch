@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: peachey  Tue Sep  4 13:56:02 PDT 2007
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Use dummy RA and Dec in construction of test ephemeris.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v7r0p1, operation: add
 Package: periodSearch
