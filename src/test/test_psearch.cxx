@@ -183,7 +183,7 @@ void PSearchTestApp::run() {
   glast_tdb.setValue(epoch);
   AbsoluteTime abs_epoch(glast_tdb);
 
-  PeriodEph eph("TDB", abs_epoch, abs_epoch, abs_epoch, phi0, 1. / central, pdot, p2dot);
+  PeriodEph eph("TDB", abs_epoch, abs_epoch, abs_epoch, 0., 0., phi0, 1. / central, pdot, p2dot);
   TimingModel timing_model;
 
   // Correct the data.
