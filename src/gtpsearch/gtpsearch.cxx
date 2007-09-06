@@ -11,28 +11,24 @@
 
 #include "pulsarDb/EphChooser.h"
 #include "pulsarDb/EphComputer.h"
-#include "pulsarDb/PulsarDb.h"
-#include "pulsarDb/PulsarEph.h"
 #include "pulsarDb/PulsarToolApp.h"
 #include "pulsarDb/TimingModel.h"
+
+#include "timeSystem/AbsoluteTime.h"
+#include "timeSystem/TimeSystem.h"
+
+#include "tip/IFileSvc.h"
+#include "tip/Table.h"
 
 #include "st_app/AppParGroup.h"
 #include "st_app/StApp.h"
 #include "st_app/StAppFactory.h"
-
-#include "timeSystem/AbsoluteTime.h"
-#include "timeSystem/GlastMetRep.h"
-#include "timeSystem/TimeRep.h"
-
-#include "tip/IFileSvc.h"
-#include "tip/Table.h"
 
 #include "st_facilities/Env.h"
 
 #include "st_stream/Stream.h"
 #include "st_stream/StreamFormatter.h"
 #include "st_stream/st_stream.h"
-#include "timeSystem/TimeSystem.h"
 
 #include "periodSearch/PeriodSearch.h"
 #include "periodSearch/PeriodSearchViewer.h"
