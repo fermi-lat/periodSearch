@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Sep  6 15:31:00 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Clean up a list of header files to include.
+
+    *
+------------------------------------------------------------
 User: peachey  Tue Sep  4 13:56:02 PDT 2007
 periodSearch/src/test
 
