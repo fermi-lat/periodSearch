@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Sep  6 15:31:01 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Clean up a list of header files to include.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Sep  6 15:31:00 PDT 2007
 periodSearch/src
 
