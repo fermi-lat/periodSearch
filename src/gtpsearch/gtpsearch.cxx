@@ -15,6 +15,8 @@
 #include "pulsarDb/TimingModel.h"
 
 #include "timeSystem/AbsoluteTime.h"
+#include "timeSystem/EventTimeHandler.h"
+#include "timeSystem/GlastTimeHandler.h"
 #include "timeSystem/TimeSystem.h"
 
 #include "tip/IFileSvc.h"
@@ -278,5 +280,8 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   // Save current values of the parameters.
   pars.Save();
 }
+
+// List supported mission(s).
+timeSystem::EventTimeHandlerFactory<timeSystem::GlastTimeHandler> glast_handler;
 
 st_app::StAppFactory<PSearchApp> g_factory("gtpsearch");
