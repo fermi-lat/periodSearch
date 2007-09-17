@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Mon Sep 17 14:44:12 PDT 2007
+periodSearch/src/gtpspec
+
+Modified Files:
+	gtpspec.cxx 
+Log Message:
+Add an EventTimeHandlerFactory object to support GLAST LAT data.
+
+    *
+------------------------------------------------------------
+User: hirayama  Mon Sep 17 14:44:12 PDT 2007
 periodSearch/src/gtpsearch
 
 Modified Files:
