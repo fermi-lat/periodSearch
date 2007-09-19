@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep 19 15:50:18 PDT 2007
+periodSearch/pfiles
+
+Modified Files:
+	gtpspec.par 
+Log Message:
+Add parameters for barycentering (scfile, sctable, ra, dec).
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Sep 17 14:44:12 PDT 2007
 periodSearch/src/gtpspec
 
