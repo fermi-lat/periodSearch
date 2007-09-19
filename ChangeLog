@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep 19 15:51:50 PDT 2007
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Add parameters for barycentering (scfile, sctable, ra, dec). Relocate ephepoch, timeformat, and timesys to match the prompting order.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Sep 19 15:50:49 PDT 2007
 periodSearch/src
 
