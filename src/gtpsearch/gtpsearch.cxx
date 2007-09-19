@@ -65,6 +65,8 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
   pars.setSwitch("ephstyle");
   pars.setSwitch("cancelpdot");
   pars.setSwitch("timeorigin");
+  pars.setCase("ephstyle", "FREQ", "ra");
+  pars.setCase("ephstyle", "FREQ", "dec");
   pars.setCase("ephstyle", "FREQ", "f0");
   pars.setCase("ephstyle", "DB", "cancelpdot");
   pars.setCase("ephstyle", "FREQ", "cancelpdot");
@@ -75,6 +77,8 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
   pars.setCase("ephstyle", "FREQ", "ephepoch");
   pars.setCase("ephstyle", "FREQ", "timeformat");
   pars.setCase("ephstyle", "FREQ", "timesys");
+  pars.setCase("ephstyle", "PER", "ra");
+  pars.setCase("ephstyle", "PER", "dec");
   pars.setCase("ephstyle", "PER", "p0");
   pars.setCase("ephstyle", "PER", "p1");
   pars.setCase("ephstyle", "PER", "ephepoch");
@@ -221,6 +225,7 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   // Prompt for most parameters automatically.
   pars.Prompt("algorithm");
   pars.Prompt("evfile");
+  pars.Prompt("scfile");
   pars.Prompt("outfile");
   pars.Prompt("evtable");
   pars.Prompt("psrdbfile");
@@ -233,11 +238,15 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
     pars.Prompt("ephepoch");
     pars.Prompt("timeformat");
     pars.Prompt("timesys");
+    pars.Prompt("ra");
+    pars.Prompt("dec");
     pars.Prompt("f0");
   } else if (eph_style == "PER") {
     pars.Prompt("ephepoch");
     pars.Prompt("timeformat");
     pars.Prompt("timesys");
+    pars.Prompt("ra");
+    pars.Prompt("dec");
     pars.Prompt("p0");
   } else if (eph_style == "DB") {
     // No action needed.
@@ -271,6 +280,8 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
     pars.Prompt("usersys");
   }
 
+  pars.Prompt("evtable");
+  pars.Prompt("sctable");
   pars.Prompt("timefield");
   pars.Prompt("plot");
   pars.Prompt("title");
