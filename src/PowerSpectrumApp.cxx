@@ -88,7 +88,7 @@ void PowerSpectrumApp::run() {
   // Set up EphComputer for arrival time corrections.
   pulsarDb::TimingModel model;
   pulsarDb::SloppyEphChooser chooser;
-  initEphComputer(pars, model, chooser, "DB");
+  initEphComputer(pars, model, chooser, "NONE");
 
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool guess_pdot = false;
@@ -164,12 +164,15 @@ void PowerSpectrumApp::run() {
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
   // Prompt for most parameters automatically.
   pars.Prompt("evfile");
+  pars.Prompt("scfile");
   pars.Prompt("outfile");
   pars.Prompt("evtable");
   pars.Prompt("binwidth");
   pars.Prompt("numbins");
   pars.Prompt("lowfcut");
   pars.Prompt("ephstyle");
+  pars.Prompt("ra");
+  pars.Prompt("dec");
 
   // Only prompt for f1 & f2 / p1 & p2 if pdot correction is selected.
   if (true == bool(pars["cancelpdot"])) {
@@ -199,6 +202,8 @@ void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
     pars.Prompt("usersys");
   }
 
+  pars.Prompt("evtable");
+  pars.Prompt("sctable");
   pars.Prompt("timefield");
   pars.Prompt("plot");
   pars.Prompt("title");
