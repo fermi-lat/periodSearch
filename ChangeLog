@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep 19 15:50:49 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Add parameters for barycentering (scfile, sctable, ra, dec). Change ephstyle (to pass to initEphComputer) from DB to NONE.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Sep 19 15:50:18 PDT 2007
 periodSearch/src/gtpsearch
 
