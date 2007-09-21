@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Sep 21 15:07:49 PDT 2007
+periodSearch/pfiles
+
+Modified Files:
+	gtpspec.par gtpsearch.par 
+Log Message:
+Add tcorrect parameter and remove cancelpdot and demodbin parameters. Rationalize the order of parameters. Change psrdbfile parameter from hidden to automatic.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Sep 19 15:51:50 PDT 2007
 periodSearch/pfiles
 
