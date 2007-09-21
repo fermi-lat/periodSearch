@@ -40,8 +40,6 @@ static const std::string s_cvs_id = "$Name:  $";
 PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2) {
   st_app::AppParGroup & pars(getParGroup("gtpspec"));
   pars.setSwitch("ephstyle");
-  pars.setCase("ephstyle", "FREQ", "cancelpdot");
-  pars.setCase("ephstyle", "PER", "cancelpdot");
   pars.setCase("ephstyle", "FREQ", "f1f0ratio");
   pars.setCase("ephstyle", "FREQ", "f2f0ratio");
   pars.setCase("ephstyle", "PER", "p1p0ratio");
@@ -164,34 +162,16 @@ void PowerSpectrumApp::run() {
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
   // Prompt for most parameters automatically.
   pars.Prompt("evfile");
-  pars.Prompt("scfile");
-  pars.Prompt("outfile");
   pars.Prompt("evtable");
+  pars.Prompt("timefield");
+  pars.Prompt("scfile");
+  pars.Prompt("sctable");
+  pars.Prompt("psrdbfile");
+  pars.Prompt("psrname");
+  pars.Prompt("outfile");
   pars.Prompt("binwidth");
   pars.Prompt("numbins");
   pars.Prompt("lowfcut");
-  pars.Prompt("ephstyle");
-  pars.Prompt("ra");
-  pars.Prompt("dec");
-
-  // Only prompt for f1 & f2 / p1 & p2 if pdot correction is selected.
-  if (true == bool(pars["cancelpdot"])) {
-    std::string eph_style = pars["ephstyle"];
-    if (eph_style == "FREQ") {
-      pars.Prompt("f1f0ratio");
-      pars.Prompt("f2f0ratio");
-    } else if (eph_style == "PER") {
-      pars.Prompt("p1p0ratio");
-      pars.Prompt("p2p0ratio");
-    } else {
-      throw std::runtime_error("Unknown ephemeris style " + eph_style);
-    }
-  }
-
-  pars.Prompt("psrdbfile");
-  pars.Prompt("psrname");
-  pars.Prompt("cancelpdot");
-  pars.Prompt("demodbin");
 
   pars.Prompt("timeorigin");
   std::string origin_style = pars["timeorigin"];
@@ -202,13 +182,32 @@ void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
     pars.Prompt("usersys");
   }
 
-  pars.Prompt("evtable");
-  pars.Prompt("sctable");
-  pars.Prompt("timefield");
+  pars.Prompt("ra");
+  pars.Prompt("dec");
+
+  // Prompt for f1 & f2 / p1 & p2 even if pdot correction is NOT selected.
+  pars.Prompt("ephstyle");
+  std::string eph_style = pars["ephstyle"];
+  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
+  if (eph_style == "FREQ") {
+    pars.Prompt("f1f0ratio");
+    pars.Prompt("f2f0ratio");
+  } else if (eph_style == "PER") {
+    pars.Prompt("p1p0ratio");
+    pars.Prompt("p2p0ratio");
+  } else {
+    throw std::runtime_error("Unknown ephemeris style " + eph_style);
+  }
+
+  pars.Prompt("tcorrect");
   pars.Prompt("plot");
   pars.Prompt("title");
   pars.Prompt("leapsecfile");
+  pars.Prompt("chatter");
   pars.Prompt("clobber");
+  pars.Prompt("debug");
+  pars.Prompt("gui");
+  pars.Prompt("mode");
 
   // Save current values of the parameters.
   pars.Save();
