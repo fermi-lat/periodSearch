@@ -63,15 +63,10 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
   setVersion(s_cvs_id);
 
   pars.setSwitch("ephstyle");
-  pars.setSwitch("cancelpdot");
   pars.setSwitch("timeorigin");
   pars.setCase("ephstyle", "FREQ", "ra");
   pars.setCase("ephstyle", "FREQ", "dec");
   pars.setCase("ephstyle", "FREQ", "f0");
-  pars.setCase("ephstyle", "DB", "cancelpdot");
-  pars.setCase("ephstyle", "FREQ", "cancelpdot");
-  pars.setCase("ephstyle", "PER", "cancelpdot");
-  pars.setCase("cancelpdot", "true", "f1");
   pars.setCase("ephstyle", "FREQ", "f1");
   pars.setCase("ephstyle", "FREQ", "f2");
   pars.setCase("ephstyle", "FREQ", "ephepoch");
@@ -81,12 +76,10 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
   pars.setCase("ephstyle", "PER", "dec");
   pars.setCase("ephstyle", "PER", "p0");
   pars.setCase("ephstyle", "PER", "p1");
+  pars.setCase("ephstyle", "PER", "p2");
   pars.setCase("ephstyle", "PER", "ephepoch");
   pars.setCase("ephstyle", "PER", "timeformat");
   pars.setCase("ephstyle", "PER", "timesys");
-  pars.setCase("cancelpdot", "true", "p1");
-  pars.setCase("ephstyle", "PER", "p2");
-  pars.setCase("ephstyle", "DB", "psrname");
   pars.setCase("timeorigin", "USER", "usertime");
   pars.setCase("timeorigin", "USER", "userformat");
   pars.setCase("timeorigin", "USER", "usersys");
@@ -127,8 +120,6 @@ void PSearchApp::run() {
   defineTimeCorrectionMode("BIN",  REQUIRED,   REQUIRED,   SUPPRESSED);
   defineTimeCorrectionMode("PDOT", REQUIRED,   SUPPRESSED, REQUIRED);
   defineTimeCorrectionMode("ALL",  REQUIRED,   REQUIRED,   REQUIRED);
-
-  
   selectTimeCorrectionMode(pars);
 
   // Set up EphComputer for arrival time corrections.
@@ -223,53 +214,18 @@ void PSearchApp::run() {
 
 void PSearchApp::prompt(st_app::AppParGroup & pars) {
   // Prompt for most parameters automatically.
-  pars.Prompt("algorithm");
   pars.Prompt("evfile");
-  pars.Prompt("scfile");
-  pars.Prompt("outfile");
   pars.Prompt("evtable");
+  pars.Prompt("timefield");
+  pars.Prompt("scfile");
+  pars.Prompt("sctable");
   pars.Prompt("psrdbfile");
   pars.Prompt("psrname");
-  pars.Prompt("ephstyle");
-  pars.Prompt("demodbin");
-
-  std::string eph_style = pars["ephstyle"];
-  if (eph_style == "FREQ") {
-    pars.Prompt("ephepoch");
-    pars.Prompt("timeformat");
-    pars.Prompt("timesys");
-    pars.Prompt("ra");
-    pars.Prompt("dec");
-    pars.Prompt("f0");
-  } else if (eph_style == "PER") {
-    pars.Prompt("ephepoch");
-    pars.Prompt("timeformat");
-    pars.Prompt("timesys");
-    pars.Prompt("ra");
-    pars.Prompt("dec");
-    pars.Prompt("p0");
-  } else if (eph_style == "DB") {
-    // No action needed.
-  } else
-    throw std::runtime_error("Unknown ephemeris style " + eph_style);
-
-  pars.Prompt("scanstep");
-  pars.Prompt("cancelpdot");
-
-  // Only prompt for f1 & f2 / p1 & p2 if pdot correction is selected.
-  if (true == bool(pars["cancelpdot"])) {
-    if (eph_style == "FREQ") {
-      pars.Prompt("f1");
-      pars.Prompt("f2");
-    } else if (eph_style == "PER") {
-      pars.Prompt("p1");
-      pars.Prompt("p2");
-    }
-    // if eph_style == "DB", coeffs will be determined.
-  }
-
-  pars.Prompt("numtrials");
+  pars.Prompt("outfile");
+  pars.Prompt("algorithm");
   pars.Prompt("numbins");
+  pars.Prompt("scanstep");
+  pars.Prompt("numtrials");
 
   pars.Prompt("timeorigin");
   std::string origin_style = pars["timeorigin"];
@@ -280,13 +236,41 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
     pars.Prompt("usersys");
   }
 
-  pars.Prompt("evtable");
-  pars.Prompt("sctable");
-  pars.Prompt("timefield");
+  pars.Prompt("ephstyle");
+  std::string eph_style = pars["ephstyle"];
+  for (std::string::iterator itor = eph_style.begin(); itor != eph_style.end(); ++itor) *itor = std::toupper(*itor);
+  if (eph_style == "FREQ") {
+    pars.Prompt("ephepoch");
+    pars.Prompt("timeformat");
+    pars.Prompt("timesys");
+    pars.Prompt("ra");
+    pars.Prompt("dec");
+    pars.Prompt("f0");
+    pars.Prompt("f1");
+    pars.Prompt("f2");
+  } else if (eph_style == "PER") {
+    pars.Prompt("ephepoch");
+    pars.Prompt("timeformat");
+    pars.Prompt("timesys");
+    pars.Prompt("ra");
+    pars.Prompt("dec");
+    pars.Prompt("p0");
+    pars.Prompt("p1");
+    pars.Prompt("p2");
+  } else if (eph_style == "DB") {
+    // No action needed.
+  } else
+    throw std::runtime_error("Unknown ephemeris style " + eph_style);
+
+  pars.Prompt("tcorrect");
   pars.Prompt("plot");
   pars.Prompt("title");
   pars.Prompt("leapsecfile");
+  pars.Prompt("chatter");
   pars.Prompt("clobber");
+  pars.Prompt("debug");
+  pars.Prompt("gui");
+  pars.Prompt("mode");
 
   // Save current values of the parameters.
   pars.Save();
