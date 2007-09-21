@@ -64,22 +64,22 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
 
   pars.setSwitch("ephstyle");
   pars.setSwitch("timeorigin");
+  pars.setCase("ephstyle", "FREQ", "ephepoch");
+  pars.setCase("ephstyle", "FREQ", "timeformat");
+  pars.setCase("ephstyle", "FREQ", "timesys");
   pars.setCase("ephstyle", "FREQ", "ra");
   pars.setCase("ephstyle", "FREQ", "dec");
   pars.setCase("ephstyle", "FREQ", "f0");
   pars.setCase("ephstyle", "FREQ", "f1");
   pars.setCase("ephstyle", "FREQ", "f2");
-  pars.setCase("ephstyle", "FREQ", "ephepoch");
-  pars.setCase("ephstyle", "FREQ", "timeformat");
-  pars.setCase("ephstyle", "FREQ", "timesys");
+  pars.setCase("ephstyle", "PER", "ephepoch");
+  pars.setCase("ephstyle", "PER", "timeformat");
+  pars.setCase("ephstyle", "PER", "timesys");
   pars.setCase("ephstyle", "PER", "ra");
   pars.setCase("ephstyle", "PER", "dec");
   pars.setCase("ephstyle", "PER", "p0");
   pars.setCase("ephstyle", "PER", "p1");
   pars.setCase("ephstyle", "PER", "p2");
-  pars.setCase("ephstyle", "PER", "ephepoch");
-  pars.setCase("ephstyle", "PER", "timeformat");
-  pars.setCase("ephstyle", "PER", "timesys");
   pars.setCase("timeorigin", "USER", "usertime");
   pars.setCase("timeorigin", "USER", "userformat");
   pars.setCase("timeorigin", "USER", "usersys");
