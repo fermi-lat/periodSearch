@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Mon Sep 24 12:29:06 PDT 2007
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Split numbins parameter into three (numphase, numharm, and maxharm) for clarity.
+
+    *
+------------------------------------------------------------
+User: hirayama  Mon Sep 24 12:29:06 PDT 2007
 periodSearch/src/gtpsearch
 
 Modified Files:
