@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Sep 24 13:19:41 PDT 2007
+periodSearch/data
+
+Removed Files:
+	master_pulsardb.fits 
+Log Message:
+Remove data/master_pulsardb.fits.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Sep 24 12:53:32 PDT 2007
 periodSearch/pfiles
 
