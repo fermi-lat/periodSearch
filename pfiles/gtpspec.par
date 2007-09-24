@@ -1,6 +1,6 @@
 evfile,         f, a, , , , "Event data file name"
 scfile,         f, a, , , , "Spacecraft data file name"
-psrdbfile,      f, a, DEFAULT, , , "Name of input pulsar ephemerides database file (for binary demodulation only)"
+psrdbfile,      f, a, , , , "Name of input pulsar ephemerides database file (for binary demodulation only)"
 psrname,        s, a, "ANY", , ,"Pulsar name (for binary demodulation only)"
 outfile,        f, a, , , , "Output FITS file name (NONE for no FITS output)"
 binwidth,       r, a, 1.e-2, 0., , "Width of time bins, in seconds"

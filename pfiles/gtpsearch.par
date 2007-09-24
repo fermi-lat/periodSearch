@@ -1,6 +1,6 @@
 evfile,         f, a, , , , "Event data file name"
 scfile,         f, a, , , , "Spacecraft data file name"
-psrdbfile,      f, a, DEFAULT, , , "Pulsar ephemerides database file name (DEFAULT - use standard eph db)"
+psrdbfile,      f, a, , , , "Pulsar ephemerides database file name"
 psrname,        s, a, "ANY", , , "Pulsar name"
 outfile,        f, a, , , , "Output FITS file name (NONE for no FITS output)"
 algorithm,      s, a, CHI2, CHI2|Z2N|H, , "Type of statistical test to perform (CHI2 - Chi squared, Z2N - Z2n/Rayleigh test, H - H test)"
