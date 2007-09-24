@@ -62,8 +62,13 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
   setName("gtpsearch");
   setVersion(s_cvs_id);
 
+  pars.setSwitch("algorithm");
   pars.setSwitch("ephstyle");
   pars.setSwitch("timeorigin");
+  // TODO: Do we need to make these (chi2, z2n, h) all capitalized?
+  pars.setCase("algorithm", "CHI2", "numphase");
+  pars.setCase("algorithm", "Z2N", "numharm");
+  pars.setCase("algorithm", "H", "maxharm");
   pars.setCase("ephstyle", "FREQ", "ephepoch");
   pars.setCase("ephstyle", "FREQ", "timeformat");
   pars.setCase("ephstyle", "FREQ", "timesys");
@@ -101,7 +106,6 @@ void PSearchApp::run() {
   std::string out_file = pars["outfile"];
   double scan_step = pars["scanstep"];
   long num_trials = pars["numtrials"];
-  long num_bins = pars["numbins"];
   bool plot = pars["plot"];
   std::string title = pars["title"];
   bool clobber = pars["clobber"];
@@ -147,13 +151,18 @@ void PSearchApp::run() {
 
   // Create the proper test.
   std::auto_ptr<PeriodSearch> search(0);
-  if (algorithm == "CHI2")
-    search.reset(new ChiSquaredTest(f_center, f_step, num_trials, origin, num_bins, duration));
-  else if (algorithm == "H")
-    search.reset(new HTest(f_center, f_step, num_trials, origin, num_bins, duration));
-  else if (algorithm == "Z2N")
-    search.reset(new Z2nTest(f_center, f_step, num_trials, origin, num_bins, duration));
-  else throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
+  if (algorithm == "CHI2") {
+    long num_phase = pars["numphase"];
+    search.reset(new ChiSquaredTest(f_center, f_step, num_trials, origin, num_phase, duration));
+  } else if (algorithm == "H") {
+    long num_harm = pars["numharm"];
+    search.reset(new HTest(f_center, f_step, num_trials, origin, num_harm, duration));
+  } else if (algorithm == "Z2N") {
+    long max_harm = pars["maxharm"];
+    search.reset(new Z2nTest(f_center, f_step, num_trials, origin, max_harm, duration));
+  } else {
+    throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
+  }
 
   for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
@@ -222,8 +231,18 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
   pars.Prompt("psrdbfile");
   pars.Prompt("psrname");
   pars.Prompt("outfile");
+
   pars.Prompt("algorithm");
-  pars.Prompt("numbins");
+  std::string algorithm = pars["algorithm"];
+  for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = std::toupper(*itor);
+  if (algorithm == "CHI2") {
+    pars.Prompt("numphase");
+  } else if (algorithm == "Z2N") {
+    pars.Prompt("numharm");
+  } else if (algorithm == "H") {
+    pars.Prompt("maxharm");
+  }
+
   pars.Prompt("scanstep");
   pars.Prompt("numtrials");
 
