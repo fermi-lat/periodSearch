@@ -65,7 +65,6 @@ PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
   pars.setSwitch("algorithm");
   pars.setSwitch("ephstyle");
   pars.setSwitch("timeorigin");
-  // TODO: Do we need to make these (chi2, z2n, h) all capitalized?
   pars.setCase("algorithm", "CHI2", "numphase");
   pars.setCase("algorithm", "Z2N", "numharm");
   pars.setCase("algorithm", "H", "maxharm");
