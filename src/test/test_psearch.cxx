@@ -22,6 +22,8 @@
 
 #include "st_facilities/Env.h"
 
+#include "facilities/commonUtilities.h"
+
 #include "st_stream/Stream.h"
 #include "st_stream/StreamFormatter.h"
 #include "st_stream/st_stream.h"
@@ -383,8 +385,8 @@ void PSearchTestApp::testChanceProb() {
 
 
 std::string PSearchTestApp::findFile(const std::string & file_name) {
-  using namespace st_facilities;
-  return Env::appendFileName(Env::getDataDir("periodSearch"), file_name);
+  using namespace facilities;
+  return commonUtilities::joinPath(commonUtilities::getDataPath("periodSearch"), file_name);
 }
 
 void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search,
