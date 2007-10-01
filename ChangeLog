@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: golpa  Mon Oct  1 08:49:00 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+use commonUtilities
+    *
+------------------------------------------------------------
 User: peachey  Tue Sep 25 13:39:29 PDT 2007
 periodSearch/src/gtpsearch
 
