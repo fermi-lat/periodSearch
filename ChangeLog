@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Oct  4 14:58:03 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Clean up headers and namespaces for st_facilities and facilities.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Oct  4 13:53:46 PDT 2007
 periodSearch/src
 
