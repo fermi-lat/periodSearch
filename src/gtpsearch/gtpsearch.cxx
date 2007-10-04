@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "facilities/commonUtilities.h"
+
 #include "pulsarDb/EphChooser.h"
 #include "pulsarDb/EphComputer.h"
 #include "pulsarDb/PulsarToolApp.h"
@@ -25,10 +27,6 @@
 #include "st_app/AppParGroup.h"
 #include "st_app/StApp.h"
 #include "st_app/StAppFactory.h"
-
-#include "st_facilities/Env.h"
-
-#include "facilities/commonUtilities.h"
 
 #include "st_stream/Stream.h"
 #include "st_stream/StreamFormatter.h"
@@ -196,8 +194,8 @@ void PSearchApp::run() {
 
   if ("NONE" != out_file_uc) {
     // Find the template file.
-    using namespace st_facilities;
-    std::string template_file = facilities::commonUtilities::joinPath(facilities::commonUtilities::getDataPath("periodSearch"), "period-search-out.tpl");
+    using namespace facilities;
+    std::string template_file = commonUtilities::joinPath(commonUtilities::getDataPath("periodSearch"), "period-search-out.tpl");
 
     // Create output file.
     tip::IFileSvc::instance().createFile(out_file, template_file, clobber);

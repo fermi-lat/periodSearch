@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "facilities/commonUtilities.h"
+
 #include "pulsarDb/EphChooser.h"
 #include "pulsarDb/EphComputer.h"
 #include "pulsarDb/PulsarDb.h"
@@ -19,10 +21,6 @@
 #include "st_app/AppParGroup.h"
 #include "st_app/StApp.h"
 #include "st_app/StAppFactory.h"
-
-#include "st_facilities/Env.h"
-
-#include "facilities/commonUtilities.h"
 
 #include "st_stream/Stream.h"
 #include "st_stream/StreamFormatter.h"
