@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Oct  4 13:53:46 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Correct typos to make the code compilable.
+
+    *
+------------------------------------------------------------
 User: golpa  Mon Oct  1 08:49:00 PDT 2007
 periodSearch/src/test
 
