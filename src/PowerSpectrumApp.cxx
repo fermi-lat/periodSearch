@@ -24,7 +24,7 @@
 
 #include "st_facilities/Env.h"
 
-#include "faclitiles/commonUtilities.h"
+#include "facilities/commonUtilities.h"
 
 #include "st_stream/Stream.h"
 #include "st_stream/StreamFormatter.h"
@@ -136,7 +136,7 @@ void PowerSpectrumApp::run() {
   if ("NONE" != out_file_uc) {
     // Find the template file.
     using namespace st_facilities;
-    std::string template_file = facilities::commonUtilities::joinPath(facilities::commonUtilities::getDataPathr("periodSearch"), "period-search-out.tpl");
+    std::string template_file = facilities::commonUtilities::joinPath(facilities::commonUtilities::getDataPath("periodSearch"), "period-search-out.tpl");
 
     // Create output file.
     tip::IFileSvc::instance().createFile(out_file, template_file, clobber);
