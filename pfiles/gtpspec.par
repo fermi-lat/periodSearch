@@ -17,6 +17,8 @@ f2f0ratio,      r, a, 0., , , "Ratio of frequency second time derivative to freq
 p1p0ratio,      r, a, 0., , , "Ratio of period first time derivative to period at the time origin"
 p2p0ratio,      r, a, 0., , , "Ratio of period second time derivative to period at the time origin"
 tcorrect,       s, h, AUTO, NONE|AUTO|BARY|BIN|PDOT|ALL, , "Set of arrival time correction(s) to apply"
+solareph,       s, h, JPL DE405, JPL DE200|JPL DE405, , "Solar system ephemeris for barycentric correction"
+angtol,         r, h, 1.e-8, 0., , "Angular tolerance in sky position for barycentric correction"
 evtable,        s, h, "EVENTS", , , "Table containing event data"
 timefield,      s, h, "TIME", , , "Name of time field in event file"
 sctable,        s, h, "SC_DATA", , , "Table containing spacecraft data"

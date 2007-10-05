@@ -26,6 +26,8 @@ p0,             r, a, 1., 0., , "Pulse period at the epoch of the spin ephemeris
 p1,             r, a, 0., , , "First time derivative of the pulse period at the epoch of the spin ephemeris"
 p2,             r, a, 0., , , "Second time derivative of the pulse period at the epoch of the spin ephemeris"
 tcorrect,       s, h, AUTO, NONE|AUTO|BARY|BIN|PDOT|ALL, , "Set of arrival time correction(s) to apply"
+solareph,       s, h, JPL DE405, JPL DE200|JPL DE405, , "Solar system ephemeris for barycentric correction"
+angtol,         r, h, 1.e-8, 0., , "Angular tolerance in sky position for barycentric correction"
 evtable,        s, h, "EVENTS", , , "Table containing event data"
 timefield,      s, h, "TIME", , , "Name of time field in event file"
 sctable,        s, h, "SC_DATA", , , "Table containing spacecraft data"
