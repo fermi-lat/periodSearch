@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Oct 11 15:08:40 PDT 2007
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par gtpspec.par 
+Log Message:
+Add matchsolareph parameter.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Oct  5 13:49:11 PDT 2007
 periodSearch/pfiles
 
