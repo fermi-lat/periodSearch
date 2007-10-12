@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Fri Oct 12 15:58:02 PDT 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Add prompting of solareph, matchsolareph, and angtol parameters.
+
+    *
+------------------------------------------------------------
+User: hirayama  Fri Oct 12 15:58:02 PDT 2007
 periodSearch/src
 
 Modified Files:
