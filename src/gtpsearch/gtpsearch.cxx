@@ -281,6 +281,9 @@ void PSearchApp::prompt(st_app::AppParGroup & pars) {
     throw std::runtime_error("Unknown ephemeris style " + eph_style);
 
   pars.Prompt("tcorrect");
+  pars.Prompt("solareph");
+  pars.Prompt("matchsolareph");
+  pars.Prompt("angtol");
   pars.Prompt("plot");
   pars.Prompt("title");
   pars.Prompt("leapsecfile");
