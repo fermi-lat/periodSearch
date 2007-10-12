@@ -200,6 +200,9 @@ void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
   }
 
   pars.Prompt("tcorrect");
+  pars.Prompt("solareph");
+  pars.Prompt("matchsolareph");
+  pars.Prompt("angtol");
   pars.Prompt("plot");
   pars.Prompt("title");
   pars.Prompt("leapsecfile");
