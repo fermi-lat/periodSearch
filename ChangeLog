@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Oct 12 15:58:02 PDT 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Add prompting of solareph, matchsolareph, and angtol parameters.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Oct 11 15:08:40 PDT 2007
 periodSearch/pfiles
 
