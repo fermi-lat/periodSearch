@@ -5,10 +5,15 @@
     \author  James Peachey James.Peachey-1@nasa.gov
 
     \section synopsis Synopsis
-    This package contains a library and application gtpsearch which searches for pulsation frequencies
+
+    This package contains a library and two applications, gtpsearch and gtpspec.
+    The application gtpsearch searches for pulsations at frequencies
     near to a known, guessed or estimated reference frequency. It has
     several test statistics available, including Chi-squared (X2), Z-squared-n (Z2N),
-    H, and Rayleigh (Z2N with N == 1). For details about how
+    H, and Rayleigh (Z2N with N == 1). 
+    The application gtpspec searches for pulsations in a much wider range of frequencies.
+    It uses the Discrete Fast Fourier Transfer (FFT) technique to compute power spectrum 
+    density. For details about how
     each of these is computed, see
     <a href="http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/algorithm.html"> pulsar_algorithms </a>
 
