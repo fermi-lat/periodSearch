@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Oct 17 15:23:50 PDT 2007
+periodSearch/src
+
+Modified Files:
+	mainpage.h 
+Log Message:
+Add new parameters and refine descriptions. Minor clean-ups for consistency with the other pulsar tools packages.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Oct 12 15:58:02 PDT 2007
 periodSearch/src/gtpsearch
 
