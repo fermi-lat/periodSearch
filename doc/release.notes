@@ -2,9 +2,12 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.23 2007/08/08 21:03:21 peachey Exp $
+$Id: release.notes,v 1.24 2007/08/16 15:57:52 peachey Exp $
 
 \verbatim
+23-oct-2007        v8 JP  Add support for barycentering on the fly, including new solareph
+                          and matchsolareph parameters for controlling which solar system
+                          ephemeris is used.
 16-aug-2007    v7r0p1 JP  Call resetApp at beginning of run() method to clean up from any
                           previous calls to run().
 08-aug-2007        v7 JP  Derive application classes from pulsarDb::PulsarToolApp base class.
