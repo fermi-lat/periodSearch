@@ -88,29 +88,30 @@ numtrials = 100 [integer]
     Number of separate trials to perform. The larger this number, the
     wider the search around the central frequency.
 
-timeorigin = MIDDLE [string]
-    Origin of time for the periodicity test. Valid choices are START
-    (taken from the evfile), STOP, MIDDLE (mid-way between START and
-    STOP) and USER (user will supply explicitly using usertime,
-    userformat and usersys parameters.)
+timeorigin = MIDDLE [enumerated string (START|STOP|MIDDLE|USER)]
+    Origin of time for the periodicity test. If START or STOP is
+    chosen, the start or stop time is taken from the input event
+    file(s) and used as the time origin. If MIDDLE is chosen, the
+    mid-time between START and STOP is used.  If USER is chosen, user
+    will supply explicitly using usertime, userformat and usersys
+    parameters.
 
 usertime = 0. [string]
     User-specified time origin for the periodicity test, used only
     if timeorigin parameter is USER.
 
-userformat = FILE [string]
-    String describing the representation used for the usertime.
-    Valid choices are FILE, MJD and GLAST (MET). If FILE is chosen,
-    the time format specified in the input event file header will be
-    used. Used only if timeorigin parameter is USER.
+userformat = FILE [enumerated string (FILE|MJD|GLAST)]
+    String describing the representation used for the usertime.  If
+    FILE is chosen, the time format specified in the input event file
+    header will be used. Used only if timeorigin parameter is USER.
 
-usersys = FILE [string]
-    String describing the time system used for the usertime.
-    Valid choices are FILE, TAI, TDB, TT and UTC. If FILE is chosen,
-    the time system specified in the input event file header (TIMESYS
-    keyword) will be used. Used only if timeorigin parameter is USER.
+usersys = FILE [enumerated string (FILE|TAI|TDB|TT|UTC)]
+    String describing the time system used for the usertime. If FILE
+    is chosen, the time system specified in the input event file
+    header (TIMESYS keyword) will be used. Used only if timeorigin
+    parameter is USER.
 
-ephstyle = DB [string]
+ephstyle = DB [enumerated string (DB|FREQ|PER)]
     Method to specify how the ephemerides will be supplied. If
     ephstyle is DB, a pulsar database file (GLAST D4 FITS format) will
     be used. If ephstyle is FREQ (PER), the user will supply values
@@ -121,27 +122,25 @@ ephepoch = 0. [string]
     Reference epoch of the ephemeris that will be manually specified.
     This parameter only has effect if ephstyle is FREQ or PER.
 
-timeformat = FILE [string]
-    String describing the representation used for the ephepoch.
-    Valid choices are FILE, MJD and GLAST (MET). If FILE is chosen,
-    the time format specified in the input event file header will be
-    used.
+timeformat = FILE [enumerated string (FILE|MJD|GLAST)]
+    String describing the representation used for the ephepoch.  If
+    FILE is chosen, the time format specified in the input event file
+    header will be used.
 
-timesys = FILE [string]
-    String describing the time system used for the ephepoch.
-    Valid choices are FILE, TAI, TDB, TT and UTC. If FILE is chosen,
-    the time system specified in the input event file header (TIMESYS
-    keyword) will be used.
+timesys = FILE [enumerated string (FILE|TAI|TDB|TT|UTC)]
+    String describing the time system used for the ephepoch.  If FILE
+    is chosen, the time system specified in the input event file
+    header (TIMESYS keyword) will be used.
 
 ra [double]
-    RA of point source for which to perform the barycentric
-    correction.  This parameter only has effect if ephstyle is FREQ or
-    PER.
+    Right Ascension of point source in degrees for which to perform
+    the barycentric correction.  This parameter only has effect if
+    ephstyle is FREQ or PER.
 
 dec [double]
-    DEC of point source for which to perform the barycentric
-    correction.  This parameter only has effect if ephstyle is FREQ or
-    PER.
+    Declination of point source in degrees for which to perform the
+    barycentric correction.  This parameter only has effect if
+    ephstyle is FREQ or PER.
 
 (tcorrect = AUTO) [enumerated string (NONE|AUTO|BARY|BIN|PDOT|ALL)]
     Set of arrival time corrections to apply. If tcorrect is NONE, no
@@ -286,37 +285,38 @@ numbins = 1000000 [integer]
     algorithm.  The product of binwidth and numbins will be the length
     of data to be transformed at once.
 
-timeorigin = MIDDLE [string]
-    Origin of time for the periodicity test. Valid choices are START
-    (taken from the evfile), STOP, MIDDLE (mid-way between START and
-    STOP) and USER (user will supply explicitly using usertime,
-    userformat and usersys parameters.)
+timeorigin = MIDDLE [enumerated string (START|STOP|MIDDLE|USER)]
+    Origin of time for the periodicity test. If START or STOP is
+    chosen, the start or stop time is taken from the input event
+    file(s) and used as the time origin. If MIDDLE is chosen, the
+    mid-time between START and STOP is used.  If USER is chosen, user
+    will supply explicitly using usertime, userformat and usersys
+    parameters.
 
 usertime = 0. [string]
     User-specified time origin for the periodicity test, used only
     if timeorigin parameter is USER.
 
-userformat = FILE [string]
-    String describing the representation used for the usertime.
-    Valid choices are FILE, MJD and GLAST (MET). If FILE is chosen,
-    the time format specified in the input event file header will be
-    used. Used only if timeorigin parameter is USER.
+userformat = FILE [enumerated string (FILE|MJD|GLAST)]
+    String describing the representation used for the usertime.  If
+    FILE is chosen, the time format specified in the input event file
+    header will be used. Used only if timeorigin parameter is USER.
 
-usersys = FILE [string]
-    String describing the time system used for the usertime.
-    Valid choices are FILE, TAI, TDB, TT and UTC. If FILE is chosen,
-    the time system specified in the input event file header (TIMESYS
-    keyword) will be used. Used only if timeorigin parameter is USER.
+usersys = FILE [enumerated string (FILE|TAI|TDB|TT|UTC)]
+    String describing the time system used for the usertime. If FILE
+    is chosen, the time system specified in the input event file
+    header (TIMESYS keyword) will be used. Used only if timeorigin
+    parameter is USER.
 
 ra [double]
-    RA of point source for which to perform the barycentric
-    correction.
+    Right Ascension of point source in degrees for which to perform
+    the barycentric correction.
 
 dec [double]
-    DEC of point source for which to perform the barycentric
-    correction.
+    Declination of point source in degrees for which to perform the
+    barycentric correction.
 
-ephstyle = FREQ [string]
+ephstyle = FREQ [enumerated string (FREQ|PER)]
     Method to specify how the ephemeris for pdot cancellation will be
     supplied.  If ephstyle is FREQ, the user will supply values for
     the frequency and its derivatives at the time given by the epoch
