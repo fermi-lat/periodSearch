@@ -41,7 +41,7 @@ infile [file]
     default value is yes (true).
 \endverbatim
 
-    \subsection general gtpsearch General Parameters
+    \subsection general gtpsearch Parameters
 \verbatim
 evfile [file name]
     Name of input event file, FT1 format or equivalent.
@@ -142,6 +142,34 @@ dec [double]
     barycentric correction.  This parameter only has effect if
     ephstyle is FREQ or PER.
 
+f0 = 1. [double]
+    Value of the frequency at the time given by the epoch parameter.
+    This parameter only has effect if ephstyle is FREQ.
+
+f1 = 0. [double]
+    Value of the first time derivative of the frequency at the time
+    given by the epoch parameter.  This parameter only has effect if
+    ephstyle is FREQ.
+
+f2 = 0. [double]
+    Value of the second time derivative of the frequency at the time
+    given by the epoch parameter.  This parameter only has effect if
+    ephstyle is FREQ.
+
+p0 = 1. [double]
+    Value of the period at the time given by the epoch parameter.
+    This parameter only has effect if ephstyle is PER.
+
+p1 = 0. [double]
+    Value of the first time derivative of the period at the time given
+    by the epoch parameter.  This parameter only has effect if
+    ephstyle is PER.
+
+p2 = 0. [double]
+    Value of the second time derivative of the period at the time
+    given by the epoch parameter.  This parameter only has effect if
+    ephstyle is PER.
+
 (tcorrect = AUTO) [enumerated string (NONE|AUTO|BARY|BIN|PDOT|ALL)]
     Set of arrival time corrections to apply. If tcorrect is NONE, no
     corrections will be applied. If tcorrect is BARY, only the
@@ -214,42 +242,6 @@ dec [double]
     OGIP-compliant leap second table format. If leapsecfile is the
     string DEFAULT, the default leap-second file (leapsec.fits), which
     is distributed with the extFiles package, will be used.
-\endverbatim
-
-    \subsection gtpsearch_freq_par gtpsearch Frequency Parameters
-
-\verbatim
-f0 = 1. [double]
-    Value of the frequency at the time given by the epoch parameter.
-    This parameter only has effect if ephstyle is FREQ.
-
-f1 = 0. [double]
-    Value of the first time derivative of the frequency at the time
-    given by the epoch parameter.  This parameter only has effect if
-    ephstyle is FREQ.
-
-f2 = 0. [double]
-    Value of the second time derivative of the frequency at the time
-    given by the epoch parameter.  This parameter only has effect if
-    ephstyle is FREQ.
-\endverbatim
-
-    \subsection gtpsearch_per_par gtpsearch Period Parameters
-
-\verbatim
-p0 = 1. [double]
-    Value of the period at the time given by the epoch parameter.
-    This parameter only has effect if ephstyle is PER.
-
-p1 = 0. [double]
-    Value of the first time derivative of the period at the time given
-    by the epoch parameter.  This parameter only has effect if
-    ephstyle is PER.
-
-p2 = 0. [double]
-    Value of the second time derivative of the period at the time
-    given by the epoch parameter.  This parameter only has effect if
-    ephstyle is PER.
 \endverbatim
 
     \subsection gtpspec_parameters gtpspec Parameters
