@@ -1,4 +1,61 @@
 ------------------------------------------------------------
+TAG
+Tag name: v8r0p1, operation: add
+Package: periodSearch
+User: hirayama  Tue Nov 13 15:55:59 2007
+Files:
+  periodSearch/ChangeLog  1.318
+  periodSearch/cmt/requirements  1.7
+  periodSearch/data/groD4-dc2v3.fits  1.1.1.1
+  periodSearch/data/groD4-dc2v4.fits  1.1.1.1
+  periodSearch/data/period-search-out.tpl  1.1
+  periodSearch/data/ft1tiny.fits  1.2
+  periodSearch/data/step-01.fits  1.1.1.1
+  periodSearch/data/outref/psrb0540-chi-sq.fits  1.1
+  periodSearch/data/outref/psrb0540-h.fits  1.1
+  periodSearch/data/outref/psrb0540-pdot-z2n.fits  1.1
+  periodSearch/data/outref/artificial-fourier.fits  1.1
+  periodSearch/data/outref/psrb0540-pdot-h.fits  1.1
+  periodSearch/data/outref/artificial-rayleigh.fits  1.1
+  periodSearch/data/outref/psrb0540-fourier.fits  1.1
+  periodSearch/data/outref/psrb0540-pdot-rayleigh.fits  1.1
+  periodSearch/data/outref/psrb0540-pdot-chi-sq.fits  1.1
+  periodSearch/data/outref/artificial-chi-sq.fits  1.1
+  periodSearch/data/outref/artificial-h.fits  1.1
+  periodSearch/data/outref/artificial-z2n.fits  1.1
+  periodSearch/data/outref/psrb0540-z2n.fits  1.1
+  periodSearch/data/outref/psrb0540-rayleigh.fits  1.1
+  periodSearch/data/outref/psrb0540-pdot-fourier.fits  1.1
+  periodSearch/doc/release.notes  1.26
+  periodSearch/periodSearch/PeriodSearchViewer.h  1.5
+  periodSearch/periodSearch/PeriodTest.h  1.6
+  periodSearch/periodSearch/PeriodSearch.h  1.10
+  periodSearch/pfiles/gtpspec.par  1.11
+  periodSearch/pfiles/gtpsearch.par  1.26
+  periodSearch/pfiles/test_periodSearch.par  1.1
+  periodSearch/src/Z2nTest.cxx  1.4
+  periodSearch/src/PeriodTest.cxx  1.8
+  periodSearch/src/HTest.cxx  1.5
+  periodSearch/src/ChiSquaredTest.h  1.4
+  periodSearch/src/Z2nTest.h  1.4
+  periodSearch/src/mainpage.h  1.10
+  periodSearch/src/ChiSquaredProb.cxx  1.2
+  periodSearch/src/FourierAnalysis.h  1.8
+  periodSearch/src/PowerSpectrumApp.cxx  1.28
+  periodSearch/src/PeriodSearchViewer.cxx  1.7
+  periodSearch/src/PeriodSearch.cxx  1.12
+  periodSearch/src/HTest.h  1.4
+  periodSearch/src/ChiSquaredTest.cxx  1.5
+  periodSearch/src/RayleighTest.h  1.2
+  periodSearch/src/FourierAnalysis.cxx  1.9
+  periodSearch/src/ChiSquaredProb.h  1.1.1.1
+  periodSearch/src/PowerSpectrumApp.h  1.3
+  periodSearch/src/gtpsearch/gtpsearch.cxx  1.102
+  periodSearch/src/gtpspec/gtpspec.cxx  1.2
+  periodSearch/src/test/test_psearch.cxx  1.30
+
+    *
+------------------------------------------------------------
 User: hirayama  Tue Nov 13 15:45:22 PST 2007
 periodSearch/doc
 
