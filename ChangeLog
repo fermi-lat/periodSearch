@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Nov 16 14:26:21 PST 2007
+periodSearch/src
+
+Added Files:
+	FoldingAnalysis.cxx FoldingAnalysis.h PeriodicityTest.h 
+Log Message:
+Add new classes, PeriodicityTest and FoldingAnalysis, to replace PeriodTest class.
+
+    *
+------------------------------------------------------------
 TAG
 Tag name: v8r0p1, operation: add
 Package: periodSearch
