@@ -27,12 +27,12 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     */
     FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, int num_events = 0);
 
-    /** \brief Fill given time into histograms.
+    /** \brief Fill given time into the internal storage of this object.
         \param evt_time The time of the event.
     */
     virtual void fill(double evt_time);
 
-    /** \brief
+    /** \brief Compute Fourier powers at trial frequencies with Discrete Fast Fourier Transform algorighm.
     */
     virtual const std::vector<double> & computeStats();
 
