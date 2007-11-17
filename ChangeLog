@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Nov 16 16:00:46 PST 2007
+periodSearch/src
+
+Modified Files:
+	ChiSquaredTest.cxx ChiSquaredTest.h 
+Log Message:
+Add ChiSquaredTest2 class (derived from PeriodicityTest class), which eventually replaces ChiSquared class.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Nov 16 14:27:33 PST 2007
 periodSearch/src
 
