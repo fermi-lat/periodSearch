@@ -22,7 +22,7 @@ namespace periodSearch {
 
   FoldingAnalysis::FoldingAnalysis(double center, double step, size_type num_trials, double epoch, double duration,
     const PeriodicityTest & test):
-    PeriodSearch(num_trials), m_test_cont(num_trials, 0), m_step(step), m_epoch(epoch), m_fourier_res(0.), m_num_events(0) {
+    PeriodSearch(num_trials), m_test_cont(num_trials, 0), m_step(step), m_epoch(epoch), m_fourier_res(0.) {
     // Make certain there is no error in the input.
     if (0. >= center) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive center");
     if (0. >= m_step) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive step");
@@ -55,9 +55,6 @@ namespace periodSearch {
     //     dt = evtime - epoch;
     double dt = evt_time - m_epoch;
 
-    //     N_event++;
-    ++m_num_events;
-
     //     for (i=0; i<N_trial; i++) {
     //       phase = dt / period_array[i];
     //       phase -= floor(phase);
@@ -80,9 +77,6 @@ namespace periodSearch {
   const std::vector<double> & FoldingAnalysis::computeStats() {
     // Prepare a returning array.
     m_spec.assign(m_spec.size(), 0.);
-
-    // Stop here if no events are given.
-    if (0 == m_num_events) return m_spec;
 
     // Iterate over the number of trials.
     size_type num_trials = m_test_cont.size();
