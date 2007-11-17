@@ -10,6 +10,56 @@
 #include <utility>
 #include <vector>
 
+#include "PeriodicityTest.h"
+
+/** \class ChiSquaredTest
+    \brief PeriodicityTest subclass which uses a Chi^2 statistic for its test.
+*/
+class ChiSquaredTest2 : public PeriodicityTest {
+  public:
+    typedef std::vector<int> cont_type;
+    typedef cont_type::size_type size_type;
+
+    ChiSquaredTest2(size_type num_phase_bins);
+
+    virtual ~ChiSquaredTest2() {}
+
+    /** \brief Create a clone object of this object.
+    */
+    virtual PeriodicityTest * clone() const;
+
+    /** \brief Fill a given pulse phase into this periodicity test object.
+        \param phase The pulse phase.
+    */
+    virtual void fill(double phase);
+
+    /** \brief Compute a test statistic for pulse phases currently filled in this object. Details
+               depend on the specific test being performed in the subclass.
+    */
+    virtual double testStat() const;
+
+    /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
+        \param stat The value of the statistic.
+    */
+    virtual std::pair<double, double> chanceProb(double stat) const;
+
+    /** \brief Return a description of this search.
+    */
+    virtual std::string getDescription() const;
+
+  private:
+    // The number of phase bins.
+    size_type m_num_phase_bins;
+
+    // The container for a folded light curve.
+    cont_type m_curve;
+
+    // The number of events filled.
+    long m_num_events;
+};
+
+// TODO: Remove the code below once new ChiSquaredTest takes place.
+
 #include "periodSearch/PeriodTest.h"
 
 /** \class ChiSquaredTest
