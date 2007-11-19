@@ -38,6 +38,9 @@ using namespace timeSystem;
 static const std::string s_cvs_id = "$Name:  $";
 
 PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2) {
+  setName("gtpspec");
+  setVersion(s_cvs_id);
+
   st_app::AppParGroup & pars(getParGroup("gtpspec"));
   pars.setSwitch("ephstyle");
   pars.setCase("ephstyle", "FREQ", "f1f0ratio");
@@ -46,8 +49,7 @@ PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2) {
   pars.setCase("ephstyle", "PER", "p2p0ratio");
 }
 
-PowerSpectrumApp::~PowerSpectrumApp() throw() {
-}
+PowerSpectrumApp::~PowerSpectrumApp() throw() {}
 
 void PowerSpectrumApp::run() {
   // Clean up from any previous runs.
