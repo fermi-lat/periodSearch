@@ -4,7 +4,7 @@ version v0
 
 author James Peachey <James.Peachey-1@nasa.gov>
 
-# $Id: requirements,v 1.6 2007/03/19 20:58:36 peachey Exp $
+# $Id: requirements,v 1.7 2007/07/23 18:42:53 peachey Exp $
 
 use STpolicy *
 use pulsarDb *
@@ -20,5 +20,6 @@ apply_pattern ST_pfiles
 
 macro_append periodSearch_cppflags "-Wall --pedantic "
 
+application gtptest gtptest/*.cxx
 application gtpspec gtpspec/*.cxx
 application gtpsearch gtpsearch/*.cxx
