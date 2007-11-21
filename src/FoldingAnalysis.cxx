@@ -17,12 +17,15 @@
 
 #include "FoldingAnalysis.h"
 #include "PeriodicityTest.h"
+#include "PeriodicityTestArray.h"
 
 namespace periodSearch {
 
-  FoldingAnalysis::FoldingAnalysis(double center, double step, size_type num_trials, double epoch, double duration,
-    const PeriodicityTest & test):
-    PeriodSearch(num_trials), m_test_cont(num_trials, 0), m_step(step), m_epoch(epoch), m_fourier_res(0.) {
+  FoldingAnalysis::FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration):
+    PeriodSearch(test_array->size()), m_test_array(test_array), m_step(step), m_epoch(epoch), m_fourier_res(0.) {
+    // Get the array size.
+    size_type num_trials = test_array->size();
+
     // Make certain there is no error in the input.
     if (0. >= center) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive center");
     if (0. >= m_step) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive step");
@@ -40,9 +43,6 @@ namespace periodSearch {
     for (size_type ii = 0; ii < num_trials; ++ii) {
       // Populating frequency array.
       m_freq[ii] = min + ii * m_step;
-
-      // Populating an array of statistical test.
-      m_test_cont[ii] = test.clone();
     }
 
     // Compute Fourier resolution.
@@ -63,14 +63,14 @@ namespace periodSearch {
     //     }
 
     // Iterate over the number of trial frequencies.
-    size_type num_trials = m_test_cont.size();
+    size_type num_trials = m_test_array->size();
     for (size_type ii = 0; ii < num_trials; ++ii) {
       // For each frequency, compute the phase.
       double phase = dt * m_freq[ii];
       phase -= floor(phase);
 
       // Use this phase information to fill in the corresponding trial.
-      m_test_cont[ii]->fill(phase);
+      m_test_array->fill(phase, ii);
     }
   }
 
@@ -79,9 +79,9 @@ namespace periodSearch {
     m_spec.assign(m_spec.size(), 0.);
 
     // Iterate over the number of trials.
-    size_type num_trials = m_test_cont.size();
+    size_type num_trials = m_test_array->size();
     for (size_type ii = 0; ii < num_trials; ++ii) {
-      m_spec[ii] = m_test_cont[ii]->testStat();
+      m_spec[ii] = m_test_array->testStat(ii);
     }
 
     // Return the result.
@@ -106,17 +106,11 @@ namespace periodSearch {
   }
 
   std::pair<double, double> FoldingAnalysis::chanceProbOneTrial(double stat) const {
-    // Check if at least than one trial frequency is given.
-    if (m_test_cont.size() < 1) throw std::logic_error("FoldingAnalysis was not given a statistical test to perform");
-
     // Delegate the computation of a chance probablity.
-    return m_test_cont.at(0)->chanceProb(stat);
+    return m_test_array->chanceProb(stat);
   }
 
   std::string FoldingAnalysis::getDescription() const {
-    // Check if at least than one trial frequency is given.
-    if (m_test_cont.size() < 1) throw std::logic_error("FoldingAnalysis was not given a statistical test to perform");
-
     // Write out common parameters.
     std::ostringstream os;
     os << "Search Type: Folding Analysis\n"
@@ -124,7 +118,7 @@ namespace periodSearch {
        << "Sampling Frequency: " << m_step << " Hz";
 
     // Write out the test-specific output.
-    os << "\n" << m_test_cont.at(0)->getDescription();
+    os << "\n" << m_test_array->getDescription();
 
     // Return the string.
     return os.str();

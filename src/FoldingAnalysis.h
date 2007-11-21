@@ -12,7 +12,7 @@
 
 #include "periodSearch/PeriodSearch.h"
 
-class PeriodicityTest;
+class PeriodicityTestArray;
 
 /** \class FoldingAnalysis
     \brief Class for periodicity search based on various statistical tests used to determine frequency of pulsation
@@ -20,19 +20,14 @@ class PeriodicityTest;
 */
 class FoldingAnalysis : public periodSearch::PeriodSearch {
   public:
-    /// \brief Container type used to store periodicity tests for trial frequencies.
-    typedef std::vector<PeriodicityTest *> TestCont_t;
-
     /** \brief Construct a periodicity search object using given search criteria and a statistical test object.
         \param center The central value to test.
         \param step The step size to use.
-        \param num_trials The number of trials in the test scan range.
+        \param test_array The statistical test array object to be used for this periodicity search.
         \param epoch The global time offset defining the origin for purposes of this computation.
         \param duration The total time duration (only used if chance probability will be computed).
-        \param test The statistical test object to be used for this periodicity search.
     */
-    FoldingAnalysis(double center, double step, size_type num_trials, double epoch, double duration,
-                    const PeriodicityTest & test);
+    FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration);
 
     virtual ~FoldingAnalysis() {}
 
@@ -62,7 +57,7 @@ class FoldingAnalysis : public periodSearch::PeriodSearch {
 
   protected:
     // The container of statistical trials.
-    TestCont_t m_test_cont;
+    PeriodicityTestArray * m_test_array;
 
     // Sampling frequency (frequency step).
     double m_step;
