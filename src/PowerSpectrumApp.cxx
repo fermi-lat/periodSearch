@@ -124,7 +124,9 @@ void PowerSpectrumApp::run() {
   };
 
   // Use default title if user did not specify one.
-  if (title == "DEFAULT") title = "Fourier Analysis: Power Spectrum";
+  std::string title_uc(title);
+  for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
+  if (title_uc == "DEFAULT") title = "Fourier Analysis: Power Spectrum";
 
   // Create a viewer for plotting and writing output.
   periodSearch::PeriodSearchViewer viewer(*test, low_f_cut);

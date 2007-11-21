@@ -183,7 +183,9 @@ void PSearchApp::run() {
   };
 
   // Use default title if user did not specify one.
-  if (title == "DEFAULT") title = "Folding Analysis: " + algorithm + " Test";
+  std::string title_uc(title);
+  for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
+  if (title_uc == "DEFAULT") title = "Folding Analysis: " + algorithm + " Test";
 
   // Create a viewer for plotting and writing output.
   periodSearch::PeriodSearchViewer viewer(*search);
