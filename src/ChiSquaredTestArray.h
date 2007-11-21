@@ -45,7 +45,14 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
 
     /** \brief Return the size of this periodicity test array.
     */
-    virtual size_type size() const = 0;
+    virtual size_type size() const;
+
+    /** \brief Display an internal data for this periodicity test, such as a folded light curve for the chi-squared test.
+               Details depend on the specific test being performed in the subclass.
+        \param title The plot title.
+        \param array_index The index of the element of the periodicity test array, of which a plot is to be created.
+    */
+    virtual void plot(const std::string & title, size_type array_index = 0) const;
 
   private:
     // The number of phase bins.
