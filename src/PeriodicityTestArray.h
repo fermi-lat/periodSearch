@@ -16,13 +16,10 @@
 */
 class PeriodicityTestArray {
   public:
+    // TODO: Is there any other way to do this?
     typedef int size_type;
 
     virtual ~PeriodicityTestArray() {}
-
-    /** \brief Create a clone object of this object.
-    */
-    virtual PeriodicityTestArray * clone() const = 0;
 
     /** \brief Fill a given pulse phase into a given element of the array of periodicity test.
         \param phase The pulse phase to fill.
@@ -41,9 +38,13 @@ class PeriodicityTestArray {
     */
     virtual std::pair<double, double> chanceProb(double stat) const = 0;
 
-    /** \brief Return a description of this search.
+    /** \brief Return a description of this periodicity test array.
     */
     virtual std::string getDescription() const = 0;
+
+    /** \brief Return the size of this periodicity test array.
+    */
+    virtual size_type size() const = 0;
 
   protected:
     /** \brief Construct a periodicity test object.
