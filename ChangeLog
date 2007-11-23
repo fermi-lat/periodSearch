@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Nov 23 15:28:42 PST 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Replace Z2nTest class with Z2nTestArray and FoldingAnalysis class. Fix a bug reported as JIRA PULS-43.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Nov 23 15:26:55 PST 2007
 periodSearch/src
 
