@@ -35,6 +35,8 @@
 #include "periodSearch/PeriodSearch.h"
 #include "periodSearch/PeriodSearchViewer.h"
 #include "ChiSquaredTest.h"
+#include "ChiSquaredTestArray.h"
+#include "FoldingAnalysis.h"
 #include "HTest.h"
 #include "RayleighTest.h"
 #include "Z2nTest.h"
@@ -150,9 +152,12 @@ void PSearchApp::run() {
 
   // Create the proper test.
   std::auto_ptr<PeriodSearch> search(0);
+  std::auto_ptr<PeriodicityTestArray> test_array(0);
   if (algorithm == "CHI2") {
     long num_phase = pars["numphase"];
-    search.reset(new ChiSquaredTest(f_center, f_step, num_trials, origin, num_phase, duration));
+//    search.reset(new ChiSquaredTest(f_center, f_step, num_trials, origin, num_phase, duration));
+    test_array.reset(new ChiSquaredTestArray(num_trials, num_phase));
+    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
   } else if (algorithm == "H") {
     long num_harm = pars["numharm"];
     search.reset(new HTest(f_center, f_step, num_trials, origin, num_harm, duration));
