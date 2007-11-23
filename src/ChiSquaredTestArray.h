@@ -61,8 +61,8 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     // The container for a folded light curve.
     cont_type m_curve_cont;
 
-    // The number of events filled.
-    long m_num_events;
+    // The number of events filled for each element of this test array.
+    std::vector<long> m_num_events;
 };
 
 #endif

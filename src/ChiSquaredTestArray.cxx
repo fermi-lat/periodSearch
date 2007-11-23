@@ -18,7 +18,7 @@
 #include "ChiSquaredProb.h"
 
 ChiSquaredTestArray::ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins):
-  m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)), m_num_events(0) {}
+  m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)), m_num_events(array_size, 0) {}
 
 void ChiSquaredTestArray::fill(double phase, size_type array_index) {
   // Bin phase; it runs from [0, 1), so multiply by the number of bins to determine
@@ -32,12 +32,12 @@ void ChiSquaredTestArray::fill(double phase, size_type array_index) {
   ++(m_curve_cont.at(array_index)[bin_id]);
 
   // Increment the number of events filled.
-  ++m_num_events;
+  ++(m_num_events.at(array_index));
 }
 
 double ChiSquaredTestArray::testStat(size_type array_index) const {
   // Compute average count rate.
-  double avg = double(m_num_events) / m_num_phase_bins;
+  double avg = double(m_num_events.at(array_index)) / m_num_phase_bins;
 
   // Compute S-value.
   double S_value = 0.;
