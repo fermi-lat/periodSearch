@@ -18,6 +18,7 @@
 
 #include "ChiSquaredTestArray.h"
 #include "PeriodicityTestArray.h"
+#include "Z2nTestArray.h"
 
 static const std::string s_cvs_id = "$Name:  $";
 
@@ -71,13 +72,13 @@ void PeriodicityTestApp::run() {
   PeriodicityTestArray & test_to_plot = *test_array;
   test_list.push_back(test_array);
 
-#if 0
   long num_harm = pars["numharm"];
-  test_array = new Z2nTestArray(1, num_harm)
+  test_array = new Z2nTestArray(1, num_harm);
   test_list.push_back(test_array);
 
+#if 0
   long max_harm = pars["maxharm"];
-  test_array = new HTestArray(1, max_harm)
+  test_array = new HTestArray(1, max_harm);
   test_list.push_back(test_array);
 #endif
 
