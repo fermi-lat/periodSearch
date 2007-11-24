@@ -17,6 +17,7 @@
 #include "tip/Table.h"
 
 #include "ChiSquaredTestArray.h"
+#include "HTestArray.h"
 #include "PeriodicityTestArray.h"
 #include "Z2nTestArray.h"
 
@@ -76,11 +77,9 @@ void PeriodicityTestApp::run() {
   test_array = new Z2nTestArray(1, num_harm);
   test_list.push_back(test_array);
 
-#if 0
   long max_harm = pars["maxharm"];
   test_array = new HTestArray(1, max_harm);
   test_list.push_back(test_array);
-#endif
 
   // Loop over events in the event table(s).
   for (table_list_type::const_iterator table_itor = table_list.begin(); table_itor != table_list.end(); ++table_itor) {
