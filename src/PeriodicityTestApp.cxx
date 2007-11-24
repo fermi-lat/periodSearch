@@ -19,6 +19,7 @@
 #include "ChiSquaredTestArray.h"
 #include "HTestArray.h"
 #include "PeriodicityTestArray.h"
+#include "RayleighTestArray.h"
 #include "Z2nTestArray.h"
 
 static const std::string s_cvs_id = "$Name:  $";
@@ -71,6 +72,9 @@ void PeriodicityTestApp::run() {
   long num_phase = pars["numphase"];
   test_array = new ChiSquaredTestArray(1, num_phase);
   PeriodicityTestArray & test_to_plot = *test_array;
+  test_list.push_back(test_array);
+
+  test_array = new RayleighTestArray(1);
   test_list.push_back(test_array);
 
   long num_harm = pars["numharm"];
