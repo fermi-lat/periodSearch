@@ -34,13 +34,10 @@
 
 #include "periodSearch/PeriodSearch.h"
 #include "periodSearch/PeriodSearchViewer.h"
-//#include "ChiSquaredTest.h"
 #include "ChiSquaredTestArray.h"
 #include "FoldingAnalysis.h"
-//#include "HTest.h"
 #include "HTestArray.h"
-//#include "RayleighTest.h"
-//#include "Z2nTest.h"
+#include "RayleighTestArray.h"
 #include "Z2nTestArray.h"
 
 using namespace periodSearch;
@@ -157,17 +154,17 @@ void PSearchApp::run() {
   std::auto_ptr<PeriodicityTestArray> test_array(0);
   if (algorithm == "CHI2") {
     long num_phase = pars["numphase"];
-//    search.reset(new ChiSquaredTest(f_center, f_step, num_trials, origin, num_phase, duration));
     test_array.reset(new ChiSquaredTestArray(num_trials, num_phase));
+    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
+  } else if (algorithm == "RAYLEIGH") {
+    test_array.reset(new RayleighTestArray(num_trials));
     search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
   } else if (algorithm == "Z2N") {
     long num_harm = pars["numharm"];
-//    search.reset(new Z2nTest(f_center, f_step, num_trials, origin, num_harm, duration));
     test_array.reset(new Z2nTestArray(num_trials, num_harm));
     search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
   } else if (algorithm == "H") {
     long max_harm = pars["maxharm"];
-//    search.reset(new HTest(f_center, f_step, num_trials, origin, max_harm, duration));
     test_array.reset(new HTestArray(num_trials, max_harm));
     search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
   } else {
