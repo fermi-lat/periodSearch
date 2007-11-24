@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Nov 23 16:27:38 PST 2007
+periodSearch/src
+
+Modified Files:
+	ChiSquaredTestArray.h HTestArray.h Z2nTestArray.h 
+Log Message:
+Improve comments (cosmetic only).
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Nov 23 16:09:38 PST 2007
 periodSearch/src/gtpsearch
 
