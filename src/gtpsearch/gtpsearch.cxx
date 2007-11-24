@@ -37,7 +37,8 @@
 //#include "ChiSquaredTest.h"
 #include "ChiSquaredTestArray.h"
 #include "FoldingAnalysis.h"
-#include "HTest.h"
+//#include "HTest.h"
+#include "HTestArray.h"
 //#include "RayleighTest.h"
 //#include "Z2nTest.h"
 #include "Z2nTestArray.h"
@@ -166,7 +167,9 @@ void PSearchApp::run() {
     search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
   } else if (algorithm == "H") {
     long max_harm = pars["maxharm"];
-    search.reset(new HTest(f_center, f_step, num_trials, origin, max_harm, duration));
+//    search.reset(new HTest(f_center, f_step, num_trials, origin, max_harm, duration));
+    test_array.reset(new HTestArray(num_trials, max_harm));
+    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
   } else {
     throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
   }
