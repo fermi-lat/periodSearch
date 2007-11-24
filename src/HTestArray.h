@@ -19,6 +19,10 @@ class HTestArray : public PeriodicityTestArray {
     typedef std::vector<double> data_type;
     typedef std::vector<data_type> cont_type;
 
+    /** \brief Construct an array object of H test.
+        \param array_size The size of this test array.
+        \param num_phase_bins The maximum number of harmonics for the H test.
+    */
     HTestArray(size_type array_size, data_type::size_type max_harmonics);
 
     virtual ~HTestArray() {}
@@ -37,7 +41,7 @@ class HTestArray : public PeriodicityTestArray {
     */
     virtual std::pair<double, double> chanceProb(double stat) const;
 
-    /** \brief Return a description of this search.
+    /** \brief Return a description of this test array.
     */
     virtual std::string getDescription() const;
 
