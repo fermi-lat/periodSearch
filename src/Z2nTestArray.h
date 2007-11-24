@@ -28,8 +28,7 @@ class Z2nTestArray : public PeriodicityTestArray {
     */
     virtual void fill(double phase, size_type array_index = 0);
 
-    /** \brief Compute a test statistic for pulse phases currently filled in this object. Details
-               depend on the specific test being performed in the subclass.
+    /** \brief Compute a Z2n value of this Z2n test for pulse phases currently filled in this object.
     */
     virtual double testStat(size_type array_index = 0) const;
 
@@ -46,15 +45,14 @@ class Z2nTestArray : public PeriodicityTestArray {
     */
     virtual size_type size() const;
 
-    /** \brief Display an internal data for this periodicity test, such as a folded light curve for the Z2n test.
-               Details depend on the specific test being performed in the subclass.
+    /** \brief Display sine and cosine component accumulated in this Z2n test.
         \param title The plot title.
         \param array_index The index of the element of the periodicity test array, of which a plot is to be created.
     */
     virtual void plot(const std::string & title, size_type array_index = 0) const;
 
   private:
-    // The number of phase bins.
+    // The number of harmonics to sum up.
     size_type m_num_harm;
 
     // The container for sine and cosine components.

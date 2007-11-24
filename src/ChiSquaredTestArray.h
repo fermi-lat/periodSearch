@@ -28,8 +28,7 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     */
     virtual void fill(double phase, size_type array_index = 0);
 
-    /** \brief Compute a test statistic for pulse phases currently filled in this object. Details
-               depend on the specific test being performed in the subclass.
+    /** \brief Compute an S-value of this chi-squared test for pulse phases currently filled in this object.
     */
     virtual double testStat(size_type array_index = 0) const;
 
@@ -46,8 +45,7 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     */
     virtual size_type size() const;
 
-    /** \brief Display an internal data for this periodicity test, such as a folded light curve for the chi-squared test.
-               Details depend on the specific test being performed in the subclass.
+    /** \brief Display a folded light curve used in this chi-squared test.
         \param title The plot title.
         \param array_index The index of the element of the periodicity test array, of which a plot is to be created.
     */
