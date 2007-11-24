@@ -54,7 +54,7 @@ class PeriodicityTestArray {
     virtual void plot(const std::string & title, size_type array_index = 0) const = 0;
 
   protected:
-    /** \brief Construct a periodicity test object.
+    /** \brief Construct a periodicity test array object.
     */
     PeriodicityTestArray() {};
 };

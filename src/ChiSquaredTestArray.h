@@ -19,6 +19,10 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     typedef std::vector<long> data_type;
     typedef std::vector<data_type> cont_type;
 
+    /** \brief Construct an array object of the chi-squared test.
+        \param array_size The size of this test array.
+        \param num_phase_bins The number of phase bins for the chi-squared test.
+    */
     ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins);
 
     virtual ~ChiSquaredTestArray() {}
@@ -37,7 +41,7 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     */
     virtual std::pair<double, double> chanceProb(double stat) const;
 
-    /** \brief Return a description of this search.
+    /** \brief Return a description of this test array.
     */
     virtual std::string getDescription() const;
 

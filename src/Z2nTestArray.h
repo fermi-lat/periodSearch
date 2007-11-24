@@ -19,6 +19,10 @@ class Z2nTestArray : public PeriodicityTestArray {
     typedef std::vector<double> data_type;
     typedef std::vector<data_type> cont_type;
 
+    /** \brief Construct an array object of the Z2n test.
+        \param array_size The size of this test array.
+        \param num_phase_bins The number of harmonics to sum up for the Z2n test.
+    */
     Z2nTestArray(size_type array_size, data_type::size_type num_harmonics);
 
     virtual ~Z2nTestArray() {}
@@ -37,7 +41,7 @@ class Z2nTestArray : public PeriodicityTestArray {
     */
     virtual std::pair<double, double> chanceProb(double stat) const;
 
-    /** \brief Return a description of this search.
+    /** \brief Return a description of this test array.
     */
     virtual std::string getDescription() const;
 
