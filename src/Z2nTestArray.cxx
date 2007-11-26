@@ -33,7 +33,11 @@ void Z2nTestArray::fill(double phase, size_type array_index) {
   ++(m_num_events.at(array_index));
 }
 
-double Z2nTestArray::testStat(size_type array_index) const {
+void Z2nTestArray::computePower(size_type array_index, data_type & power) const {
+  // Initialize the container of the Fourier powers to return.
+  power.resize(m_num_harm);
+  power.assign(m_num_harm, 0.);
+
   // Get the storage for sine and consine component.
   const data_type & sine_array = m_sine_cont.at(array_index);
   const data_type & cosine_array = m_cosine_cont.at(array_index);
@@ -41,15 +45,23 @@ double Z2nTestArray::testStat(size_type array_index) const {
   // Compute normalization.
   double fourier_norm = 2. / m_num_events.at(array_index);
 
-  // Compute the Fourier powers and sum them up over harmonics.
-  double summed_power = 0.;
+  // Compute the Fourier powers.
   for (size_type jj = 0; jj < m_num_harm; ++jj) {
-    summed_power += sine_array[jj] * sine_array[jj];
-    summed_power += cosine_array[jj] * cosine_array[jj];
+    power[jj] = fourier_norm * (sine_array[jj] * sine_array[jj] + cosine_array[jj] * cosine_array[jj]);
   }
+}
 
-  // Return normalized summed power.
-  return summed_power * fourier_norm;
+double Z2nTestArray::testStat(size_type array_index) const {
+  // Compute the Fourier powers.
+  data_type power;
+  computePower(array_index, power);
+
+  // Sum up the Fourier powers over harmonics.
+  double summed_power = 0.;
+  for (data_type::const_iterator itor = power.begin(); itor != power.end(); ++itor) summed_power += *itor;
+
+  // Return the summed power.
+  return summed_power;
 }
 
 std::pair<double, double> Z2nTestArray::chanceProb(double stat) const {
