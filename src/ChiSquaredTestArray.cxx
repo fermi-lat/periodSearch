@@ -10,11 +10,6 @@
 #include <stdexcept>
 #include <vector>
 
-#include "st_graph/Axis.h"
-#include "st_graph/Engine.h"
-#include "st_graph/IPlot.h"
-#include "st_graph/Sequence.h"
-
 #include "ChiSquaredProb.h"
 
 ChiSquaredTestArray::ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins):
@@ -75,9 +70,7 @@ ChiSquaredTestArray::size_type ChiSquaredTestArray::size() const {
   return m_curve_cont.size();
 }
 
-void ChiSquaredTestArray::plot(const std::string & title, size_type array_index) const {
-  using namespace st_graph;
-
+std::pair<std::vector<double>, std::vector<double> > ChiSquaredTestArray::getPlotData(size_type array_index) const {
   // Create a light curve to plot.
   const data_type & curve = m_curve_cont.at(array_index);
   typedef std::vector<double> hist_type;
@@ -88,28 +81,14 @@ void ChiSquaredTestArray::plot(const std::string & title, size_type array_index)
     light_curve[ii] = curve[ii];
   }
 
-  try {
-    // Get graphics engine to set up graph.
-    Engine & engine(Engine::instance());
+  // Return the light curve.
+  return std::make_pair(phase_value, light_curve);
+}
 
-    // Typedef for readability.
-    typedef st_graph::ValueSequence<std::vector<double>::const_iterator> ValueSeq_t;
+std::pair<std::string, std::string> ChiSquaredTestArray::getPlotLabel() const {
+  return std::make_pair(std::string("Pulse Phase"), std::string("Counts"));
+}
 
-    // TODO Add text output (statistics, etc.)to a text box on the plot, and/or in a GUI output window.
-    std::auto_ptr<IPlot> plot(engine.createPlot(title, 800, 600, "hist",
-      ValueSeq_t(phase_value.begin(), phase_value.end()),
-      ValueSeq_t(light_curve.begin(), light_curve.end())));
-
-    // Set axes titles.
-    std::vector<Axis> & axes(plot->getAxes());
-    axes[0].setTitle("Pulse Phase");
-    axes[1].setTitle("Counts");
-
-    // Display plot.
-    engine.run();
-
-  } catch (const std::exception & x) {
-    std::cerr << x.what() << std::endl;
-    std::cerr << "Warning: ChiSquaredTestArray::plot could not display plot." << std::endl;
-  }
+std::string ChiSquaredTestArray::getPlotTitle() const {
+  return "Folded Light Curve";
 }

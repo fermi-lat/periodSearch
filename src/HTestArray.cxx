@@ -95,7 +95,15 @@ HTestArray::size_type HTestArray::size() const {
   return m_sine_cont.size();
 }
 
-void HTestArray::plot(const std::string & /* title */, size_type /* array_index */) const {
+std::pair<std::vector<double>, std::vector<double> > HTestArray::getPlotData(size_type array_index) const {
   // TODO: Implement this method, plotting sine and cosine component against the harmonic number.
-  throw std::runtime_error("HTestArray::plot is not implemented yet.");
+  throw std::runtime_error("HTestArray::getPlotData is not implemented yet.");
+}
+
+std::pair<std::string, std::string> HTestArray::getPlotLabel() const {
+  return std::make_pair(std::string("Harmonic Number"), std::string("H"));
+}
+
+std::string HTestArray::getPlotTitle() const {
+  return "Candidate H values";
 }
