@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Nov 26 14:28:49 PST 2007
+periodSearch/src
+
+Modified Files:
+	HTestArray.h HTestArray.cxx 
+Log Message:
+Make HTestArray class a subclass of Z2nTestArray.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Nov 26 14:28:28 PST 2007
 periodSearch/src
 
