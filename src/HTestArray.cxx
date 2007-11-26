@@ -9,49 +9,25 @@
 
 #include "HTestArray.h"
 
-HTestArray::HTestArray(size_type array_size, data_type::size_type max_harmonics):
-  m_max_harm(max_harmonics), m_sine_cont(array_size, data_type(max_harmonics, 0.)),
-  m_cosine_cont(array_size, data_type(max_harmonics, 0.)), m_num_events(array_size, 0) {}
-
-void HTestArray::fill(double phase, size_type array_index) {
-  // Define two pi (for convenience and clarity).
-  static const double s_2pi = 2. * 4. * std::atan(1.0);
-
-  // Get the storage for sine and consine component.
-  data_type & sine_array = m_sine_cont.at(array_index);
-  data_type & cosine_array = m_cosine_cont.at(array_index);
-
-  // For each phase, the complex Fourier component is computed for each trial harmonic.
-  for (size_type jj = 0; jj < m_max_harm; ++jj) {
-    double phase_angle = s_2pi * (jj + 1) * phase;
-    sine_array[jj] += std::sin(phase_angle);
-    cosine_array[jj] += std::cos(phase_angle);
-  }
-
-  // Increment the number of events filled.
-  ++(m_num_events.at(array_index));
-}
+HTestArray::HTestArray(size_type array_size, data_type::size_type max_harmonics): Z2nTestArray(array_size, max_harmonics),
+  m_max_harm(max_harmonics) {}
 
 double HTestArray::testStat(size_type array_index) const {
-  // Get the storage for sine and consine component.
-  const data_type & sine_array = m_sine_cont.at(array_index);
-  const data_type & cosine_array = m_cosine_cont.at(array_index);
-
-  // Compute normalization.
-  double fourier_norm = 2. / m_num_events.at(array_index);
+  // Compute the Fourier powers.
+  data_type power;
+  computePower(array_index, power);
 
   // Compute H value.
   double highest_H = 0.;
   double z2_value = 0.;
   // Iterate over bins in each trial.
-  for (size_type jj = 0; jj < m_max_harm; ++jj) {
+  for (size_type jj = 0; jj < size_type(power.size()); ++jj) {
     // Compute coefficient of power spectrum for each harmonic.
-    z2_value += fourier_norm * (sine_array[jj] * sine_array[jj] + cosine_array[jj] * cosine_array[jj]);
+    z2_value += power[jj];
     double H_value = z2_value - 4. * jj;
-    if (H_value > highest_H) {
-      // Keep only the harmonic with the highest H_value.
-      highest_H = H_value;
-    }
+
+    // Keep only the harmonic with the highest H_value.
+    if (H_value > highest_H) highest_H = H_value;
   }
 
   return highest_H;
@@ -89,10 +65,6 @@ std::string HTestArray::getDescription() const {
   os << "Type of test: H Test, " << m_max_harm << " maximum harmonics\n" <<
     "Probability distribution: H Test-specific";
   return os.str();
-}
-
-HTestArray::size_type HTestArray::size() const {
-  return m_sine_cont.size();
 }
 
 std::pair<std::vector<double>, std::vector<double> > HTestArray::getPlotData(size_type array_index) const {
