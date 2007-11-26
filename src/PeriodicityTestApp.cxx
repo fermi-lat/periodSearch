@@ -13,6 +13,11 @@
 
 #include "st_facilities/FileSys.h"
 
+#include "st_graph/Axis.h"
+#include "st_graph/Engine.h"
+#include "st_graph/IPlot.h"
+#include "st_graph/Sequence.h"
+
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
 
@@ -132,11 +137,48 @@ void PeriodicityTestApp::run() {
   m_os.info().precision(orig_precision);
 
   // Display a plot, if desired.
-  if (plot) test_to_plot.plot(title);
+  if (plot) plotResult(title, test_to_plot);
 
   // Delete the event table(s).
   for (table_list_type::iterator itor = table_list.begin(); itor != table_list.end(); ++itor) delete *itor;
 
   // Delete the peridicity tests.
   for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) delete *itor;
+}
+
+void PeriodicityTestApp::plotResult(const std::string & title, const PeriodicityTestArray & test_array) const {
+  using namespace st_graph;
+
+  // Get data to plot.
+  // NOTE: Only the first element of test array in this application.
+  typedef std::vector<double> hist_type;
+  std::pair<hist_type, hist_type> hist_pair = test_array.getPlotData(0);
+  hist_type & phase_value = hist_pair.first;
+  hist_type & light_curve = hist_pair.second;
+
+  try {
+    // Get graphics engine to set up graph.
+    Engine & engine(Engine::instance());
+
+    // Typedef for readability.
+    typedef st_graph::ValueSequence<std::vector<double>::const_iterator> ValueSeq_t;
+
+    // TODO Add text output (statistics, etc.)to a text box on the plot, and/or in a GUI output window.
+    std::auto_ptr<IPlot> plot(engine.createPlot(title, 800, 600, "hist",
+      ValueSeq_t(phase_value.begin(), phase_value.end()),
+      ValueSeq_t(light_curve.begin(), light_curve.end())));
+
+    // Set axes titles.
+    std::vector<Axis> & axes(plot->getAxes());
+    std::pair<std::string, std::string> label_pair = test_array.getPlotLabel();
+    axes[0].setTitle(label_pair.first);
+    axes[1].setTitle(label_pair.second);
+
+    // Display plot.
+    engine.run();
+
+  } catch (const std::exception & x) {
+    std::cerr << x.what() << std::endl;
+    std::cerr << "Warning: ChiSquaredTestArray::plot could not display plot." << std::endl;
+  }
 }
