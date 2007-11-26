@@ -9,12 +9,12 @@
 #include <utility>
 #include <vector>
 
-#include "PeriodicityTestArray.h"
+#include "Z2nTestArray.h"
 
 /** \class HTestArray
     \brief PeriodicityTestArray subclass which uses a H statistic for its test.
 */
-class HTestArray : public PeriodicityTestArray {
+class HTestArray : public Z2nTestArray {
   public:
     typedef std::vector<double> data_type;
     typedef std::vector<data_type> cont_type;
@@ -26,11 +26,6 @@ class HTestArray : public PeriodicityTestArray {
     HTestArray(size_type array_size, data_type::size_type max_harmonics);
 
     virtual ~HTestArray() {}
-
-    /** \brief Fill a given pulse phase into this periodicity test object.
-        \param phase The pulse phase.
-    */
-    virtual void fill(double phase, size_type array_index = 0);
 
     /** \brief Compute an H-value of this H test for pulse phases currently filled in this object.
     */
@@ -44,10 +39,6 @@ class HTestArray : public PeriodicityTestArray {
     /** \brief Return a description of this test array.
     */
     virtual std::string getDescription() const;
-
-    /** \brief Return the size of this periodicity test array.
-    */
-    virtual size_type size() const;
 
     /** \brief Return a pair of data arrays that contains the candidate H values for each harmonic number. The first array
                of the pair is an array of harmonic numbers, and the second an array of the Z2n values subtracted by 4*(m-1),
@@ -65,15 +56,8 @@ class HTestArray : public PeriodicityTestArray {
     virtual std::string getPlotTitle() const;
 
   private:
-    // The maximum number of harmonics to investigate.
+    // The maximum number of harmonics (to be used only in getDescription method).
     size_type m_max_harm;
-
-    // The container for sine and cosine components.
-    cont_type m_sine_cont;
-    cont_type m_cosine_cont;
-
-    // The number of events filled for each element of this test array.
-    std::vector<long> m_num_events;
 };
 
 #endif
