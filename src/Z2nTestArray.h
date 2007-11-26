@@ -49,11 +49,20 @@ class Z2nTestArray : public PeriodicityTestArray {
     */
     virtual size_type size() const;
 
-    /** \brief Display sine and cosine component accumulated in this Z2n test.
-        \param title The plot title.
-        \param array_index The index of the element of the periodicity test array, of which a plot is to be created.
+    /** \brief Return a pair of data arrays that contains the Fourier power (i.e., squared sum of sine and cosine component)
+               for each harmonic number. The first array of the pair is an array of harmonic numbers, and the second an array
+               of the Fourier powers for each harmonic number.
+        \param array_index The index of the element of the periodicity test array, of which a data array is to be created.
     */
-    virtual void plot(const std::string & title, size_type array_index = 0) const;
+    virtual std::pair<std::vector<double>, std::vector<double> > getPlotData(size_type array_index = 0) const;
+
+    /** \brief Return a pair of axis labels, each of which can be used as an X- and Y-axis label, respectively.
+    */
+    virtual std::pair<std::string, std::string> getPlotLabel() const;
+
+    /** \brief Return a plot title that can be used with a return value of getPlotData method.
+    */
+    virtual std::string getPlotTitle() const;
 
   private:
     // The number of harmonics to sum up.

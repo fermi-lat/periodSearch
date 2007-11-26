@@ -73,7 +73,15 @@ Z2nTestArray::size_type Z2nTestArray::size() const {
   return m_sine_cont.size();
 }
 
-void Z2nTestArray::plot(const std::string & /* title */, size_type /* array_index */) const {
+std::pair<std::vector<double>, std::vector<double> > Z2nTestArray::getPlotData(size_type array_index) const {
   // TODO: Implement this method, plotting sine and cosine component against the harmonic number.
-  throw std::runtime_error("Z2nTestArray::plot is not implemented yet.");
+  throw std::runtime_error("Z2nTestArray::getPlotData is not implemented yet.");
+}
+
+std::pair<std::string, std::string> Z2nTestArray::getPlotLabel() const {
+  return std::make_pair(std::string("Harmonic Number"), std::string("Power"));
+}
+
+std::string Z2nTestArray::getPlotTitle() const {
+  return "Fourier Power";
 }
