@@ -14,7 +14,7 @@ Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmon
   m_num_harm(num_harmonics), m_sine_cont(array_size, data_type(num_harmonics, 0.)),
   m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0) {}
 
-void Z2nTestArray::fill(double phase, size_type array_index) {
+void Z2nTestArray::fill(size_type array_index, double phase) {
   // Define two pi (for convenience and clarity).
   static const double s_2pi = 2. * 4. * std::atan(1.0);
 
@@ -85,13 +85,14 @@ Z2nTestArray::size_type Z2nTestArray::size() const {
   return m_sine_cont.size();
 }
 
-std::pair<std::vector<double>, std::vector<double> > Z2nTestArray::getPlotData(size_type array_index) const {
+void Z2nTestArray::getPlotData(size_type array_index, std::vector<double> & harmonic, std::vector<double> & power) const {
   // TODO: Implement this method, plotting sine and cosine component against the harmonic number.
   throw std::runtime_error("Z2nTestArray::getPlotData is not implemented yet.");
 }
 
-std::pair<std::string, std::string> Z2nTestArray::getPlotLabel() const {
-  return std::make_pair(std::string("Harmonic Number"), std::string("Power"));
+void Z2nTestArray::getPlotLabel(std::string & x_label, std::string & y_label) const {
+  x_label = "Harmonic Number";
+  y_label = "Power";
 }
 
 std::string Z2nTestArray::getPlotTitle() const {

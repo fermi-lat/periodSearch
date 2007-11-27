@@ -15,7 +15,7 @@
 ChiSquaredTestArray::ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins):
   m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)), m_num_events(array_size, 0) {}
 
-void ChiSquaredTestArray::fill(double phase, size_type array_index) {
+void ChiSquaredTestArray::fill(size_type array_index, double phase) {
   // Bin phase; it runs from [0, 1), so multiply by the number of bins to determine
   // bin for this phase.
   size_type bin_id = size_type(phase * m_num_phase_bins);
@@ -70,23 +70,24 @@ ChiSquaredTestArray::size_type ChiSquaredTestArray::size() const {
   return m_curve_cont.size();
 }
 
-std::pair<std::vector<double>, std::vector<double> > ChiSquaredTestArray::getPlotData(size_type array_index) const {
+void ChiSquaredTestArray::getPlotData(size_type array_index, std::vector<double> & phase, std::vector<double> & count) const {
+  // Initialize the output arrays.
+  phase.resize(m_num_phase_bins);
+  phase.assign(m_num_phase_bins, 0.);
+  count.resize(m_num_phase_bins);
+  count.assign(m_num_phase_bins, 0.);
+
   // Create a light curve to plot.
   const data_type & curve = m_curve_cont.at(array_index);
-  typedef std::vector<double> hist_type;
-  hist_type phase_value(m_num_phase_bins, 0.);
-  hist_type light_curve(m_num_phase_bins, 0.);
-  for (hist_type::size_type ii=0; ii < hist_type::size_type(m_num_phase_bins); ++ii) {
-    phase_value[ii] = (ii + 0.5) / m_num_phase_bins;
-    light_curve[ii] = curve[ii];
+  for (std::vector<double>::size_type ii=0; ii < std::vector<double>::size_type(m_num_phase_bins); ++ii) {
+    phase[ii] = (ii + 0.5) / m_num_phase_bins;
+    count[ii] = curve[ii];
   }
-
-  // Return the light curve.
-  return std::make_pair(phase_value, light_curve);
 }
 
-std::pair<std::string, std::string> ChiSquaredTestArray::getPlotLabel() const {
-  return std::make_pair(std::string("Pulse Phase"), std::string("Counts"));
+void ChiSquaredTestArray::getPlotLabel(std::string & x_label, std::string & y_label) const {
+  x_label = "Pulse Phase";
+  y_label = "Counts";
 }
 
 std::string ChiSquaredTestArray::getPlotTitle() const {
