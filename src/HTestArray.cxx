@@ -12,24 +12,36 @@
 HTestArray::HTestArray(size_type array_size, data_type::size_type max_harmonics): Z2nTestArray(array_size, max_harmonics),
   m_max_harm(max_harmonics) {}
 
+void HTestArray::computeCandidate(data_type & power, data_type & H_candidate) const {
+  // Initialize output array.
+  data_type::size_type array_size = power.size();
+  H_candidate.resize(array_size);
+  H_candidate.assign(array_size, 0.);
+
+  // Compute candidates for the H value.
+  double z2_value = 0.;
+  for (data_type::size_type jj = 0; jj < array_size; ++jj) {
+    z2_value += power[jj];
+    H_candidate[jj] = z2_value - 4. * jj;
+  }
+}
+
 double HTestArray::testStat(size_type array_index) const {
   // Compute the Fourier powers.
   data_type power;
   computePower(array_index, power);
 
-  // Compute H value.
-  double highest_H = 0.;
-  double z2_value = 0.;
-  // Iterate over bins in each trial.
-  for (size_type jj = 0; jj < size_type(power.size()); ++jj) {
-    // Compute coefficient of power spectrum for each harmonic.
-    z2_value += power[jj];
-    double H_value = z2_value - 4. * jj;
+  // Compute H values.
+  data_type H_candidate;
+  computeCandidate(power, H_candidate);
 
-    // Keep only the harmonic with the highest H_value.
-    if (H_value > highest_H) highest_H = H_value;
+  // Keep only the harmonic with the highest H-value.
+  double highest_H = 0.;
+  for (data_type::const_iterator itor = H_candidate.begin(); itor != H_candidate.end(); ++itor) {
+    if (*itor > highest_H) highest_H = *itor;
   }
 
+  // Return the maximum value of H-value candidates.
   return highest_H;
 }
 
@@ -68,8 +80,12 @@ std::string HTestArray::getDescription() const {
 }
 
 void HTestArray::getPlotData(size_type array_index, std::vector<double> & harmonic, std::vector<double> & H_value) const {
-  // TODO: Implement this method, plotting sine and cosine component against the harmonic number.
-  throw std::runtime_error("HTestArray::getPlotData is not implemented yet.");
+  // Delegate computation of Fourier powers and harmonic numbers.
+  data_type power;
+  Z2nTestArray::getPlotData(array_index, harmonic, power);
+
+  // Convert the Fourier powers to H-value candidates.
+  computeCandidate(power, H_value);
 }
 
 void HTestArray::getPlotLabel(std::string & x_label, std::string & y_label) const {
