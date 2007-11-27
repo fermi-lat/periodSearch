@@ -72,7 +72,7 @@ class Z2nTestArray : public PeriodicityTestArray {
   protected:
     /** \brief Compute the Fourier power (i.e., squared sum of sine and cosine component) for each harmonic numbers.
         \param array_index The index of the element of the periodicity test array, for which the Fourier power is computed.
-        \param power The container of the Fourier powers
+        \param power The container of the output Fourier powers.
     */
     void computePower(size_type array_index, data_type & power) const;
 
