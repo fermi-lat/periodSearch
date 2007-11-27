@@ -6,14 +6,8 @@
 
 #include <cmath>
 #include <iostream>
-//#include <memory>
 #include <sstream>
 #include <stdexcept>
-
-//#include "st_graph/Axis.h"
-//#include "st_graph/Engine.h"
-//#include "st_graph/IPlot.h"
-//#include "st_graph/Sequence.h"
 
 #include "FoldingAnalysis.h"
 #include "PeriodicityTest.h"
@@ -70,7 +64,7 @@ namespace periodSearch {
       phase -= floor(phase);
 
       // Use this phase information to fill in the corresponding trial.
-      m_test_array->fill(phase, ii);
+      m_test_array->fill(ii, phase);
     }
   }
 

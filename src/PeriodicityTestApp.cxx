@@ -103,7 +103,7 @@ void PeriodicityTestApp::run() {
       // Fill the phase value into the tests.
       for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
         PeriodicityTestArray & test_array = **itor;
-        test_array.fill(phase_value);
+        test_array.fill(0, phase_value);
       }
     }
   }
@@ -126,7 +126,7 @@ void PeriodicityTestApp::run() {
   for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
     // Compute test results.
     PeriodicityTestArray & test_array = **itor;
-    double test_stat = test_array.testStat();
+    double test_stat = test_array.testStat(0);
     std::pair<double, double> chance_prob = test_array.chanceProb(test_stat);
 
     // Display the results on the screen.
@@ -151,10 +151,9 @@ void PeriodicityTestApp::plotResult(const std::string & title, const Periodicity
 
   // Get data to plot.
   // NOTE: Only the first element of test array in this application.
-  typedef std::vector<double> hist_type;
-  std::pair<hist_type, hist_type> hist_pair = test_array.getPlotData(0);
-  hist_type & phase_value = hist_pair.first;
-  hist_type & light_curve = hist_pair.second;
+  std::vector<double> phase_value;
+  std::vector<double> light_curve;
+  test_array.getPlotData(0, phase_value, light_curve);
 
   try {
     // Get graphics engine to set up graph.
@@ -170,9 +169,11 @@ void PeriodicityTestApp::plotResult(const std::string & title, const Periodicity
 
     // Set axes titles.
     std::vector<Axis> & axes(plot->getAxes());
-    std::pair<std::string, std::string> label_pair = test_array.getPlotLabel();
-    axes[0].setTitle(label_pair.first);
-    axes[1].setTitle(label_pair.second);
+    std::string x_label;
+    std::string y_label;
+    test_array.getPlotLabel(x_label, y_label);
+    axes[0].setTitle(x_label);
+    axes[1].setTitle(y_label);
 
     // Display plot.
     engine.run();
