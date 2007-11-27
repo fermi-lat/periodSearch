@@ -67,13 +67,14 @@ std::string HTestArray::getDescription() const {
   return os.str();
 }
 
-std::pair<std::vector<double>, std::vector<double> > HTestArray::getPlotData(size_type array_index) const {
+void HTestArray::getPlotData(size_type array_index, std::vector<double> & harmonic, std::vector<double> & H_value) const {
   // TODO: Implement this method, plotting sine and cosine component against the harmonic number.
   throw std::runtime_error("HTestArray::getPlotData is not implemented yet.");
 }
 
-std::pair<std::string, std::string> HTestArray::getPlotLabel() const {
-  return std::make_pair(std::string("Harmonic Number"), std::string("H"));
+void HTestArray::getPlotLabel(std::string & x_label, std::string & y_label) const {
+  x_label = "Harmonic Number";
+  y_label = "H";
 }
 
 std::string HTestArray::getPlotTitle() const {

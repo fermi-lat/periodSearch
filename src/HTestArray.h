@@ -28,8 +28,9 @@ class HTestArray : public Z2nTestArray {
     virtual ~HTestArray() {}
 
     /** \brief Compute an H-value of this H test for pulse phases currently filled in this object.
+        \param array_index The index of the element of the periodicity test array, of which an H-value is to be computed.
     */
-    virtual double testStat(size_type array_index = 0) const;
+    virtual double testStat(size_type array_index) const;
 
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
@@ -40,16 +41,19 @@ class HTestArray : public Z2nTestArray {
     */
     virtual std::string getDescription() const;
 
-    /** \brief Return a pair of data arrays that contains the candidate H values for each harmonic number. The first array
-               of the pair is an array of harmonic numbers, and the second an array of the Z2n values subtracted by 4*(m-1),
-               where m is the harmonic number.
+    /** \brief Fill a pair of given arrays with data that contains the candidate H values for each harmonic number,
+               that are the Z2n values subtracted by 4*(m-1), where m is the harmonic number.
         \param array_index The index of the element of the periodicity test array, of which a data array is to be created.
+        \param harmonic The output array for harmonic numbers, which may be used an X-axis of a plot.
+        \param power The output array for the candidate H values for each harmonic number, which may be used an Y-axis of a plot.
     */
-    virtual std::pair<std::vector<double>, std::vector<double> > getPlotData(size_type array_index = 0) const;
+    virtual void getPlotData(size_type array_index, std::vector<double> & harmonic, std::vector<double> & H_value) const;
 
-    /** \brief Return a pair of axis labels, each of which can be used as an X- and Y-axis label, respectively.
+    /** \brief Assign axis labels to a pair of given strings, each of which can be used as an X- and Y-axis label, respectively.
+        \param x_data The output string that contains the label for X-axis of a plot to display.
+        \param y_data The output string that contains the label for Y-axis of a plot to display.
     */
-    virtual std::pair<std::string, std::string> getPlotLabel() const;
+    virtual void getPlotLabel(std::string & x_label, std::string & y_label) const;
 
     /** \brief Return a plot title that can be used with a return value of getPlotData method.
     */

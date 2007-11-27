@@ -22,16 +22,16 @@ class PeriodicityTestArray {
     virtual ~PeriodicityTestArray() {}
 
     /** \brief Fill a given pulse phase into a given element of the array of periodicity test.
-        \param phase The pulse phase to fill.
         \param array_index The index of the element of the periodicity test array, to which a given phase is filled.
+        \param phase The pulse phase to fill.
     */
-    virtual void fill(double phase, size_type array_index = 0) = 0;
+    virtual void fill(size_type array_index, double phase) = 0;
 
     /** \brief Compute a test statistic for pulse phases currently filled in this object. Details
                depend on the specific test being performed in the subclass.
         \param array_index The index of the element of the periodicity test array, of which a test statistic is to be computed.
     */
-    virtual double testStat(size_type array_index = 0) const = 0;
+    virtual double testStat(size_type array_index) const = 0;
     // TODO: Rename the above to computeStat for consistency.
 
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
@@ -48,16 +48,20 @@ class PeriodicityTestArray {
     */
     virtual size_type size() const = 0;
 
-    /** \brief Return a pair of data arrays that represents internal state of this periodicity test, such as a folded light
-               curve for the chi-squared test. The arrays in the pair may be used as X- and Y-axis of a plot to display.
-               Details depend on the specific test being performed in the subclass.
+    /** \brief Fill a pair of given arrays with data that represents internal state of this periodicity test, such as a folded
+               light curve for the chi-squared test, such that they can be used as X- and Y-axis of a plot to display. The given
+               arrays may be resized if necessary. Details depend on the specific test being performed in the subclass.
         \param array_index The index of the element of the periodicity test array, of which a data array is to be created.
+        \param x_data The output array that contains X-values for a plot to display.
+        \param y_data The output array that contains Y-values for a plot to display.
     */
-    virtual std::pair<std::vector<double>, std::vector<double> > getPlotData(size_type array_index = 0) const = 0;
+    virtual void getPlotData(size_type array_index, std::vector<double> & x_data, std::vector<double> & y_data) const = 0;
 
-    /** \brief Return a pair of axis labels, each of which can be used as an X- and Y-axis label, respectively.
+    /** \brief Assign axis labels to a pair of given strings, each of which can be used as an X- and Y-axis label, respectively.
+        \param x_data The output string that contains the label for X-axis of a plot to display.
+        \param y_data The output string that contains the label for Y-axis of a plot to display.
     */
-    virtual std::pair<std::string, std::string> getPlotLabel() const = 0;
+    virtual void getPlotLabel(std::string & x_label, std::string & y_label) const = 0;
 
     /** \brief Return a plot title that can be used with a return value of getPlotData method.
     */
