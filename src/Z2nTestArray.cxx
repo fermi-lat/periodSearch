@@ -86,8 +86,17 @@ Z2nTestArray::size_type Z2nTestArray::size() const {
 }
 
 void Z2nTestArray::getPlotData(size_type array_index, std::vector<double> & harmonic, std::vector<double> & power) const {
-  // TODO: Implement this method, plotting sine and cosine component against the harmonic number.
-  throw std::runtime_error("Z2nTestArray::getPlotData is not implemented yet.");
+  // Compute the Fourier powers.
+  computePower(array_index, power);
+
+  // Initialize the output array for harmonic numbers.
+  std::vector<double>::size_type num_harm = power.size();
+  harmonic.resize(num_harm);
+  harmonic.assign(num_harm, 0.);
+
+  // Set harmonic numbers, starting with one (1).
+  double harmonic_number = 1.;
+  for (std::vector<double>::iterator itor = power.begin(); itor != power.end(); ++itor) *itor = harmonic_number++;
 }
 
 void Z2nTestArray::getPlotLabel(std::string & x_label, std::string & y_label) const {
