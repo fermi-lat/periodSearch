@@ -78,19 +78,6 @@ namespace periodSearch {
     return os;
   }
 
-  tip::Header & PeriodSearchViewer::writeSummary(tip::Header & header) const {
-    PeriodSearchResult result = m_search->search(m_min_freq, m_max_freq);
-    std::stringstream ss;
-    result.write(ss);
-    while (ss.good()) {
-      const unsigned int buf_size = 1024;
-      char buf[buf_size];
-      ss.getline(buf, buf_size);
-      header.addComment(buf);
-    }
-    return header;
-  }
-
   st_stream::OStream & PeriodSearchViewer::writeData(st_stream::OStream & os) const {
     using namespace std;
 
@@ -120,6 +107,17 @@ namespace periodSearch {
   }
 
   tip::Table & PeriodSearchViewer::writeData(tip::Table & table) const {
+    // Write description of this search into the header.
+    PeriodSearchResult result = m_search->search(m_min_freq, m_max_freq);
+    std::stringstream ss;
+    result.write(ss);
+    while (ss.good()) {
+      const unsigned int buf_size = 1024;
+      char buf[buf_size];
+      ss.getline(buf, buf_size);
+      table.getHeader().addComment(buf);
+    }
+
     // Impose range limits.
     std::pair<PeriodSearch::size_type, PeriodSearch::size_type> indices = m_search->getRangeIndex(m_min_freq, m_max_freq);
     PeriodSearch::size_type begin_index = indices.first;
