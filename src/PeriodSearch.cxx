@@ -15,6 +15,8 @@
 #include <utility>
 #include <vector>
 
+#include "StatisticViewer.h"
+
 namespace periodSearch {
 
   PeriodSearchResult::PeriodSearchResult(const std::string & description, double min_freq, double max_freq, size_type num_freq_bin,
@@ -191,6 +193,33 @@ namespace periodSearch {
     }
 
     return std::make_pair(begin_index, end_index);
+  }
+
+  StatisticViewer PeriodSearch::getViewer(double min_freq, double max_freq) const {
+    // Impose range limits.
+    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
+    size_type begin_index = indices.first;
+    size_type end_index = indices.second;
+
+    // Create a viewer object to return.
+    StatisticViewer viewer(2, end_index - begin_index);
+
+    // Set data to the viewer.
+    viewer.setData(0, m_freq.begin() + begin_index);
+    viewer.setData(1, m_spec.begin() + begin_index);
+
+    // Set label to the viewer.
+    viewer.setLabel(0, "Frequency");
+    viewer.setLabel(1, "Statistic");
+
+    // Set caption to the viewer.
+    PeriodSearchResult result = search(min_freq, max_freq);
+    std::ostringstream os;
+    result.write(os);
+    viewer.setCaption(os.str());
+
+    // Return the viewer.
+    return viewer;
   }
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearch & test) {
