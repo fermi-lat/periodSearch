@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Nov 29 15:15:19 PST 2007
+periodSearch/src
+
+Modified Files:
+	StatisticViewer.cxx 
+Log Message:
+Fix a problem in chatness control. Made cosmetic changes in labels.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Nov 29 15:13:48 PST 2007
 periodSearch/src
 
