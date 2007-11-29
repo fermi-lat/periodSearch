@@ -210,12 +210,10 @@ void PSearchApp::run() {
     // Create output file.
     tip::IFileSvc::instance().createFile(out_file, template_file, clobber);
 
-    // Open output file and get reference to its header.
+    // Open output file.
     std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
-    tip::Header & out_header(out_table->getHeader());
 
     // Write the summary to the output header, and the data to the output table.
-    viewer.writeSummary(out_header);
     viewer.writeData(*out_table);
   }
 
