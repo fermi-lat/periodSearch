@@ -65,7 +65,7 @@ class StatisticViewer {
         \param x_index The axis index of the data to be used for X-axis of the plot.
         \param y_index The axis index of the data to be used for Y-axis of the plot.
     */
-    void plot(index_type x_axis_index, index_type y_axis_index) const;
+    void plot(index_type x_axis_index = 0, index_type y_axis_index = 1) const;
 
     /** \brief Write a text output to an output stream. The output will be controlled by chatness level automatically.
         \param os StreamFormatter object, to which the text output is to be forwarded.
