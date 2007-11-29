@@ -33,11 +33,11 @@
 #include "st_stream/st_stream.h"
 
 #include "periodSearch/PeriodSearch.h"
-#include "periodSearch/PeriodSearchViewer.h"
 #include "ChiSquaredTestArray.h"
 #include "FoldingAnalysis.h"
 #include "HTestArray.h"
 #include "RayleighTestArray.h"
+#include "StatisticViewer.h"
 #include "Z2nTestArray.h"
 
 using namespace periodSearch;
@@ -185,18 +185,17 @@ void PSearchApp::run() {
   // Compute the statistics.
   search->computeStats();
 
-  enum ChatLevel {
-    eIncludeSummary= 2,
-    eAllDetails = 3
-  };
+  // Create a viewer object.
+  StatisticViewer viewer(search->getViewer());
 
   // Use default title if user did not specify one.
   std::string title_uc(title);
   for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
   if (title_uc == "DEFAULT") title = "Folding Analysis: " + algorithm + " Test";
 
-  // Create a viewer for plotting and writing output.
-  periodSearch::PeriodSearchViewer viewer(*search);
+  // Set title and unit for a plot.
+  viewer.setTitle(title);
+  viewer.setUnit(0, "Hz");
 
   // Interpret output file parameter.
   std::string out_file_uc = out_file;
@@ -214,18 +213,14 @@ void PSearchApp::run() {
     std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
 
     // Write the summary to the output header, and the data to the output table.
-    viewer.writeData(*out_table);
+    viewer.write(*out_table);
   }
 
   // Write the stats to the screen.
-  m_os.info(eIncludeSummary) << title << std::endl;
-  viewer.writeSummary(m_os.info(eIncludeSummary)) << std::endl;
-
-  // Write details of test result if chatter is high enough.
-  viewer.writeData(m_os.info(eAllDetails)) << std::endl;
+  viewer.write(m_os);
 
   // Display a plot, if desired.
-  if (plot) viewer.plot(title, "(Hz)");
+  if (plot) viewer.plot();
 }
 
 void PSearchApp::prompt(st_app::AppParGroup & pars) {
