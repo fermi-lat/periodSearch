@@ -13,6 +13,8 @@
 
 #include "st_stream/Stream.h"
 
+class StatisticViewer;
+
 namespace periodSearch {
 
   /** \class PeriodSearchResult
@@ -139,6 +141,8 @@ namespace periodSearch {
           \param max_freq The maximum frequency.
       */
       std::pair<size_type, size_type> getRangeIndex(double min_freq, double max_freq) const;
+
+      StatisticViewer getViewer(double min_freq = -1., double max_freq = -1.) const;
 
     protected:
 
