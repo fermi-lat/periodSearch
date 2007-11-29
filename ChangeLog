@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Wed Nov 28 16:29:47 PST 2007
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Merge PeriodSearchViewer::writeSummary(tip::Header) into writeData(tip::Table).
+
+    *
+------------------------------------------------------------
+User: hirayama  Wed Nov 28 16:29:47 PST 2007
 periodSearch/src/gtpsearch
 
 Modified Files:
