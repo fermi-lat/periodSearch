@@ -51,8 +51,13 @@ void StatisticViewer::plot(index_type x_axis_index, index_type y_axis_index) con
   data_type::const_iterator y_begin = m_begin_cont.at(y_axis_index);
 
   // Create axis labels here, in order to check the indicies before creating a plot.
-  std::string x_label = m_label_cont.at(x_axis_index) + " " + m_unit_cont.at(x_axis_index);
-  std::string y_label = m_label_cont.at(y_axis_index) + " " + m_unit_cont.at(y_axis_index);
+  std::string x_unit = m_unit_cont.at(x_axis_index);
+  std::string y_unit = m_unit_cont.at(y_axis_index);
+
+  std::string x_label = m_label_cont.at(x_axis_index);
+  if (!x_unit.empty()) x_label += " (" + x_unit + ")";
+  std::string y_label = m_label_cont.at(y_axis_index);
+  if (!y_unit.empty()) y_label += " (" + y_unit + ")";
 
   try {
     // Get graphics engine to set up graph.
@@ -81,38 +86,34 @@ void StatisticViewer::plot(index_type x_axis_index, index_type y_axis_index) con
 }
 
 st_stream::StreamFormatter & StatisticViewer::write(st_stream::StreamFormatter & os) const {
-  // Select chatness levels for caption and data.
-  st_stream::OStream & os_caption = os.info(eIncludeCaption);
-  st_stream::OStream & os_data = os.info(eIncludeData);
-
   // Write out the caption.
-  os_caption << m_caption << std::endl;
+  os.info(eIncludeCaption) << m_caption << std::endl;
 
   // Get the number of axes.
   index_type num_axis = m_begin_cont.size();
 
   // Write out axis labels and units.
   for (index_type ii = 0; ii < num_axis; ++ii) {
-    if (ii != 0) os_data << "\t";
-    os_data << m_label_cont[ii] << "(" << m_unit_cont[ii] << ")";
+    if (ii != 0) os.info(eIncludeData) << "\t";
+    os.info(eIncludeData) << m_label_cont[ii] << "(" << m_unit_cont[ii] << ")";
   }
-  os_data << std::endl;
+  os.info(eIncludeData) << std::endl;
 
   // Save current precision, and set desired precision in this method.
-  int save_precision = os_data.precision();
-  os_data.precision(std::numeric_limits<double>::digits10);
+  int save_precision = os.info(eIncludeData).precision();
+  os.info(eIncludeData).precision(std::numeric_limits<double>::digits10);
 
   // Write out the statistics.
   for (data_type::size_type diff = 0; diff < m_num_element; ++diff) {
     for (index_type ii = 0; ii < num_axis; ++ii) {
-      if (ii != 0) os_data << "\t";
-      os_data << *(m_begin_cont[ii] + diff);
+      if (ii != 0) os.info(eIncludeData) << "\t";
+      os.info(eIncludeData) << *(m_begin_cont[ii] + diff);
     }
-    os_data << std::endl;
+    os.info(eIncludeData) << std::endl;
   }
 
   // Restore original precision.
-  os_data.precision(save_precision);
+  os.info(eIncludeData).precision(save_precision);
 
   // Return the stream.
   return os;
