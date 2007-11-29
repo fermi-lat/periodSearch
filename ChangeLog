@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Nov 29 15:15:50 PST 2007
+periodSearch/src
+
+Modified Files:
+	StatisticViewer.h 
+Log Message:
+Add default values for arguments of plot method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Nov 29 15:15:19 PST 2007
 periodSearch/src
 
