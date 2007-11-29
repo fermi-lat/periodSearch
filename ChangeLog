@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Thu Nov 29 15:13:48 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodSearch.cxx 
+Log Message:
+Add getViewer method.
+
+    *
+------------------------------------------------------------
+User: hirayama  Thu Nov 29 15:13:48 PST 2007
 periodSearch/periodSearch
 
 Modified Files:
