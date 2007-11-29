@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Thu Nov 29 15:16:21 PST 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Replace PeriodSearchViewer with StatisticViewer.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Nov 29 15:15:50 PST 2007
 periodSearch/src
 
