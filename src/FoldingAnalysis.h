@@ -55,6 +55,12 @@ class FoldingAnalysis : public periodSearch::PeriodSearch {
     */
     virtual std::string getDescription() const;
 
+    /** \brief Create a statistic viewer for an object of this class.
+        \param min_freq The minimum frequency.
+        \param max_freq The maximum frequency.
+    */
+    virtual StatisticViewer getViewer(double min_freq = -1., double max_freq = -1.) const;
+
   protected:
     // The container of statistical trials.
     PeriodicityTestArray * m_test_array;

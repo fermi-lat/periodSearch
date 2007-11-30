@@ -49,6 +49,12 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     */
     virtual std::string getDescription() const;
 
+    /** \brief Create a statistic viewer for an object of this class.
+        \param min_freq The minimum frequency.
+        \param max_freq The maximum frequency.
+    */
+    virtual StatisticViewer getViewer(double min_freq = -1., double max_freq = -1.) const;
+
   private:
     typedef std::multimap<size_type, size_type> index_map_type;
     index_map_type m_index;

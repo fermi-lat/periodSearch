@@ -14,6 +14,7 @@
 
 #include "ChiSquaredProb.h"
 #include "FourierAnalysis.h"
+#include "StatisticViewer.h"
 
 #include "fftw/fftw3.h"
 
@@ -124,4 +125,15 @@ using namespace periodSearch;
        << "Data Binning: " << m_num_segments << " segments with " << m_num_bins << " time bins in each segment\n"
        << "Probability Distribution: Chi Squared with " << 2 * m_num_segments << " degrees of freedom";
     return os.str();
+  }
+
+  StatisticViewer FourierAnalysis::getViewer(double min_freq, double max_freq) const {
+    // Let the base class create a viewer.
+    StatisticViewer viewer = PeriodSearch::getViewer(min_freq, max_freq);
+
+    // Add/modify plot title.
+    viewer.setTitle("Fourier Analysis: Power Spectrum");
+
+    // Return the viewer.
+    return viewer;
   }

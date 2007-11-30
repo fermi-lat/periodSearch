@@ -12,6 +12,7 @@
 #include "FoldingAnalysis.h"
 #include "PeriodicityTest.h"
 #include "PeriodicityTestArray.h"
+#include "StatisticViewer.h"
 
 namespace periodSearch {
 
@@ -116,5 +117,16 @@ namespace periodSearch {
 
     // Return the string.
     return os.str();
+  }
+
+  StatisticViewer FoldingAnalysis::getViewer(double min_freq, double max_freq) const {
+    // Let the base class create a viewer.
+    StatisticViewer viewer = PeriodSearch::getViewer(min_freq, max_freq);
+
+    // Add/modify plot title.
+    viewer.setTitle("Folding Analysis: " + m_test_array->getTestName());
+
+    // Return the viewer.
+    return viewer;
   }
 }
