@@ -76,7 +76,7 @@ std::pair<double, double> Z2nTestArray::chanceProb(double stat) const {
 
 std::string Z2nTestArray::getDescription() const {
   std::ostringstream os;
-  os << "Type of test: Z2n Test, " << m_num_harm << " harmonics\n" <<
+  os << "Type of test: " << getTestName() << ", " << m_num_harm << " harmonics\n" <<
     "Probability distribution: Chi-squared, " << 2 * m_num_harm << " degrees of freedom";
   return os.str();
 }
@@ -106,4 +106,8 @@ void Z2nTestArray::getPlotLabel(std::string & x_label, std::string & y_label) co
 
 std::string Z2nTestArray::getPlotTitle() const {
   return "Fourier Power";
+}
+
+std::string Z2nTestArray::getTestName() const {
+  return "Z2n Test";
 }

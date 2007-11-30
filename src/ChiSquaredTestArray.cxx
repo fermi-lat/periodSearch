@@ -61,7 +61,7 @@ std::pair<double, double> ChiSquaredTestArray::chanceProb(double stat) const {
 
 std::string ChiSquaredTestArray::getDescription() const {
   std::ostringstream os;
-  os << "Type of test: CHI2 Test, " << m_num_phase_bins << " phase bins\n"
+  os << "Type of test: " << getTestName() << ", " << m_num_phase_bins << " phase bins\n"
      << "Probability distribution: Chi-squared, " << m_num_phase_bins - 1 << " degrees of freedom";
   return os.str();
 }
@@ -92,4 +92,8 @@ void ChiSquaredTestArray::getPlotLabel(std::string & x_label, std::string & y_la
 
 std::string ChiSquaredTestArray::getPlotTitle() const {
   return "Folded Light Curve";
+}
+
+std::string ChiSquaredTestArray::getTestName() const {
+  return "Chi-squared Test";
 }

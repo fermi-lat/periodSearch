@@ -59,6 +59,10 @@ class HTestArray : public Z2nTestArray {
     */
     virtual std::string getPlotTitle() const;
 
+    /** \brief Return the name of this periodicity test.
+    */
+    virtual std::string getTestName() const;
+
   private:
     /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum
                of sine and cosine component).

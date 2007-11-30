@@ -74,7 +74,7 @@ std::pair<double, double> HTestArray::chanceProb(double stat) const {
 
 std::string HTestArray::getDescription() const {
   std::ostringstream os;
-  os << "Type of test: H Test, " << m_max_harm << " maximum harmonics\n" <<
+  os << "Type of test: " << getTestName() << ", " << m_max_harm << " maximum harmonics\n" <<
     "Probability distribution: H Test-specific";
   return os.str();
 }
@@ -95,4 +95,8 @@ void HTestArray::getPlotLabel(std::string & x_label, std::string & y_label) cons
 
 std::string HTestArray::getPlotTitle() const {
   return "Candidate H values";
+}
+
+std::string HTestArray::getTestName() const {
+  return "H Test";
 }
