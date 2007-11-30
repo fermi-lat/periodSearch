@@ -149,7 +149,7 @@ void PSearchApp::run() {
   std::string algorithm = pars["algorithm"];
   for (std::string::iterator itor = algorithm.begin(); itor != algorithm.end(); ++itor) *itor = std::toupper(*itor);
 
-  // Create the proper test.
+  // Create the proper period search object..
   std::auto_ptr<PeriodSearch> search(0);
   std::auto_ptr<PeriodicityTestArray> test_array(0);
   if (algorithm == "CHI2") {
@@ -178,7 +178,7 @@ void PSearchApp::run() {
     // Convert event time to target time representation.
     double target_evt_time = computeElapsedSecond(abs_evt_time);
 
-    // Fill into the test.
+    // Fill into the period search object.
     search->fill(target_evt_time);
   }
 
@@ -188,13 +188,12 @@ void PSearchApp::run() {
   // Create a viewer object.
   StatisticViewer viewer(search->getViewer());
 
-  // Use default title if user did not specify one.
+  // Set a plot title: use default title if user did not specify one.
   std::string title_uc(title);
   for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
-  if (title_uc == "DEFAULT") title = "Folding Analysis: " + algorithm + " Test";
+  if (title_uc != "DEFAULT") viewer.setTitle(title);
 
-  // Set title and unit for a plot.
-  viewer.setTitle(title);
+  // Set unit for a plot.
   viewer.setUnit(0, "Hz");
 
   // Interpret output file parameter.
