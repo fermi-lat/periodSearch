@@ -142,7 +142,11 @@ namespace periodSearch {
       */
       std::pair<size_type, size_type> getRangeIndex(double min_freq, double max_freq) const;
 
-      StatisticViewer getViewer(double min_freq = -1., double max_freq = -1.) const;
+      /** \brief Create a statistic viewer for an object of this class.
+          \param min_freq The minimum frequency.
+          \param max_freq The maximum frequency.
+      */
+      virtual StatisticViewer getViewer(double min_freq = -1., double max_freq = -1.) const;
 
     protected:
 
