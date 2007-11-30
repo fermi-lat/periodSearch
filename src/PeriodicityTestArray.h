@@ -67,6 +67,10 @@ class PeriodicityTestArray {
     */
     virtual std::string getPlotTitle() const = 0;
 
+    /** \brief Return the name of periodicity test being performed in the subclass.
+    */
+    virtual std::string getTestName() const = 0;
+
   protected:
     /** \brief Construct a periodicity test array object.
     */
