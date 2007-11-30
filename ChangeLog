@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Nov 30 14:32:25 PST 2007
+periodSearch/src
+
+Modified Files:
+	StatisticViewer.cxx 
+Log Message:
+Fix a bug in creating FITS columns (wrong order of the procedure).
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Nov 30 13:41:53 PST 2007
 periodSearch/src
 
