@@ -69,6 +69,10 @@ class Z2nTestArray : public PeriodicityTestArray {
     */
     virtual std::string getPlotTitle() const;
 
+    /** \brief Return the name of this periodicity test.
+    */
+    virtual std::string getTestName() const;
+
   protected:
     /** \brief Compute the Fourier power (i.e., squared sum of sine and cosine component) for each harmonic numbers.
         \param array_index The index of the element of the periodicity test array, for which the Fourier power is computed.

@@ -21,10 +21,14 @@ class RayleighTestArray : public Z2nTestArray {
     */
     virtual std::string getDescription() const {
       std::ostringstream os;
-      os << "Type of test: Rayleigh Test (Z2n with n = 1 harmonic)\n" << 
-        "Probability distribution: Chi-squared, " << 2 << " degrees of freedom";
+      os << "Type of test: " << getTestName() << " (Z2n with n = 1 harmonic)" << std::endl
+         << "Probability distribution: Chi-squared, 2 degrees of freedom";
       return os.str();
     }
+
+    /** \brief Return the name of this periodicity test.
+    */
+    virtual std::string getTestName() const { return "Rayleigh Test"; }
 };
 
 #endif

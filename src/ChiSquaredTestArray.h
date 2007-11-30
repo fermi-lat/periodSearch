@@ -68,6 +68,10 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     */
     virtual std::string getPlotTitle() const;
 
+    /** \brief Return the name of this periodicity test.
+    */
+    virtual std::string getTestName() const;
+
   private:
     // The number of phase bins.
     size_type m_num_phase_bins;
