@@ -29,8 +29,8 @@
 #include "st_stream/st_stream.h"
 
 #include "periodSearch/PeriodSearch.h"
-#include "periodSearch/PeriodSearchViewer.h"
 #include "FourierAnalysis.h"
+#include "StatisticViewer.h"
 
 using namespace periodSearch;
 using namespace timeSystem;
@@ -101,8 +101,8 @@ void PowerSpectrumApp::run() {
   // Get binwidth parameter.
   double bin_width = pars["binwidth"];
 
-  // Create the proper test.
-  std::auto_ptr<FourierAnalysis> test(new FourierAnalysis(tstart, tstop, bin_width, num_bins));
+  // Create the proper period search object..
+  std::auto_ptr<PeriodSearch> search(new FourierAnalysis(tstart, tstop, bin_width, num_bins));
 
   for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
@@ -111,25 +111,23 @@ void PowerSpectrumApp::run() {
     // Convert event time to target time representation.
     double target_evt_time = computeElapsedSecond(abs_evt_time);
 
-    // Fill into the test.
-    test->fill(target_evt_time);
+    // Fill into the period search object.
+    search->fill(target_evt_time);
   }
 
   // Compute the statistics.
-  test->computeStats();
+  search->computeStats();
 
-  enum ChatLevel {
-    eIncludeSummary= 2,
-    eAllDetails = 3
-  };
+  // Create a viewer object.
+  StatisticViewer viewer(search->getViewer(low_f_cut));
 
-  // Use default title if user did not specify one.
+  // Set a plot title: use default title if user did not specify one.
   std::string title_uc(title);
   for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
-  if (title_uc == "DEFAULT") title = "Fourier Analysis: Power Spectrum";
+  if (title_uc != "DEFAULT") viewer.setTitle(title);
 
-  // Create a viewer for plotting and writing output.
-  periodSearch::PeriodSearchViewer viewer(*test, low_f_cut);
+  // Set unit for a plot.
+  viewer.setUnit(0, "Hz");
 
   // Interpret output file parameter.
   std::string out_file_uc = out_file;
@@ -147,18 +145,14 @@ void PowerSpectrumApp::run() {
     std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
 
     // Write the summary to the output header, and the data to the output table.
-    viewer.writeData(*out_table);
+    viewer.write(*out_table);
   }
 
   // Write the stats to the screen.
-  m_os.info(eIncludeSummary) << title << std::endl;
-  viewer.writeSummary(m_os.info(eIncludeSummary)) << std::endl;
-
-  // Write details of test result if chatter is high enough.
-  viewer.writeData(m_os.info(eAllDetails)) << std::endl;
+  viewer.write(m_os);
 
   // Display a plot, if desired.
-  if (plot) viewer.plot(title, "(Hz)");
+  if (plot) viewer.plot();
 }
 
 void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
