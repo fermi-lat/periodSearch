@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Nov 30 13:41:53 PST 2007
+periodSearch/src
+
+Modified Files:
+	StatisticViewer.cxx 
+Log Message:
+Add FITS column(s) when missing.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Nov 30 13:40:56 PST 2007
 periodSearch/src
 
