@@ -130,24 +130,26 @@ tip::Table & StatisticViewer::write(tip::Table & table) const {
     table.getHeader().addComment(buf);
   }
 
-  // Resize the table to accomodate all the data.
-  table.setNumRecords(m_num_element);
-
-  // Start at the beginning of the table.
-  tip::Table::Iterator itor = table.begin();
-
   // Get the number of axes.
   index_type num_axis = m_begin_cont.size();
 
   // Append FITS columns if missing.
-  for (std::vector<std::string>::const_iterator itor = m_label_cont.begin(); itor != m_label_cont.end(); ++itor) {
-    const std::string & field_name = *itor;
+  for (index_type ii = 0; ii < num_axis; ++ii) {
+    const std::string & field_name = m_label_cont[ii];
+    // TODO: Set the field unit (below) to each column, if not blank.
+    //const std::string & field_unit = m_unit_cont[ii];
     try {
       table.getFieldIndex(field_name);
     } catch (const tip::TipException &) {
       table.appendField(field_name, "1D");
     }
   }
+
+  // Resize the table to accomodate all the data.
+  table.setNumRecords(m_num_element);
+
+  // Start at the beginning of the table.
+  tip::Table::Iterator itor = table.begin();
 
   // Write out the statistics.
   for (data_type::size_type diff = 0; diff < m_num_element; ++diff, ++itor) {
