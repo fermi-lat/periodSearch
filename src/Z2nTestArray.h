@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "PeriodicityTestArray.h"
+#include "StatisticViewer.h"
 
 /** \class Z2nTestArray
     \brief PeriodicityTestArray subclass which uses a Z2n statistic for its test.
@@ -73,6 +74,15 @@ class Z2nTestArray : public PeriodicityTestArray {
     */
     virtual std::string getTestName() const;
 
+    /** \brief Create a statistic viewer for an object of this class.
+    */
+    virtual StatisticViewer getViewer() const;
+
+    /** \brief Compute the Fourier power (i.e., squared sum of sine and cosine component) for each harmonic numbers.
+        \param array_index The index of the element of the periodicity test array, of which the Fourier power is to be computed.
+    */
+    virtual void computeViewerData(size_type array_index);
+
   protected:
     /** \brief Compute the Fourier power (i.e., squared sum of sine and cosine component) for each harmonic numbers.
         \param array_index The index of the element of the periodicity test array, for which the Fourier power is computed.
@@ -90,6 +100,12 @@ class Z2nTestArray : public PeriodicityTestArray {
 
     // The number of events filled for each element of this test array.
     std::vector<long> m_num_events;
+
+  protected:
+    // The container for a statistic viewer.
+    // NOTE: These are protected, not private, for derived classes of this.
+    StatisticViewer::data_type m_X_data;
+    StatisticViewer::data_type m_Y_data;
 };
 
 #endif

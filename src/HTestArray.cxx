@@ -100,3 +100,33 @@ std::string HTestArray::getPlotTitle() const {
 std::string HTestArray::getTestName() const {
   return "H Test";
 }
+
+StatisticViewer HTestArray::getViewer() const {
+  // Delegate creation of a viewer object to the parent class.
+  StatisticViewer viewer = Z2nTestArray::getViewer();
+
+  // Set label to the viewer.
+  viewer.setLabel(0, "Harmonic Number");
+  viewer.setLabel(1, "H-value");
+
+  // Set title and caption to the viewer.
+  viewer.setTitle("Candidate H values");
+  // TODO: Can we remove the below?
+  viewer.setCaption(getDescription());
+
+  // Return the viewer.
+  return viewer;
+}
+
+void HTestArray::computeViewerData(size_type array_index) {
+  // Compute the Fourier powers.
+  data_type power;
+  computePower(array_index, power);
+
+  // Convert the Fourier powers to H-value candidates.
+  computeCandidate(power, m_Y_data);
+
+  // Set harmonic numbers, starting with one (1).
+  double harmonic_number = 1.;
+  for (std::vector<double>::iterator itor = m_X_data.begin(); itor != m_X_data.end(); ++itor) *itor = harmonic_number++;
+}

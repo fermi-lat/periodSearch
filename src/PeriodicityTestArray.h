@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+class StatisticViewer;
+
 /** \class PeriodicityTestArray
     \brief Base class to represent an array of various statistical tests used to evaluate significance of pulsation.
 */
@@ -70,6 +72,18 @@ class PeriodicityTestArray {
     /** \brief Return the name of periodicity test being performed in the subclass.
     */
     virtual std::string getTestName() const = 0;
+
+    /** \brief Create a statistic viewer for an object of this class.
+        \param min_freq The minimum frequency.
+        \param max_freq The maximum frequency.
+    */
+    virtual StatisticViewer getViewer() const = 0;
+
+    /** \brief Compute a set of data to be viewed by a statistic viewer. Details depend on subclasses.
+        \param min_freq The minimum frequency.
+        \param max_freq The maximum frequency.
+    */
+    virtual void computeViewerData(size_type array_index) = 0;
 
   protected:
     /** \brief Construct a periodicity test array object.

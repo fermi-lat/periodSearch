@@ -9,10 +9,12 @@
 
 #include "ChiSquaredProb.h"
 #include "Z2nTestArray.h"
+#include "StatisticViewer.h"
 
 Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmonics):
   m_num_harm(num_harmonics), m_sine_cont(array_size, data_type(num_harmonics, 0.)),
-  m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0) {}
+  m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0),
+  m_X_data(num_harmonics, 0.), m_Y_data(num_harmonics, 0.) {}
 
 void Z2nTestArray::fill(size_type array_index, double phase) {
   // Define two pi (for convenience and clarity).
@@ -110,4 +112,33 @@ std::string Z2nTestArray::getPlotTitle() const {
 
 std::string Z2nTestArray::getTestName() const {
   return "Z2n Test";
+}
+
+StatisticViewer Z2nTestArray::getViewer() const {
+  // Create a viewer object to return.
+  StatisticViewer viewer(2, m_num_harm);
+
+  // Set data to the viewer.
+  viewer.setData(0, m_X_data.begin());
+  viewer.setData(1, m_Y_data.begin());
+
+  // Set label to the viewer.
+  viewer.setLabel(0, "Harmonic Number");
+  viewer.setLabel(1, "Power");
+
+  // Set title and caption to the viewer.
+  viewer.setTitle("Fourier Powers");
+  viewer.setCaption(getDescription());
+
+  // Return the viewer.
+  return viewer;
+}
+
+void Z2nTestArray::computeViewerData(size_type array_index) {
+  // Compute the Fourier powers.
+  computePower(array_index, m_Y_data);
+
+  // Set harmonic numbers, starting with one (1).
+  double harmonic_number = 1.;
+  for (std::vector<double>::iterator itor = m_X_data.begin(); itor != m_X_data.end(); ++itor) *itor = harmonic_number++;
 }
