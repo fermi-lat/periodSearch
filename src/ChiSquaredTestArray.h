@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "PeriodicityTestArray.h"
+#include "StatisticViewer.h"
 
 /** \class ChiSquaredTestArray
     \brief PeriodicityTestArray subclass which uses a Chi^2 statistic for its test.
@@ -72,6 +73,15 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     */
     virtual std::string getTestName() const;
 
+    /** \brief Create a statistic viewer for an object of this class.
+    */
+    virtual StatisticViewer getViewer() const;
+
+    /** \brief Compute a folded light curve to be viewed by a statistic viewer.
+        \param array_index The index of the element of the periodicity test array, of which a folded light curve is to be computed.
+    */
+    virtual void computeViewerData(size_type array_index);
+
   private:
     // The number of phase bins.
     size_type m_num_phase_bins;
@@ -81,6 +91,10 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
 
     // The number of events filled for each element of this test array.
     std::vector<long> m_num_events;
+
+    // The container for a statistic viewer.
+    StatisticViewer::data_type m_X_data;
+    StatisticViewer::data_type m_Y_data;
 };
 
 #endif

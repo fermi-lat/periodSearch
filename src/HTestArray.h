@@ -11,6 +11,8 @@
 
 #include "Z2nTestArray.h"
 
+class StatisticViewer;
+
 /** \class HTestArray
     \brief PeriodicityTestArray subclass which uses a H statistic for its test.
 */
@@ -63,6 +65,16 @@ class HTestArray : public Z2nTestArray {
     */
     virtual std::string getTestName() const;
 
+    /** \brief Create a statistic viewer for an object of this class.
+    */
+    virtual StatisticViewer getViewer() const;
+
+    /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum
+               of sine and cosine component).
+        \param array_index The index of the element of the periodicity test array, of which the candidates are to be computed.
+    */
+    virtual void computeViewerData(size_type array_index);
+
   private:
     /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum
                of sine and cosine component).
@@ -70,6 +82,7 @@ class HTestArray : public Z2nTestArray {
         \param H_candidate the container of the candidates of H-value (output).
     */
     void computeCandidate(data_type & power, data_type & H_candidate) const;
+    void computeCandidate();
 
     // The maximum number of harmonics (to be used only in getDescription method).
     size_type m_max_harm;
