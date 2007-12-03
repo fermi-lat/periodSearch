@@ -118,8 +118,8 @@ void PowerSpectrumApp::run() {
   // Compute the statistics.
   search->computeStats();
 
-  // Create a viewer object.
-  StatisticViewer viewer(search->getViewer(low_f_cut));
+  // Create a viewer object, without copying data.
+  StatisticViewer viewer(search->getViewer(false, low_f_cut));
 
   // Set a plot title: use default title if user did not specify one.
   std::string title_uc(title);

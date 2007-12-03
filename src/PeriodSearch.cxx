@@ -195,7 +195,7 @@ namespace periodSearch {
     return std::make_pair(begin_index, end_index);
   }
 
-  StatisticViewer PeriodSearch::getViewer(double min_freq, double max_freq) const {
+  StatisticViewer PeriodSearch::getViewer(bool copy_data, double min_freq, double max_freq) const {
     // Impose range limits.
     std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
     size_type begin_index = indices.first;
@@ -205,8 +205,8 @@ namespace periodSearch {
     StatisticViewer viewer(2, end_index - begin_index);
 
     // Set data to the viewer.
-    viewer.setData(0, m_freq.begin() + begin_index);
-    viewer.setData(1, m_spec.begin() + begin_index);
+    viewer.setData(0, m_freq.begin() + begin_index, copy_data);
+    viewer.setData(1, m_spec.begin() + begin_index, copy_data);
 
     // Set label to the viewer.
     viewer.setLabel(0, "Frequency");

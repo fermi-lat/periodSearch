@@ -143,10 +143,11 @@ namespace periodSearch {
       std::pair<size_type, size_type> getRangeIndex(double min_freq, double max_freq) const;
 
       /** \brief Create a statistic viewer for an object of this class.
+          \param copy_data Specify whether to copy the data being viewed to be copied to a statistic viewer object.
           \param min_freq The minimum frequency.
           \param max_freq The maximum frequency.
       */
-      virtual StatisticViewer getViewer(double min_freq = -1., double max_freq = -1.) const;
+      virtual StatisticViewer getViewer(bool copy_data, double min_freq = -1., double max_freq = -1.) const;
 
     protected:
 

@@ -20,11 +20,26 @@
 #include "tip/Header.h"
 #include "tip/Table.h"
 
-StatisticViewer::StatisticViewer(index_type num_axis, data_type::size_type num_element): m_begin_cont(num_axis),
-  m_num_element(num_element), m_label_cont(num_axis), m_unit_cont(num_axis), m_title(), m_caption() {}
+StatisticViewer::StatisticViewer(index_type num_axis, data_type::size_type num_element): m_data_cont(num_axis), 
+  m_begin_cont(num_axis), m_num_element(num_element), m_label_cont(num_axis), m_unit_cont(num_axis), m_title(), m_caption() {}
 
-void StatisticViewer::setData(index_type axis_index, const data_type::const_iterator & begin) {
-  m_begin_cont.at(axis_index) = begin;
+void StatisticViewer::setData(index_type axis_index, const data_type::const_iterator & begin, bool copy_data) {
+  if (copy_data) {
+    // Get the local storage and resize it if necessary.
+    data_type & data = m_data_cont.at(axis_index);
+    if (data.empty()) data.resize(m_num_element);
+
+    // Copy data into the local storage.
+    data_type::const_iterator itor_src = begin;
+    for (data_type::iterator itor_dst = data.begin(); itor_dst != data.end(); ++itor_src, ++itor_dst) *itor_dst = *itor_src;
+
+    // Set the iterator.
+    m_begin_cont.at(axis_index) = data.begin();
+
+  } else {
+    // Store the iterator, without copying the data contents.
+    m_begin_cont.at(axis_index) = begin;
+  }
 }
 
 void StatisticViewer::setLabel(index_type axis_index, const std::string & label) {
