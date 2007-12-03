@@ -1,4 +1,17 @@
 ------------------------------------------------------------
+User: hirayama  Mon Dec  3 15:19:35 PST 2007
+periodSearch/src
+
+Modified Files:
+	StatisticViewer.h StatisticViewer.cxx PeriodSearch.cxx 
+	ChiSquaredTestArray.cxx FoldingAnalysis.h FoldingAnalysis.cxx 
+	FourierAnalysis.h FourierAnalysis.cxx PowerSpectrumApp.cxx 
+	Z2nTestArray.cxx 
+Log Message:
+Add new argument, copy_data, to StatisticViewer::getViewer method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Nov 30 16:39:11 PST 2007
 periodSearch/src
 
