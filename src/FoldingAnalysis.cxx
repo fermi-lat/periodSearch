@@ -119,9 +119,9 @@ namespace periodSearch {
     return os.str();
   }
 
-  StatisticViewer FoldingAnalysis::getViewer(double min_freq, double max_freq) const {
+  StatisticViewer FoldingAnalysis::getViewer(bool copy_data, double min_freq, double max_freq) const {
     // Let the base class create a viewer.
-    StatisticViewer viewer = PeriodSearch::getViewer(min_freq, max_freq);
+    StatisticViewer viewer = PeriodSearch::getViewer(copy_data, min_freq, max_freq);
 
     // Add/modify plot title.
     viewer.setTitle("Folding Analysis: " + m_test_array->getTestName());

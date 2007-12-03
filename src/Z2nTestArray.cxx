@@ -118,9 +118,9 @@ StatisticViewer Z2nTestArray::getViewer() const {
   // Create a viewer object to return.
   StatisticViewer viewer(2, m_num_harm);
 
-  // Set data to the viewer.
-  viewer.setData(0, m_X_data.begin());
-  viewer.setData(1, m_Y_data.begin());
+  // Copy data to the viewer.
+  viewer.setData(0, m_X_data.begin(), true);
+  viewer.setData(1, m_Y_data.begin(), true);
 
   // Set label to the viewer.
   viewer.setLabel(0, "Harmonic Number");

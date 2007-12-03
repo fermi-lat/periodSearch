@@ -36,8 +36,11 @@ class StatisticViewer {
     /** \brief Set a pair of iterators of data array to be viewed.
         \param axis_index The index of axis, for which a set of iterators is to be set.
         \param begin The iterator of data array, which points to the first element to be viewed.
+        \param copy_data If true, the given data will be copied into an internal data storage of this object.
+                         If not, the data will not be copied and the original data will be read in
+                         every time this object needs them (in plot method, etc.).
     */
-    void setData(index_type axis_index, const data_type::const_iterator & begin);
+    void setData(index_type axis_index, const data_type::const_iterator & begin, bool copy_data);
 
     /** \brief Set an axis label.
         \param axis_index The index of axis, for which an axis label is to be set.
@@ -78,6 +81,7 @@ class StatisticViewer {
     tip::Table & write(tip::Table & table) const;
 
   private:
+    std::vector<data_type> m_data_cont;
     std::vector<data_type::const_iterator> m_begin_cont;
     data_type::size_type m_num_element;
     std::vector<std::string> m_label_cont;

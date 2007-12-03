@@ -127,9 +127,9 @@ using namespace periodSearch;
     return os.str();
   }
 
-  StatisticViewer FourierAnalysis::getViewer(double min_freq, double max_freq) const {
+  StatisticViewer FourierAnalysis::getViewer(bool copy_data, double min_freq, double max_freq) const {
     // Let the base class create a viewer.
-    StatisticViewer viewer = PeriodSearch::getViewer(min_freq, max_freq);
+    StatisticViewer viewer = PeriodSearch::getViewer(copy_data, min_freq, max_freq);
 
     // Add/modify plot title.
     viewer.setTitle("Fourier Analysis: Power Spectrum");
