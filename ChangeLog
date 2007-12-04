@@ -1,4 +1,16 @@
 ------------------------------------------------------------
+User: hirayama  Mon Dec  3 16:12:08 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodicityTestArray.h ChiSquaredTestArray.h 
+	ChiSquaredTestArray.cxx Z2nTestArray.h Z2nTestArray.cxx 
+	HTestArray.h HTestArray.cxx 
+Log Message:
+Remove internal data storage and use copy-data option of StatisticViewer::getViewer method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Dec  3 15:19:36 PST 2007
 periodSearch/src/gtpsearch
 
