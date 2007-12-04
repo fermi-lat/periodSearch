@@ -66,14 +66,9 @@ class HTestArray : public Z2nTestArray {
     virtual std::string getTestName() const;
 
     /** \brief Create a statistic viewer for an object of this class.
+        \param array_index The index of the element of the periodicity test array, for which a viewer is to be created.
     */
-    virtual StatisticViewer getViewer() const;
-
-    /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum
-               of sine and cosine component).
-        \param array_index The index of the element of the periodicity test array, of which the candidates are to be computed.
-    */
-    virtual void computeViewerData(size_type array_index);
+    virtual StatisticViewer getViewer(size_type array_index) const;
 
   private:
     /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum

@@ -74,16 +74,9 @@ class PeriodicityTestArray {
     virtual std::string getTestName() const = 0;
 
     /** \brief Create a statistic viewer for an object of this class.
-        \param min_freq The minimum frequency.
-        \param max_freq The maximum frequency.
+        \param array_index The index of the element of the periodicity test array, for which a viewer is to be created.
     */
-    virtual StatisticViewer getViewer() const = 0;
-
-    /** \brief Compute a set of data to be viewed by a statistic viewer. Details depend on subclasses.
-        \param min_freq The minimum frequency.
-        \param max_freq The maximum frequency.
-    */
-    virtual void computeViewerData(size_type array_index) = 0;
+    virtual StatisticViewer getViewer(size_type array_index) const = 0;
 
   protected:
     /** \brief Construct a periodicity test array object.
