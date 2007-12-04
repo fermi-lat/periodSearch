@@ -13,8 +13,7 @@
 
 Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmonics):
   m_num_harm(num_harmonics), m_sine_cont(array_size, data_type(num_harmonics, 0.)),
-  m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0),
-  m_X_data(num_harmonics, 0.), m_Y_data(num_harmonics, 0.) {}
+  m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0) {}
 
 void Z2nTestArray::fill(size_type array_index, double phase) {
   // Define two pi (for convenience and clarity).
@@ -114,13 +113,22 @@ std::string Z2nTestArray::getTestName() const {
   return "Z2n Test";
 }
 
-StatisticViewer Z2nTestArray::getViewer() const {
+StatisticViewer Z2nTestArray::getViewer(size_type array_index) const {
+  // Compute the Fourier powers.
+  StatisticViewer::data_type power;
+  computePower(array_index, power);
+
+  // Set harmonic numbers, starting with one (1).
+  double harmonic_number = 1.;
+  StatisticViewer::data_type harmonic(m_num_harm, 0.);
+  for (std::vector<double>::iterator itor = harmonic.begin(); itor != harmonic.end(); ++itor) *itor = harmonic_number++;
+
   // Create a viewer object to return.
   StatisticViewer viewer(2, m_num_harm);
 
   // Copy data to the viewer.
-  viewer.setData(0, m_X_data.begin(), true);
-  viewer.setData(1, m_Y_data.begin(), true);
+  viewer.setData(0, harmonic.begin(), true);
+  viewer.setData(1, power.begin(), true);
 
   // Set label to the viewer.
   viewer.setLabel(0, "Harmonic Number");
@@ -132,13 +140,4 @@ StatisticViewer Z2nTestArray::getViewer() const {
 
   // Return the viewer.
   return viewer;
-}
-
-void Z2nTestArray::computeViewerData(size_type array_index) {
-  // Compute the Fourier powers.
-  computePower(array_index, m_Y_data);
-
-  // Set harmonic numbers, starting with one (1).
-  double harmonic_number = 1.;
-  for (std::vector<double>::iterator itor = m_X_data.begin(); itor != m_X_data.end(); ++itor) *itor = harmonic_number++;
 }

@@ -14,8 +14,7 @@
 #include "StatisticViewer.h"
 
 ChiSquaredTestArray::ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins):
-  m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)), m_num_events(array_size, 0),
-  m_X_data(num_phase_bins, 0.), m_Y_data(num_phase_bins, 0.) {}
+  m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)), m_num_events(array_size, 0) {}
 
 void ChiSquaredTestArray::fill(size_type array_index, double phase) {
   // Bin phase; it runs from [0, 1), so multiply by the number of bins to determine
@@ -100,13 +99,22 @@ std::string ChiSquaredTestArray::getTestName() const {
   return "Chi-squared Test";
 }
 
-StatisticViewer ChiSquaredTestArray::getViewer() const {
+StatisticViewer ChiSquaredTestArray::getViewer(size_type array_index) const {
+  // Create a light curve to plot.
+  const data_type & curve = m_curve_cont.at(array_index);
+  StatisticViewer::data_type phase(m_num_phase_bins, 0.);
+  StatisticViewer::data_type count(m_num_phase_bins, 0.);
+  for (std::vector<double>::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
+    phase[ii] = (ii + 0.5) / m_num_phase_bins;
+    count[ii] = curve[ii];
+  }
+
   // Create a viewer object to return.
   StatisticViewer viewer(2, m_num_phase_bins);
 
   // Copy data to the viewer.
-  viewer.setData(0, m_X_data.begin(), true);
-  viewer.setData(1, m_Y_data.begin(), true);
+  viewer.setData(0, phase.begin(), true);
+  viewer.setData(1, count.begin(), true);
 
   // Set label to the viewer.
   viewer.setLabel(0, "Pulse Phase");
@@ -118,13 +126,4 @@ StatisticViewer ChiSquaredTestArray::getViewer() const {
 
   // Return the viewer.
   return viewer;
-}
-
-void ChiSquaredTestArray::computeViewerData(size_type array_index) {
-  // Create a light curve to plot.
-  const data_type & curve = m_curve_cont.at(array_index);
-  for (std::vector<double>::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
-    m_X_data[ii] = (ii + 0.5) / m_num_phase_bins;
-    m_Y_data[ii] = curve[ii];
-  }
 }
