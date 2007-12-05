@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Dec  5 14:09:48 PST 2007
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearch.h 
+Log Message:
+Replace m_freq and m_spec with a StatisticViewer object.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Dec  5 14:07:41 PST 2007
 periodSearch/src
 
