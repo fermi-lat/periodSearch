@@ -27,9 +27,10 @@ using namespace periodSearch;
     // m_index.reserve(num_events);
 
     // Set up frequency array.
+    StatisticViewer::data_type & freq = m_viewer.getData(0);
     m_fourier_res = 1. / (m_width * m_num_bins);
-    for (size_t ii = 0; ii < m_freq.size(); ++ii) {
-      m_freq[ii] = ii * m_fourier_res;
+    for (size_t ii = 0; ii < freq.size(); ++ii) {
+      freq[ii] = ii * m_fourier_res;
     }
   }
 
@@ -51,10 +52,13 @@ using namespace periodSearch;
   }
 
   const std::vector<double> & FourierAnalysis::computeStats() {
+    const StatisticViewer::data_type & freq = m_viewer.getData(0);
+    StatisticViewer::data_type & spec = m_viewer.getData(1);
+
     double * in = 0;
     fftw_complex * out = 0;
     fftw_plan p = 0;
-    size_t num_cpx_elements = m_freq.size();
+    size_t num_cpx_elements = freq.size();
     size_t num_dbl_elements = 2 * num_cpx_elements;
 
     // Allocate array for fftw input/output.
@@ -96,14 +100,14 @@ using namespace periodSearch;
       for (size_t ii = 0; ii < num_cpx_elements; ++ii) {
         const double & real = out[ii][0];
         const double & imag = out[ii][1];
-        m_spec[ii] += (real * real + imag * imag) * 2. / num_events;
+        spec[ii] += (real * real + imag * imag) * 2. / num_events;
       }
     }
 
     fftw_destroy_plan(p);
     fftw_free(in);
 
-    return m_spec;
+    return spec;
   }
 
   PeriodSearch::size_type FourierAnalysis::numIndepTrials(double min_freq, double max_freq) const {
@@ -127,9 +131,9 @@ using namespace periodSearch;
     return os.str();
   }
 
-  StatisticViewer FourierAnalysis::getViewer(bool copy_data, double min_freq, double max_freq) const {
+  StatisticViewer & FourierAnalysis::getViewer(double min_freq, double max_freq) {
     // Let the base class create a viewer.
-    StatisticViewer viewer = PeriodSearch::getViewer(copy_data, min_freq, max_freq);
+    StatisticViewer & viewer = PeriodSearch::getViewer(min_freq, max_freq);
 
     // Add/modify plot title.
     viewer.setTitle("Fourier Analysis: Power Spectrum");
