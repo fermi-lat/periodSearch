@@ -33,6 +33,11 @@ class StatisticViewer {
     */
     StatisticViewer(index_type num_axis, data_type::size_type num_element);
 
+    // TODO: Make this a base class? With two subclasses that copy/don't copy the data.
+    // TODO: Copy constructor that checks whether pointers point to array start and if so
+    // the destination pointer is reset to point to the start of the array.
+    // TODO: Assignment operator that behaves as copy constructor.
+    // TODO: split setData into two methods: copyData and setData (rename? connectData? ...)
     /** \brief Set a pair of iterators of data array to be viewed.
         \param axis_index The index of axis, for which a set of iterators is to be set.
         \param begin The iterator of data array, which points to the first element to be viewed.
@@ -41,6 +46,18 @@ class StatisticViewer {
                          every time this object needs them (in plot method, etc.).
     */
     void setData(index_type axis_index, const data_type::const_iterator & begin, bool copy_data);
+
+    /** \brief Get a reference to an internal data storage for a given axis.
+        \param axis_index The index of axis, for which a reference to the data storage is to be returned.
+    */
+    const data_type & getData(index_type axis_index) const;
+    data_type & getData(index_type axis_index);
+
+    /** \brief Mark a part of the internal data storage as "selected" for viewing.
+        \param begin_index The index for the internal storage which points to the first element of the selected range.
+        \param end_index The index for the internal storage which points to one past the last element of the selected range.
+    */
+    void selectData(data_type::size_type begin_index, data_type::size_type end_index);
 
     /** \brief Set an axis label.
         \param axis_index The index of axis, for which an axis label is to be set.
@@ -81,9 +98,11 @@ class StatisticViewer {
     tip::Table & write(tip::Table & table) const;
 
   private:
-    std::vector<data_type> m_data_cont;
-    std::vector<data_type::const_iterator> m_begin_cont;
+    data_type::size_type m_num_axis;
     data_type::size_type m_num_element;
+    std::vector<data_type> m_data_cont;
+    data_type::size_type m_begin_index;
+    data_type::size_type m_end_index;
     std::vector<std::string> m_label_cont;
     std::vector<std::string> m_unit_cont;
     std::string m_title;
