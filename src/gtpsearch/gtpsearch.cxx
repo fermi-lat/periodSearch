@@ -186,7 +186,7 @@ void PSearchApp::run() {
   search->computeStats();
 
   // Create a viewer object, without copying data.
-  StatisticViewer viewer(search->getViewer(false));
+  StatisticViewer & viewer(search->getViewer());
 
   // Set a plot title: use default title if user did not specify one.
   std::string title_uc(title);
