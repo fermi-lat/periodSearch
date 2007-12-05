@@ -33,7 +33,7 @@ namespace periodSearch {
 
   const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
 
-  PeriodSearch::PeriodSearch(size_type num_bins): m_freq(num_bins), m_spec(num_bins) {}
+  PeriodSearch::PeriodSearch(size_type num_bins): m_viewer(2, num_bins) {}
 
   PeriodSearchResult PeriodSearch::search(double min_freq, double max_freq) const {
     // Find position of the maximum in the range.
@@ -54,8 +54,9 @@ namespace periodSearch {
     size_type num_bins = indices.second - indices.first;
 
     // Reset min/max frequency if either bound was not explicitly specified (negative).
-    if (0. > min_freq) min_freq = m_freq[indices.first];
-    if (0. > max_freq && indices.second > 0) max_freq = m_freq[indices.second - 1];
+    const StatisticViewer::data_type & freq = m_viewer.getData(0);
+    if (0. > min_freq) min_freq = freq[indices.first];
+    if (0. > max_freq && indices.second > 0) max_freq = freq[indices.second - 1];
 
     return PeriodSearchResult(getDescription(), min_freq, max_freq, num_bins, num_indep_trials, max, chance_prob);
   }
@@ -72,8 +73,9 @@ namespace periodSearch {
 
     for (size_type ii = begin_index; ii < end_index; ++ii) {
       // If the value is larger than the current maximum, replace it.
-      if (m_spec[ii] > max) {
-        max = m_spec[ii];
+      const StatisticViewer::data_type & spec = m_viewer.getData(1);
+      if (spec[ii] > max) {
+        max = spec[ii];
         max_idx = ii;
         found_max = true;
       }
@@ -85,16 +87,17 @@ namespace periodSearch {
       os << "PeriodSearch::findMax cannot find any trial frequency in range [" << min_freq << ", " << max_freq << "]";
       throw std::runtime_error(os.str());
     }
-    return std::pair<double, double>(m_freq[max_idx], max);
+    const StatisticViewer::data_type & freq = m_viewer.getData(0);
+    return std::pair<double, double>(freq[max_idx], max);
   }
 
   st_stream::OStream & PeriodSearch::write(st_stream::OStream & os) const {
     return os << getDescription();
   }
 
-  const PeriodSearch::cont_type PeriodSearch::getFreq() const { return m_freq; }
+  const PeriodSearch::cont_type PeriodSearch::getFreq() const { return m_viewer.getData(0); }
       
-  const PeriodSearch::cont_type PeriodSearch::getSpec() const { return m_spec; }
+  const PeriodSearch::cont_type PeriodSearch::getSpec() const { return m_viewer.getData(1); }
 
   double PeriodSearch::chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial) {
     static double epsilon = std::numeric_limits<double>::epsilon();
@@ -173,17 +176,19 @@ namespace periodSearch {
 
   std::pair<PeriodSearch::size_type, PeriodSearch::size_type> PeriodSearch::getRangeIndex(double min_freq,
     double max_freq) const {
+
+    const StatisticViewer::data_type & freq = m_viewer.getData(0);
     size_type begin_index = 0;
-    size_type end_index = m_freq.size();
+    size_type end_index = freq.size();
 
     if (0. <= min_freq) {
       // Find first element whose frequency is not less than the minimum frequency.
-      for (begin_index = 0; begin_index < m_freq.size() && m_freq[begin_index] < min_freq; ++begin_index);
+      for (begin_index = 0; begin_index < freq.size() && freq[begin_index] < min_freq; ++begin_index);
     }
 
     if (0. <= max_freq) {
       // Find last element whose frequency is not greater than the maximum frequency.
-      for (end_index = m_freq.size(); end_index > begin_index && m_freq[end_index - 1] > max_freq; --end_index);
+      for (end_index = freq.size(); end_index > begin_index && freq[end_index - 1] > max_freq; --end_index);
     }
 
     if (begin_index >= end_index) {
@@ -195,35 +200,28 @@ namespace periodSearch {
     return std::make_pair(begin_index, end_index);
   }
 
-  StatisticViewer PeriodSearch::getViewer(bool copy_data, double min_freq, double max_freq) const {
+  StatisticViewer & PeriodSearch::getViewer(double min_freq, double max_freq) {
     // Impose range limits.
     std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
     size_type begin_index = indices.first;
     size_type end_index = indices.second;
-
-    // Create a viewer object to return.
-    StatisticViewer viewer(2, end_index - begin_index);
-
-    // Set data to the viewer.
-    viewer.setData(0, m_freq.begin() + begin_index, copy_data);
-    viewer.setData(1, m_spec.begin() + begin_index, copy_data);
+    m_viewer.selectData(begin_index, end_index);
 
     // Set label to the viewer.
-    viewer.setLabel(0, "Frequency");
-    viewer.setLabel(1, "Statistic");
+    m_viewer.setLabel(0, "Frequency");
+    m_viewer.setLabel(1, "Statistic");
 
     // Set caption to the viewer.
     PeriodSearchResult result = search(min_freq, max_freq);
     std::ostringstream os;
     result.write(os);
-    viewer.setCaption(os.str());
+    m_viewer.setCaption(os.str());
 
     // Return the viewer.
-    return viewer;
+    return m_viewer;
   }
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearch & test) {
     return test.write(os);
   }
-
 }

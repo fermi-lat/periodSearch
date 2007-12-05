@@ -13,7 +13,7 @@
 
 #include "st_stream/Stream.h"
 
-class StatisticViewer;
+#include "StatisticViewer.h"
 
 namespace periodSearch {
 
@@ -142,12 +142,11 @@ namespace periodSearch {
       */
       std::pair<size_type, size_type> getRangeIndex(double min_freq, double max_freq) const;
 
-      /** \brief Create a statistic viewer for an object of this class.
-          \param copy_data Specify whether to copy the data being viewed to be copied to a statistic viewer object.
-          \param min_freq The minimum frequency.
-          \param max_freq The maximum frequency.
+      /** \brief Get a reference to an internal statistic viewer for an object of this class.
+          \param min_freq The minimum frequency to view.
+          \param max_freq The maximum frequency to view.
       */
-      virtual StatisticViewer getViewer(bool copy_data, double min_freq = -1., double max_freq = -1.) const;
+      virtual StatisticViewer & getViewer(double min_freq = -1., double max_freq = -1.);
 
     protected:
 
@@ -155,10 +154,15 @@ namespace periodSearch {
       static const double s_2pi;
 
       // The frequencies forming the domain of the search/test.
+      // TODO: Remove the below after ChiSquaredTest.{h,cxx} are cvs-removed.
       cont_type m_freq;
 
       // The statistical measure of the validity of each trial.
+      // TODO: Remove the below after ChiSquaredTest.{h,cxx} are cvs-removed.
       cont_type m_spec;
+
+      // The statistical measure of the validity of each trial.
+      StatisticViewer m_viewer;
   };
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearch & test);

@@ -37,7 +37,8 @@ namespace periodSearch {
     // Step from minimum frequency on up, populating internal arrays.
     for (size_type ii = 0; ii < num_trials; ++ii) {
       // Populating frequency array.
-      m_freq[ii] = min + ii * m_step;
+      StatisticViewer::data_type & freq = m_viewer.getData(0);
+      freq[ii] = min + ii * m_step;
     }
 
     // Compute Fourier resolution.
@@ -61,7 +62,8 @@ namespace periodSearch {
     size_type num_trials = m_test_array->size();
     for (size_type ii = 0; ii < num_trials; ++ii) {
       // For each frequency, compute the phase.
-      double phase = dt * m_freq[ii];
+      const StatisticViewer::data_type & freq = m_viewer.getData(0);
+      double phase = dt * freq[ii];
       phase -= floor(phase);
 
       // Use this phase information to fill in the corresponding trial.
@@ -71,24 +73,26 @@ namespace periodSearch {
 
   const std::vector<double> & FoldingAnalysis::computeStats() {
     // Prepare a returning array.
-    m_spec.assign(m_spec.size(), 0.);
+    StatisticViewer::data_type & spec = m_viewer.getData(1);
+    spec.assign(spec.size(), 0.);
 
     // Iterate over the number of trials.
     size_type num_trials = m_test_array->size();
     for (size_type ii = 0; ii < num_trials; ++ii) {
-      m_spec[ii] = m_test_array->testStat(ii);
+      spec[ii] = m_test_array->testStat(ii);
     }
 
     // Return the result.
-    return m_spec;
+    return spec;
   }
 
   PeriodSearch::size_type FoldingAnalysis::numIndepTrials(double min_freq, double max_freq) const {
     std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
 
     // Reset min/max frequency if either bound was not explicitly specified (negative).
-    if (0. > min_freq) min_freq = m_freq[indices.first];
-    if (0. > max_freq && indices.second > 0) max_freq = m_freq[indices.second - 1];
+    const StatisticViewer::data_type & freq = m_viewer.getData(0);
+    if (0. > min_freq) min_freq = freq[indices.first];
+    if (0. > max_freq && indices.second > 0) max_freq = freq[indices.second - 1];
 
     //    N_Fourier = (stop - start) / Fourier_step
     size_type n_fourier = size_type(ceil(fabs((max_freq - min_freq)) / m_fourier_res));
@@ -119,9 +123,9 @@ namespace periodSearch {
     return os.str();
   }
 
-  StatisticViewer FoldingAnalysis::getViewer(bool copy_data, double min_freq, double max_freq) const {
+  StatisticViewer & FoldingAnalysis::getViewer(double min_freq, double max_freq) {
     // Let the base class create a viewer.
-    StatisticViewer viewer = PeriodSearch::getViewer(copy_data, min_freq, max_freq);
+    StatisticViewer & viewer = PeriodSearch::getViewer(min_freq, max_freq);
 
     // Add/modify plot title.
     viewer.setTitle("Folding Analysis: " + m_test_array->getTestName());
