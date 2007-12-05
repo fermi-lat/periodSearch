@@ -101,29 +101,18 @@ std::string HTestArray::getTestName() const {
   return "H Test";
 }
 
-StatisticViewer HTestArray::getViewer(size_type array_index) const {
-  // Compute the Fourier powers.
-  StatisticViewer::data_type power;
-  computePower(array_index, power);
+StatisticViewer & HTestArray::getViewer(size_type array_index) {
+  // Let Z2nTestArray compute the Fourier powers.
+  StatisticViewer & viewer = Z2nTestArray::getViewer(array_index);
+
+  // Copy the computed Fourier powers to a local variable for safety.
+  StatisticViewer::data_type power = viewer.getData(1);
 
   // Convert the Fourier powers to H-value candidates.
-  StatisticViewer::data_type candidate;
+  StatisticViewer::data_type & candidate = viewer.getData(1);
   computeCandidate(power, candidate);
 
-  // Set harmonic numbers, starting with one (1).
-  StatisticViewer::data_type harmonic(m_max_harm, 0.);
-  double harmonic_number = 1.;
-  for (std::vector<double>::iterator itor = harmonic.begin(); itor != harmonic.end(); ++itor) *itor = harmonic_number++;
-
-  // Create a viewer object to return.
-  StatisticViewer viewer(2, m_max_harm);
-
-  // Copy data to the viewer.
-  viewer.setData(0, harmonic.begin(), true);
-  viewer.setData(1, power.begin(), true);
-
-  // Set label to the viewer.
-  viewer.setLabel(0, "Harmonic Number");
+  // Overwrite Y-label to the viewer.
   viewer.setLabel(1, "H-value");
 
   // Set title and caption to the viewer.

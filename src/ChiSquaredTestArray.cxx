@@ -14,7 +14,8 @@
 #include "StatisticViewer.h"
 
 ChiSquaredTestArray::ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins):
-  m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)), m_num_events(array_size, 0) {}
+  PeriodicityTestArray(2, num_phase_bins), m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)),
+  m_num_events(array_size, 0) {}
 
 void ChiSquaredTestArray::fill(size_type array_index, double phase) {
   // Bin phase; it runs from [0, 1), so multiply by the number of bins to determine
@@ -99,31 +100,24 @@ std::string ChiSquaredTestArray::getTestName() const {
   return "Chi-squared Test";
 }
 
-StatisticViewer ChiSquaredTestArray::getViewer(size_type array_index) const {
-  // Create a light curve to plot.
+StatisticViewer & ChiSquaredTestArray::getViewer(size_type array_index) {
+  // Copy a light curve to the viewer.
   const data_type & curve = m_curve_cont.at(array_index);
-  StatisticViewer::data_type phase(m_num_phase_bins, 0.);
-  StatisticViewer::data_type count(m_num_phase_bins, 0.);
-  for (std::vector<double>::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
+  StatisticViewer::data_type & phase = m_viewer.getData(0);
+  StatisticViewer::data_type & count = m_viewer.getData(1);
+  for (StatisticViewer::data_type::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
     phase[ii] = (ii + 0.5) / m_num_phase_bins;
     count[ii] = curve[ii];
   }
 
-  // Create a viewer object to return.
-  StatisticViewer viewer(2, m_num_phase_bins);
-
-  // Copy data to the viewer.
-  viewer.setData(0, phase.begin(), true);
-  viewer.setData(1, count.begin(), true);
-
   // Set label to the viewer.
-  viewer.setLabel(0, "Pulse Phase");
-  viewer.setLabel(1, "Counts");
+  m_viewer.setLabel(0, "Pulse Phase");
+  m_viewer.setLabel(1, "Counts");
 
   // Set title and caption to the viewer.
-  viewer.setTitle("Folded Light Curve");
-  viewer.setCaption(getDescription());
+  m_viewer.setTitle("Folded Light Curve");
+  m_viewer.setCaption(getDescription());
 
   // Return the viewer.
-  return viewer;
+  return m_viewer;
 }
