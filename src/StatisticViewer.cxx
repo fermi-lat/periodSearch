@@ -20,10 +20,12 @@
 #include "tip/Header.h"
 #include "tip/Table.h"
 
-StatisticViewer::StatisticViewer(index_type num_axis, data_type::size_type num_element): m_data_cont(num_axis), 
-  m_begin_cont(num_axis), m_num_element(num_element), m_label_cont(num_axis), m_unit_cont(num_axis), m_title(), m_caption() {}
+StatisticViewer::StatisticViewer(index_type num_axis, data_type::size_type num_element): m_num_axis(num_axis),
+  m_num_element(num_element), m_data_cont(num_axis, data_type(num_element, 0.)), m_begin_index(0), m_end_index(num_element),
+  m_label_cont(num_axis), m_unit_cont(num_axis), m_title(), m_caption() {}
 
 void StatisticViewer::setData(index_type axis_index, const data_type::const_iterator & begin, bool copy_data) {
+#if 0
   if (copy_data) {
     // Get the local storage and resize it if necessary.
     data_type & data = m_data_cont.at(axis_index);
@@ -39,6 +41,29 @@ void StatisticViewer::setData(index_type axis_index, const data_type::const_iter
   } else {
     // Store the iterator, without copying the data contents.
     m_begin_cont.at(axis_index) = begin;
+  }
+#endif
+}
+
+const StatisticViewer::data_type & StatisticViewer::getData(index_type axis_index) const {
+  return m_data_cont.at(axis_index);
+}
+
+StatisticViewer::data_type & StatisticViewer::getData(index_type axis_index) {
+  return m_data_cont.at(axis_index);
+}
+
+void StatisticViewer::selectData(data_type::size_type begin_index, data_type::size_type end_index) {
+  // Check whether the desired range is found or not.
+  if (begin_index >= end_index) {
+    std::ostringstream os;
+    os << "No bins contained in the given index range [" << begin_index << ", " << end_index << "]";
+    throw std::runtime_error(os.str());
+
+  } else {
+    // Set the indices to the data member.
+    m_begin_index = begin_index;
+    m_end_index = end_index;
   }
 }
 
@@ -62,13 +87,14 @@ void StatisticViewer::plot(index_type x_axis_index, index_type y_axis_index) con
   using namespace st_graph;
 
   // Get data to plot here, in order to check the indicies before creating a plot.
-  data_type::const_iterator x_begin = m_begin_cont.at(x_axis_index);
-  data_type::const_iterator y_begin = m_begin_cont.at(y_axis_index);
+  const data_type & x_data = m_data_cont.at(x_axis_index);
+  const data_type & y_data = m_data_cont.at(y_axis_index);
+
+  // Get units here, in order to check the indicies before creating a plot.
+  const std::string & x_unit = m_unit_cont.at(x_axis_index);
+  const std::string & y_unit = m_unit_cont.at(y_axis_index);
 
   // Create axis labels here, in order to check the indicies before creating a plot.
-  std::string x_unit = m_unit_cont.at(x_axis_index);
-  std::string y_unit = m_unit_cont.at(y_axis_index);
-
   std::string x_label = m_label_cont.at(x_axis_index);
   if (!x_unit.empty()) x_label += " (" + x_unit + ")";
   std::string y_label = m_label_cont.at(y_axis_index);
@@ -84,7 +110,8 @@ void StatisticViewer::plot(index_type x_axis_index, index_type y_axis_index) con
     // Create plot, using frequency as x, and spectrum/statistic as y.
     // TODO: Add m_caption in a text box on the plot, and/or in a GUI output window.
     std::auto_ptr<IPlot> plot(engine.createPlot(m_title, 800, 600, "hist",
-      ValueSeq_t(x_begin, x_begin + m_num_element), ValueSeq_t(y_begin, y_begin + m_num_element)));
+      ValueSeq_t(x_data.begin() + m_begin_index, x_data.begin() + m_end_index),
+      ValueSeq_t(y_data.begin() + m_begin_index, y_data.begin() + m_end_index)));
 
     // Set axes titles.
     std::vector<Axis> & axes(plot->getAxes());
@@ -104,13 +131,10 @@ st_stream::StreamFormatter & StatisticViewer::write(st_stream::StreamFormatter &
   // Write out the caption.
   os.info(eIncludeCaption) << m_caption << std::endl;
 
-  // Get the number of axes.
-  index_type num_axis = m_begin_cont.size();
-
   // Write out axis labels and units.
-  for (index_type ii = 0; ii < num_axis; ++ii) {
-    if (ii != 0) os.info(eIncludeData) << "\t";
-    os.info(eIncludeData) << m_label_cont[ii] << "(" << m_unit_cont[ii] << ")";
+  for (index_type axis_index = 0; axis_index < m_num_axis; ++axis_index) {
+    if (axis_index != 0) os.info(eIncludeData) << "\t";
+    os.info(eIncludeData) << m_label_cont[axis_index] << "(" << m_unit_cont[axis_index] << ")";
   }
   os.info(eIncludeData) << std::endl;
 
@@ -119,10 +143,10 @@ st_stream::StreamFormatter & StatisticViewer::write(st_stream::StreamFormatter &
   os.info(eIncludeData).precision(std::numeric_limits<double>::digits10);
 
   // Write out the statistics.
-  for (data_type::size_type diff = 0; diff < m_num_element; ++diff) {
-    for (index_type ii = 0; ii < num_axis; ++ii) {
-      if (ii != 0) os.info(eIncludeData) << "\t";
-      os.info(eIncludeData) << *(m_begin_cont[ii] + diff);
+  for (data_type::size_type elem_index = m_begin_index; elem_index < m_end_index; ++elem_index) {
+    for (index_type axis_index = 0; axis_index < m_num_axis; ++axis_index) {
+      if (axis_index != 0) os.info(eIncludeData) << "\t";
+      os.info(eIncludeData) << m_data_cont[axis_index][elem_index];
     }
     os.info(eIncludeData) << std::endl;
   }
@@ -145,14 +169,11 @@ tip::Table & StatisticViewer::write(tip::Table & table) const {
     table.getHeader().addComment(buf);
   }
 
-  // Get the number of axes.
-  index_type num_axis = m_begin_cont.size();
-
   // Append FITS columns if missing.
-  for (index_type ii = 0; ii < num_axis; ++ii) {
-    const std::string & field_name = m_label_cont[ii];
+  for (index_type axis_index = 0; axis_index < m_num_axis; ++axis_index) {
+    const std::string & field_name = m_label_cont[axis_index];
     // TODO: Set the field unit (below) to each column, if not blank.
-    //const std::string & field_unit = m_unit_cont[ii];
+    //const std::string & field_unit = m_unit_cont[axis_index];
     try {
       table.getFieldIndex(field_name);
     } catch (const tip::TipException &) {
@@ -161,16 +182,16 @@ tip::Table & StatisticViewer::write(tip::Table & table) const {
   }
 
   // Resize the table to accomodate all the data.
-  table.setNumRecords(m_num_element);
+  table.setNumRecords(m_end_index - m_begin_index);
 
   // Start at the beginning of the table.
   tip::Table::Iterator itor = table.begin();
 
   // Write out the statistics.
-  for (data_type::size_type diff = 0; diff < m_num_element; ++diff, ++itor) {
-    for (index_type ii = 0; ii < num_axis; ++ii) {
-      std::string label = m_label_cont[ii];
-      double value = *(m_begin_cont[ii] + diff);
+  for (data_type::size_type elem_index = m_begin_index; elem_index < m_end_index; ++elem_index, ++itor) {
+    for (index_type axis_index = 0; axis_index < m_num_axis; ++axis_index) {
+      std::string label = m_label_cont[axis_index];
+      double value = m_data_cont[axis_index][elem_index];
       (*itor)[label].set(value);
     }
   }
