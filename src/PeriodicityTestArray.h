@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-class StatisticViewer;
+#include "StatisticViewer.h"
 
 /** \class PeriodicityTestArray
     \brief Base class to represent an array of various statistical tests used to evaluate significance of pulsation.
@@ -73,15 +73,18 @@ class PeriodicityTestArray {
     */
     virtual std::string getTestName() const = 0;
 
-    /** \brief Create a statistic viewer for an object of this class.
-        \param array_index The index of the element of the periodicity test array, for which a viewer is to be created.
+    /** \brief Get a reference to an internal statistic viewer for an object of this class.
+        \param array_index The index of the element of the periodicity test array, for which a viewer is to be configured.
     */
-    virtual StatisticViewer getViewer(size_type array_index) const = 0;
+    virtual StatisticViewer & getViewer(size_type array_index) = 0;
 
   protected:
     /** \brief Construct a periodicity test array object.
     */
-    PeriodicityTestArray() {};
+    PeriodicityTestArray(StatisticViewer::index_type num_axis, StatisticViewer::data_type::size_type num_element):
+      m_viewer(num_axis, num_element) {};
+
+    StatisticViewer m_viewer;
 };
 
 #endif

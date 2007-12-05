@@ -65,10 +65,10 @@ class HTestArray : public Z2nTestArray {
     */
     virtual std::string getTestName() const;
 
-    /** \brief Create a statistic viewer for an object of this class.
-        \param array_index The index of the element of the periodicity test array, for which a viewer is to be created.
+    /** \brief Get a reference to an internal statistic viewer for an object of this class.
+        \param array_index The index of the element of the periodicity test array, for which a viewer is to be configured.
     */
-    virtual StatisticViewer getViewer(size_type array_index) const;
+    virtual StatisticViewer & getViewer(size_type array_index);
 
   private:
     /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum
