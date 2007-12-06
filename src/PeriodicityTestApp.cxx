@@ -76,8 +76,8 @@ void PeriodicityTestApp::run() {
   // Add periodicity tests to the list.
   long num_phase = pars["numphase"];
   test_array = new ChiSquaredTestArray(1, num_phase);
-  PeriodicityTestArray & test_to_plot = *test_array;
   test_list.push_back(test_array);
+  PeriodicityTestArray & test_to_plot = *test_array;
 
   test_array = new RayleighTestArray(1);
   test_list.push_back(test_array);
@@ -117,69 +117,20 @@ void PeriodicityTestApp::run() {
   // Use default title if user did not specify one.
   std::string title_uc(title);
   for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
-  if (title_uc == "DEFAULT") title = "Folding Analysis: All Tests";
+  if (title_uc != "DEFAULT") test_to_plot.getViewer(0).setTitle(title);
 
   // Compute the statistical test results and write them to the screen.
-  std::streamsize orig_precision = m_os.info().precision();
-  m_os.info().precision(std::numeric_limits<double>::digits10);
-  m_os.info() << title << std::endl;
   for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
-    // Compute test results.
     PeriodicityTestArray & test_array = **itor;
-    double test_stat = test_array.testStat(0);
-    std::pair<double, double> chance_prob = test_array.chanceProb(test_stat);
-
-    // Display the results on the screen.
-    m_os.info() << test_array.getDescription() << std::endl;
-    m_os.info() << "Test Statistic: " << test_stat << std::endl;
-    m_os.info() << "Chance Probability Range: " << "(" << chance_prob.first << ", " << chance_prob.second << ")" << std::endl;
+    test_array.getViewer(0).write(m_os);
   }
-  m_os.info().precision(orig_precision);
 
   // Display a plot, if desired.
-  if (plot) plotResult(title, test_to_plot);
+  if (plot) test_to_plot.getViewer(0).plot();
 
   // Delete the event table(s).
   for (table_list_type::iterator itor = table_list.begin(); itor != table_list.end(); ++itor) delete *itor;
 
   // Delete the peridicity tests.
   for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) delete *itor;
-}
-
-void PeriodicityTestApp::plotResult(const std::string & title, const PeriodicityTestArray & test_array) const {
-  using namespace st_graph;
-
-  // Get data to plot.
-  // NOTE: Only the first element of test array in this application.
-  std::vector<double> phase_value;
-  std::vector<double> light_curve;
-  test_array.getPlotData(0, phase_value, light_curve);
-
-  try {
-    // Get graphics engine to set up graph.
-    Engine & engine(Engine::instance());
-
-    // Typedef for readability.
-    typedef st_graph::ValueSequence<std::vector<double>::const_iterator> ValueSeq_t;
-
-    // TODO Add text output (statistics, etc.)to a text box on the plot, and/or in a GUI output window.
-    std::auto_ptr<IPlot> plot(engine.createPlot(title, 800, 600, "hist",
-      ValueSeq_t(phase_value.begin(), phase_value.end()),
-      ValueSeq_t(light_curve.begin(), light_curve.end())));
-
-    // Set axes titles.
-    std::vector<Axis> & axes(plot->getAxes());
-    std::string x_label;
-    std::string y_label;
-    test_array.getPlotLabel(x_label, y_label);
-    axes[0].setTitle(x_label);
-    axes[1].setTitle(y_label);
-
-    // Display plot.
-    engine.run();
-
-  } catch (const std::exception & x) {
-    std::cerr << x.what() << std::endl;
-    std::cerr << "Warning: ChiSquaredTestArray::plot could not display plot." << std::endl;
-  }
 }

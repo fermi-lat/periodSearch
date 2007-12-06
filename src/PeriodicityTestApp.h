@@ -22,8 +22,6 @@ class PeriodicityTestApp : public st_app::StApp {
     virtual ~PeriodicityTestApp() throw();
     virtual void run();
 
-    void plotResult(const std::string & title, const PeriodicityTestArray & test_array) const;
-
   private:
     st_stream::StreamFormatter m_os;
 };
