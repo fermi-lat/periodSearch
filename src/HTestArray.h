@@ -43,24 +43,6 @@ class HTestArray : public Z2nTestArray {
     */
     virtual std::string getDescription() const;
 
-    /** \brief Fill a pair of given arrays with data that contains the candidate H values for each harmonic number,
-               that are the Z2n values subtracted by 4*(m-1), where m is the harmonic number.
-        \param array_index The index of the element of the periodicity test array, of which a data array is to be created.
-        \param harmonic The output array for harmonic numbers, which may be used an X-axis of a plot.
-        \param power The output array for the candidate H values for each harmonic number, which may be used an Y-axis of a plot.
-    */
-    virtual void getPlotData(size_type array_index, std::vector<double> & harmonic, std::vector<double> & H_value) const;
-
-    /** \brief Assign axis labels to a pair of given strings, each of which can be used as an X- and Y-axis label, respectively.
-        \param x_data The output string that contains the label for X-axis of a plot to display.
-        \param y_data The output string that contains the label for Y-axis of a plot to display.
-    */
-    virtual void getPlotLabel(std::string & x_label, std::string & y_label) const;
-
-    /** \brief Return a plot title that can be used with a return value of getPlotData method.
-    */
-    virtual std::string getPlotTitle() const;
-
     /** \brief Return the name of this periodicity test.
     */
     virtual std::string getTestName() const;

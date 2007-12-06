@@ -79,24 +79,6 @@ std::string HTestArray::getDescription() const {
   return os.str();
 }
 
-void HTestArray::getPlotData(size_type array_index, std::vector<double> & harmonic, std::vector<double> & H_value) const {
-  // Delegate computation of Fourier powers and harmonic numbers.
-  data_type power;
-  Z2nTestArray::getPlotData(array_index, harmonic, power);
-
-  // Convert the Fourier powers to H-value candidates.
-  computeCandidate(power, H_value);
-}
-
-void HTestArray::getPlotLabel(std::string & x_label, std::string & y_label) const {
-  x_label = "Harmonic Number";
-  y_label = "H";
-}
-
-std::string HTestArray::getPlotTitle() const {
-  return "Candidate H values";
-}
-
 std::string HTestArray::getTestName() const {
   return "H Test";
 }
@@ -112,12 +94,11 @@ StatisticViewer & HTestArray::getViewer(size_type array_index) {
   StatisticViewer::data_type & candidate = viewer.getData(1);
   computeCandidate(power, candidate);
 
-  // Overwrite Y-label to the viewer.
+  // Overwrite Y-label in the viewer.
   viewer.setLabel(1, "H-value");
 
-  // Set title and caption to the viewer.
+  // Overwrite title in the viewer.
   viewer.setTitle("Candidate H values");
-  viewer.setCaption(getDescription());
 
   // Return the viewer.
   return viewer;
