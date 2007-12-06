@@ -72,30 +72,6 @@ ChiSquaredTestArray::size_type ChiSquaredTestArray::size() const {
   return m_curve_cont.size();
 }
 
-void ChiSquaredTestArray::getPlotData(size_type array_index, std::vector<double> & phase, std::vector<double> & count) const {
-  // Initialize the output arrays.
-  phase.resize(m_num_phase_bins);
-  phase.assign(m_num_phase_bins, 0.);
-  count.resize(m_num_phase_bins);
-  count.assign(m_num_phase_bins, 0.);
-
-  // Create a light curve to plot.
-  const data_type & curve = m_curve_cont.at(array_index);
-  for (std::vector<double>::size_type ii=0; ii < std::vector<double>::size_type(m_num_phase_bins); ++ii) {
-    phase[ii] = (ii + 0.5) / m_num_phase_bins;
-    count[ii] = curve[ii];
-  }
-}
-
-void ChiSquaredTestArray::getPlotLabel(std::string & x_label, std::string & y_label) const {
-  x_label = "Pulse Phase";
-  y_label = "Counts";
-}
-
-std::string ChiSquaredTestArray::getPlotTitle() const {
-  return "Folded Light Curve";
-}
-
 std::string ChiSquaredTestArray::getTestName() const {
   return "Chi-squared Test";
 }
@@ -116,7 +92,7 @@ StatisticViewer & ChiSquaredTestArray::getViewer(size_type array_index) {
 
   // Set title and caption to the viewer.
   m_viewer.setTitle("Folded Light Curve");
-  m_viewer.setCaption(getDescription());
+  m_viewer.setCaption(getSummary(array_index));
 
   // Return the viewer.
   return m_viewer;
