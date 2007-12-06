@@ -7,6 +7,7 @@
 #define periodSearch_PeriodicityTestArray_h
 
 #include <complex>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -46,28 +47,25 @@ class PeriodicityTestArray {
     */
     virtual std::string getDescription() const = 0;
 
+    /** \brief Return a summary of this periodicity test array.
+        \param array_index The index of the element of the periodicity test array, of which a summary is to be returned.
+    */
+    virtual std::string getSummary(size_type array_index) {
+      double test_stat = testStat(array_index);
+      std::pair<double, double> chance_prob = chanceProb(test_stat);
+
+      std::ostringstream os;
+      os.precision(std::numeric_limits<double>::digits10);
+      os << getDescription() << std::endl;
+      os << "Test Statistic: " << test_stat << std::endl;
+      os << "Chance Probability Range: " << "(" << chance_prob.first << ", " << chance_prob.second << ")";
+
+      return os.str();
+    }
+
     /** \brief Return the size of this periodicity test array.
     */
     virtual size_type size() const = 0;
-
-    /** \brief Fill a pair of given arrays with data that represents internal state of this periodicity test, such as a folded
-               light curve for the chi-squared test, such that they can be used as X- and Y-axis of a plot to display. The given
-               arrays may be resized if necessary. Details depend on the specific test being performed in the subclass.
-        \param array_index The index of the element of the periodicity test array, of which a data array is to be created.
-        \param x_data The output array that contains X-values for a plot to display.
-        \param y_data The output array that contains Y-values for a plot to display.
-    */
-    virtual void getPlotData(size_type array_index, std::vector<double> & x_data, std::vector<double> & y_data) const = 0;
-
-    /** \brief Assign axis labels to a pair of given strings, each of which can be used as an X- and Y-axis label, respectively.
-        \param x_data The output string that contains the label for X-axis of a plot to display.
-        \param y_data The output string that contains the label for Y-axis of a plot to display.
-    */
-    virtual void getPlotLabel(std::string & x_label, std::string & y_label) const = 0;
-
-    /** \brief Return a plot title that can be used with a return value of getPlotData method.
-    */
-    virtual std::string getPlotTitle() const = 0;
 
     /** \brief Return the name of periodicity test being performed in the subclass.
     */
