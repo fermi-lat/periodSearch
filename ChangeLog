@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: hirayama  Wed Dec  5 16:09:42 PST 2007
+periodSearch/src
+
+Modified Files:
+	ChiSquaredTestArray.h ChiSquaredTestArray.cxx Z2nTestArray.h 
+	Z2nTestArray.cxx HTestArray.h HTestArray.cxx 
+Log Message:
+Use getSummary method in getViewer method. Remove obsolete methods: getPlotData, getPlotLabel, and getPlotTitle.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Dec  5 16:08:39 PST 2007
 periodSearch/src
 
