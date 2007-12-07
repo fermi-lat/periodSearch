@@ -95,10 +95,10 @@ StatisticViewer & HTestArray::getViewer(size_type array_index) {
   computeCandidate(power, candidate);
 
   // Overwrite Y-label in the viewer.
-  viewer.setLabel(1, "H-value");
+  viewer.setLabel(1, "Candidate Value");
 
   // Overwrite title in the viewer.
-  viewer.setTitle("Candidate H values");
+  viewer.setTitle("Candidates for H value");
 
   // Return the viewer.
   return viewer;
