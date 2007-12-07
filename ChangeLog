@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Dec  7 14:47:56 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodicityTestApp.cxx 
+Log Message:
+Add FITS output capability.
+
+    *
+------------------------------------------------------------
 User: hirayama  Fri Dec  7 14:47:29 PST 2007
 periodSearch/src
 
