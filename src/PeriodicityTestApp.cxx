@@ -9,6 +9,8 @@
 #include <list>
 #include <stdexcept>
 
+#include "facilities/commonUtilities.h"
+
 #include "st_app/AppParGroup.h"
 
 #include "st_facilities/FileSys.h"
@@ -118,6 +120,31 @@ void PeriodicityTestApp::run() {
   std::string title_uc(title);
   for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
   if (title_uc != "DEFAULT") test_to_plot.getViewer(0).setTitle(title);
+
+  // Interpret output file parameter.
+  std::string out_file_uc = out_file;
+  for (std::string::iterator itor = out_file_uc.begin(); itor != out_file_uc.end(); ++itor) *itor = std::toupper(*itor);
+
+  if ("NONE" != out_file_uc) {
+    // Find the template file.
+    using namespace facilities;
+    std::string template_file = commonUtilities::joinPath(commonUtilities::getDataPath("periodSearch"), "periodicity-test-out.tpl");
+
+    // Create output file.
+    tip::IFileSvc::instance().createFile(out_file, template_file, clobber);
+
+    // Loop over periodicity tests.
+    for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
+      PeriodicityTestArray & test_array = **itor;
+
+      // Open output file.
+      std::string ext_name = test_array.getTestName();
+      std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, ext_name));
+
+      // Write the summary to the output header, and the data to the output table.
+      test_array.getViewer(0).write(*out_table);
+    }
+  }
 
   // Compute the statistical test results and write them to the screen.
   for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
