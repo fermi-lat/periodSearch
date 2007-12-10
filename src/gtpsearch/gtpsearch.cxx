@@ -219,7 +219,11 @@ void PSearchApp::run() {
   viewer.write(m_os);
 
   // Display a plot, if desired.
-  if (plot) viewer.plot();
+  if (plot) {
+    viewer.setLabel(0, "Pulse Frequency");
+    viewer.setLabel(1, "Test Statistic");
+    viewer.plot();
+  }
 }
 
 void PSearchApp::prompt(st_app::AppParGroup & pars) {
