@@ -73,24 +73,27 @@ void PeriodicityTestApp::run() {
   // Create a list of periodicity tests.
   typedef std::list<PeriodicityTestArray *> test_list_type;
   test_list_type test_list;
-  PeriodicityTestArray * test_array(0);
+  std::map<std::string, std::string> ext_name_dict;
 
   // Add periodicity tests to the list.
   long num_phase = pars["numphase"];
-  test_array = new ChiSquaredTestArray(1, num_phase);
-  test_list.push_back(test_array);
-  PeriodicityTestArray & test_to_plot = *test_array;
+  PeriodicityTestArray * chi2_test_array(new ChiSquaredTestArray(1, num_phase));
+  test_list.push_back(chi2_test_array);
+  ext_name_dict[chi2_test_array->getTestName()] = "CHI2TEST";
 
-  test_array = new RayleighTestArray(1);
-  test_list.push_back(test_array);
+  PeriodicityTestArray * rayleigh_test_array(new RayleighTestArray(1));
+  test_list.push_back(rayleigh_test_array);
+  ext_name_dict[rayleigh_test_array->getTestName()] = "RAYLEIGHTEST";
 
   long num_harm = pars["numharm"];
-  test_array = new Z2nTestArray(1, num_harm);
-  test_list.push_back(test_array);
+  PeriodicityTestArray * z2n_test_array(new Z2nTestArray(1, num_harm));
+  test_list.push_back(z2n_test_array);
+  ext_name_dict[z2n_test_array->getTestName()] = "Z2NTEST";
 
   long max_harm = pars["maxharm"];
-  test_array = new HTestArray(1, max_harm);
-  test_list.push_back(test_array);
+  PeriodicityTestArray * h_test_array(new HTestArray(1, max_harm));
+  test_list.push_back(h_test_array);
+  ext_name_dict[h_test_array->getTestName()] = "HTEST";
 
   // Loop over events in the event table(s).
   for (table_list_type::const_iterator table_itor = table_list.begin(); table_itor != table_list.end(); ++table_itor) {
@@ -119,7 +122,12 @@ void PeriodicityTestApp::run() {
   // Use default title if user did not specify one.
   std::string title_uc(title);
   for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
-  if (title_uc != "DEFAULT") test_to_plot.getViewer(0).setTitle(title);
+  if (title_uc != "DEFAULT") {
+    for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
+      PeriodicityTestArray & test_array = **itor;
+      test_array.getViewer(0).setTitle(title);
+    }
+  }
 
   // Interpret output file parameter.
   std::string out_file_uc = out_file;
@@ -138,7 +146,7 @@ void PeriodicityTestApp::run() {
       PeriodicityTestArray & test_array = **itor;
 
       // Open output file.
-      std::string ext_name = test_array.getTestName();
+      std::string ext_name = ext_name_dict[test_array.getTestName()];
       std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, ext_name));
 
       // Write the summary to the output header, and the data to the output table.
@@ -153,7 +161,12 @@ void PeriodicityTestApp::run() {
   }
 
   // Display a plot, if desired.
-  if (plot) test_to_plot.getViewer(0).plot();
+  if (plot) {
+    StatisticViewer & viewer = chi2_test_array->getViewer(0);
+    viewer.setLabel(0, "Pulse Phase");
+    viewer.setLabel(1, "Counts");
+    viewer.plot();
+  }
 
   // Delete the event table(s).
   for (table_list_type::iterator itor = table_list.begin(); itor != table_list.end(); ++itor) delete *itor;
