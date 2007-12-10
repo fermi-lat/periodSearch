@@ -113,6 +113,12 @@ void PeriodicityTestApp::run() {
     }
   }
 
+  // Update the data contents of viewer.
+  for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
+    PeriodicityTestArray & test_array = **itor;
+    test_array.updateViewer(0);
+  }
+
   // Get parameters for output.
   std::string out_file = pars["outfile"];
   bool plot = pars["plot"];
@@ -125,7 +131,7 @@ void PeriodicityTestApp::run() {
   if (title_uc != "DEFAULT") {
     for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
       PeriodicityTestArray & test_array = **itor;
-      test_array.getViewer(0).setTitle(title);
+      test_array.getViewer().setTitle(title);
     }
   }
 
@@ -150,19 +156,19 @@ void PeriodicityTestApp::run() {
       std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, ext_name));
 
       // Write the summary to the output header, and the data to the output table.
-      test_array.getViewer(0).write(*out_table);
+      test_array.getViewer().write(*out_table);
     }
   }
 
   // Compute the statistical test results and write them to the screen.
   for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
     PeriodicityTestArray & test_array = **itor;
-    test_array.getViewer(0).write(m_os);
+    test_array.getViewer().write(m_os);
   }
 
   // Display a plot, if desired.
   if (plot) {
-    StatisticViewer & viewer = chi2_test_array->getViewer(0);
+    StatisticViewer & viewer = chi2_test_array->getViewer();
     viewer.setLabel(0, "Pulse Phase");
     viewer.setLabel(1, "Counts");
     viewer.plot();
