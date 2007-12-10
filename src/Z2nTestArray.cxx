@@ -13,7 +13,19 @@
 
 Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmonics):
   PeriodicityTestArray(2, num_harmonics), m_num_harm(num_harmonics), m_sine_cont(array_size, data_type(num_harmonics, 0.)),
-  m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0) {}
+  m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0) {
+  // Set harmonic numbers, starting with one (1).
+  double harmonic_number = 1.;
+  StatisticViewer::data_type & harmonic = m_viewer.getData(0);
+  for (std::vector<double>::iterator itor = harmonic.begin(); itor != harmonic.end(); ++itor) *itor = harmonic_number++;
+
+  // Set default labels to the viewer.
+  m_viewer.setLabel(0, "HARMONIC_NUMBER");
+  m_viewer.setLabel(1, "POWER");
+
+  // Set default title to the viewer.
+  m_viewer.setTitle("Fourier Powers");
+}
 
 void Z2nTestArray::fill(size_type array_index, double phase) {
   // Define two pi (for convenience and clarity).
@@ -95,17 +107,7 @@ StatisticViewer & Z2nTestArray::getViewer(size_type array_index) {
   StatisticViewer::data_type & power = m_viewer.getData(1);
   computePower(array_index, power);
 
-  // Set harmonic numbers, starting with one (1).
-  double harmonic_number = 1.;
-  StatisticViewer::data_type & harmonic = m_viewer.getData(0);
-  for (std::vector<double>::iterator itor = harmonic.begin(); itor != harmonic.end(); ++itor) *itor = harmonic_number++;
-
-  // Set label to the viewer.
-  m_viewer.setLabel(0, "HARMONIC_NUMBER");
-  m_viewer.setLabel(1, "POWER");
-
-  // Set title and caption to the viewer.
-  m_viewer.setTitle("Fourier Powers");
+  // Set caption to the viewer.
   m_viewer.setCaption(getSummary(array_index));
 
   // Return the viewer.
