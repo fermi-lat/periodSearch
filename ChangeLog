@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Dec 10 15:52:28 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodicityTestApp.cxx 
+Log Message:
+Call PeriodicityTestArray::updateViewer method. Call PeriodicityTestArray::getViewer method with no argument.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Dec 10 15:51:09 PST 2007
 periodSearch/src
 
