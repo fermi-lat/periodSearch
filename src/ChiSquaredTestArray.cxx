@@ -64,6 +64,20 @@ double ChiSquaredTestArray::testStat(size_type array_index) const {
   return S_value;
 }
 
+void ChiSquaredTestArray::updateViewer(size_type array_index) {
+  // Copy a light curve to the viewer.
+  // TODO: Allow a caller to choose NOT to copy data for faster computation?
+  const data_type & light_curve = m_curve_cont.at(array_index);
+  StatisticViewer::data_type & viewer_curve = m_viewer.getData(1);
+  for (StatisticViewer::data_type::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
+    viewer_curve[ii] = light_curve[ii];
+  }
+
+  // Set caption to the viewer.
+  // TODO: Allow a caller to choose NOT to update caption for faster computation?
+  m_viewer.setCaption(getSummary(array_index));
+}
+
 std::pair<double, double> ChiSquaredTestArray::chanceProb(double stat) const {
   //    /* Leahy et al. 1983, ApJ 266, 160 */
   //    chance_prob = chi2prob(S_value[imax], N_bin-1) * N_Fourier;
@@ -75,6 +89,7 @@ std::pair<double, double> ChiSquaredTestArray::chanceProb(double stat) const {
 }
 
 std::string ChiSquaredTestArray::getDescription() const {
+  // TODO: Move the below to the constructor, and hold it in a member data.
   std::ostringstream os;
   os << "Type of test: " << getTestName() << ", " << m_num_phase_bins << " phase bins\n"
      << "Probability distribution: Chi-squared, " << m_num_phase_bins - 1 << " degrees of freedom";
@@ -87,19 +102,4 @@ ChiSquaredTestArray::size_type ChiSquaredTestArray::size() const {
 
 std::string ChiSquaredTestArray::getTestName() const {
   return "Chi-squared Test";
-}
-
-StatisticViewer & ChiSquaredTestArray::getViewer(size_type array_index) {
-  // Copy a light curve to the viewer.
-  const data_type & curve = m_curve_cont.at(array_index);
-  StatisticViewer::data_type & count = m_viewer.getData(1);
-  for (StatisticViewer::data_type::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
-    count[ii] = curve[ii];
-  }
-
-  // Set caption to the viewer.
-  m_viewer.setCaption(getSummary(array_index));
-
-  // Return the viewer.
-  return m_viewer;
 }

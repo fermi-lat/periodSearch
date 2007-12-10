@@ -51,6 +51,18 @@ double HTestArray::testStat(size_type array_index) const {
   return highest_H;
 }
 
+void HTestArray::updateViewer(size_type array_index) {
+  // Let Z2nTestArray compute the Fourier powers.
+  Z2nTestArray::updateViewer(array_index);
+
+  // Copy the computed Fourier powers to a local variable for safety.
+  StatisticViewer::data_type power = m_viewer.getData(1);
+
+  // Convert the Fourier powers to H-value candidates.
+  StatisticViewer::data_type & candidate = m_viewer.getData(1);
+  computeCandidate(power, candidate);
+}
+
 std::pair<double, double> HTestArray::chanceProb(double stat) const {
   /* De Jager et al. 1989, A&A 221, 180 */
   double lower_limit;
@@ -79,6 +91,7 @@ std::pair<double, double> HTestArray::chanceProb(double stat) const {
 }
 
 std::string HTestArray::getDescription() const {
+  // TODO: Move the below to the constructor, and hold it in a member data.
   std::ostringstream os;
   os << "Type of test: " << getTestName() << ", " << m_max_harm << " maximum harmonics\n" <<
     "Probability distribution: H Test-specific";
@@ -87,19 +100,4 @@ std::string HTestArray::getDescription() const {
 
 std::string HTestArray::getTestName() const {
   return "H Test";
-}
-
-StatisticViewer & HTestArray::getViewer(size_type array_index) {
-  // Let Z2nTestArray compute the Fourier powers.
-  StatisticViewer & viewer = Z2nTestArray::getViewer(array_index);
-
-  // Copy the computed Fourier powers to a local variable for safety.
-  StatisticViewer::data_type power = viewer.getData(1);
-
-  // Convert the Fourier powers to H-value candidates.
-  StatisticViewer::data_type & candidate = viewer.getData(1);
-  computeCandidate(power, candidate);
-
-  // Return the viewer.
-  return viewer;
 }
