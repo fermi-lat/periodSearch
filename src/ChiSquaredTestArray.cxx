@@ -15,7 +15,20 @@
 
 ChiSquaredTestArray::ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins):
   PeriodicityTestArray(2, num_phase_bins), m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)),
-  m_num_events(array_size, 0) {}
+  m_num_events(array_size, 0) {
+  // Set pulse phase values to the viewer.
+  StatisticViewer::data_type & phase = m_viewer.getData(0);
+  for (StatisticViewer::data_type::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
+    phase[ii] = (ii + 0.5) / m_num_phase_bins;
+  }
+
+  // Set default labels to the viewer.
+  m_viewer.setLabel(0, "PULSE_PHASE");
+  m_viewer.setLabel(1, "COUNTS");
+
+  // Set default title to the viewer.
+  m_viewer.setTitle("Folded Light Curve");
+}
 
 void ChiSquaredTestArray::fill(size_type array_index, double phase) {
   // Bin phase; it runs from [0, 1), so multiply by the number of bins to determine
@@ -79,19 +92,12 @@ std::string ChiSquaredTestArray::getTestName() const {
 StatisticViewer & ChiSquaredTestArray::getViewer(size_type array_index) {
   // Copy a light curve to the viewer.
   const data_type & curve = m_curve_cont.at(array_index);
-  StatisticViewer::data_type & phase = m_viewer.getData(0);
   StatisticViewer::data_type & count = m_viewer.getData(1);
   for (StatisticViewer::data_type::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
-    phase[ii] = (ii + 0.5) / m_num_phase_bins;
     count[ii] = curve[ii];
   }
 
-  // Set label to the viewer.
-  m_viewer.setLabel(0, "PULSE_PHASE");
-  m_viewer.setLabel(1, "COUNTS");
-
-  // Set title and caption to the viewer.
-  m_viewer.setTitle("Folded Light Curve");
+  // Set caption to the viewer.
   m_viewer.setCaption(getSummary(array_index));
 
   // Return the viewer.

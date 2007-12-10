@@ -33,7 +33,11 @@ namespace periodSearch {
 
   const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
 
-  PeriodSearch::PeriodSearch(size_type num_bins): m_viewer(2, num_bins) {}
+  PeriodSearch::PeriodSearch(size_type num_bins): m_viewer(2, num_bins) {
+    // Set default labels to the viewer.
+    m_viewer.setLabel(0, "FREQUENCY");
+    m_viewer.setLabel(1, "STATISTIC");
+  }
 
   PeriodSearchResult PeriodSearch::search(double min_freq, double max_freq) const {
     // Find position of the maximum in the range.
@@ -206,10 +210,6 @@ namespace periodSearch {
     size_type begin_index = indices.first;
     size_type end_index = indices.second;
     m_viewer.selectData(begin_index, end_index);
-
-    // Set label to the viewer.
-    m_viewer.setLabel(0, "FREQUENCY");
-    m_viewer.setLabel(1, "STATISTIC");
 
     // Set caption to the viewer.
     PeriodSearchResult result = search(min_freq, max_freq);

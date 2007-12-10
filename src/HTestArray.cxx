@@ -10,7 +10,13 @@
 #include "HTestArray.h"
 
 HTestArray::HTestArray(size_type array_size, data_type::size_type max_harmonics): Z2nTestArray(array_size, max_harmonics),
-  m_max_harm(max_harmonics) {}
+  m_max_harm(max_harmonics) {
+  // Overwrite Y-label in the viewer.
+  m_viewer.setLabel(1, "CANDIDATE_VALUE");
+
+  // Overwrite title in the viewer.
+  m_viewer.setTitle("Candidates for H value");
+}
 
 void HTestArray::computeCandidate(data_type & power, data_type & H_candidate) const {
   // Initialize output array.
@@ -93,12 +99,6 @@ StatisticViewer & HTestArray::getViewer(size_type array_index) {
   // Convert the Fourier powers to H-value candidates.
   StatisticViewer::data_type & candidate = viewer.getData(1);
   computeCandidate(power, candidate);
-
-  // Overwrite Y-label in the viewer.
-  viewer.setLabel(1, "CANDIDATE_VALUE");
-
-  // Overwrite title in the viewer.
-  viewer.setTitle("Candidates for H value");
 
   // Return the viewer.
   return viewer;
