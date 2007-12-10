@@ -134,7 +134,9 @@ st_stream::StreamFormatter & StatisticViewer::write(st_stream::StreamFormatter &
   // Write out axis labels and units.
   for (index_type axis_index = 0; axis_index < m_num_axis; ++axis_index) {
     if (axis_index != 0) os.info(eIncludeData) << "\t";
-    os.info(eIncludeData) << m_label_cont[axis_index] << "(" << m_unit_cont[axis_index] << ")";
+    os.info(eIncludeData) << m_label_cont[axis_index];
+    const std::string & unit_string = m_unit_cont[axis_index];
+    if (!unit_string.empty()) os.info(eIncludeData) << "(" << unit_string << ")";
   }
   os.info(eIncludeData) << std::endl;
 
