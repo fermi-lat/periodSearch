@@ -87,8 +87,8 @@ StatisticViewer & ChiSquaredTestArray::getViewer(size_type array_index) {
   }
 
   // Set label to the viewer.
-  m_viewer.setLabel(0, "Pulse Phase");
-  m_viewer.setLabel(1, "Counts");
+  m_viewer.setLabel(0, "PULSE_PHASE");
+  m_viewer.setLabel(1, "COUNTS");
 
   // Set title and caption to the viewer.
   m_viewer.setTitle("Folded Light Curve");

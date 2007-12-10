@@ -101,8 +101,8 @@ StatisticViewer & Z2nTestArray::getViewer(size_type array_index) {
   for (std::vector<double>::iterator itor = harmonic.begin(); itor != harmonic.end(); ++itor) *itor = harmonic_number++;
 
   // Set label to the viewer.
-  m_viewer.setLabel(0, "Harmonic Number");
-  m_viewer.setLabel(1, "Power");
+  m_viewer.setLabel(0, "HARMONIC_NUMBER");
+  m_viewer.setLabel(1, "POWER");
 
   // Set title and caption to the viewer.
   m_viewer.setTitle("Fourier Powers");

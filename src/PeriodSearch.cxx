@@ -208,8 +208,8 @@ namespace periodSearch {
     m_viewer.selectData(begin_index, end_index);
 
     // Set label to the viewer.
-    m_viewer.setLabel(0, "Frequency");
-    m_viewer.setLabel(1, "Statistic");
+    m_viewer.setLabel(0, "FREQUENCY");
+    m_viewer.setLabel(1, "STATISTIC");
 
     // Set caption to the viewer.
     PeriodSearchResult result = search(min_freq, max_freq);
