@@ -37,6 +37,12 @@ class PeriodicityTestArray {
     virtual double testStat(size_type array_index) const = 0;
     // TODO: Rename the above to computeStat for consistency.
 
+    /** \brief Compute a test statistic for pulse phases currently filled in this object, and set viewable data in
+               the internal statistic viewer. Details depend on the specific test being performed in the subclass.
+        \param array_index The index of the element of the periodicity test array, of which a test statistic is to be computed.
+    */
+    virtual void updateViewer(size_type array_index) = 0;
+
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
     */
@@ -72,9 +78,8 @@ class PeriodicityTestArray {
     virtual std::string getTestName() const = 0;
 
     /** \brief Get a reference to an internal statistic viewer for an object of this class.
-        \param array_index The index of the element of the periodicity test array, for which a viewer is to be configured.
     */
-    virtual StatisticViewer & getViewer(size_type array_index) = 0;
+    virtual StatisticViewer & getViewer() { return m_viewer; };
 
   protected:
     /** \brief Construct a periodicity test array object.

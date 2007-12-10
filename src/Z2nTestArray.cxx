@@ -77,6 +77,15 @@ double Z2nTestArray::testStat(size_type array_index) const {
   return summed_power;
 }
 
+void Z2nTestArray::updateViewer(size_type array_index) {
+  // Compute the Fourier powers.
+  StatisticViewer::data_type & power = m_viewer.getData(1);
+  computePower(array_index, power);
+
+  // Set caption to the viewer.
+  m_viewer.setCaption(getSummary(array_index));
+}
+
 std::pair<double, double> Z2nTestArray::chanceProb(double stat) const {
   //      /* Leahy et al. 1983, ApJ 266, 160 */
   //      chance_prob = chi2prob(test_stat[imax], 2*N_harm) * N_Fourier;
@@ -88,6 +97,7 @@ std::pair<double, double> Z2nTestArray::chanceProb(double stat) const {
 }
 
 std::string Z2nTestArray::getDescription() const {
+  // TODO: Move the below to the constructor, and hold it in a member data.
   std::ostringstream os;
   os << "Type of test: " << getTestName() << ", " << m_num_harm << " harmonics\n" <<
     "Probability distribution: Chi-squared, " << 2 * m_num_harm << " degrees of freedom";
@@ -100,16 +110,4 @@ Z2nTestArray::size_type Z2nTestArray::size() const {
 
 std::string Z2nTestArray::getTestName() const {
   return "Z2n Test";
-}
-
-StatisticViewer & Z2nTestArray::getViewer(size_type array_index) {
-  // Compute the Fourier powers.
-  StatisticViewer::data_type & power = m_viewer.getData(1);
-  computePower(array_index, power);
-
-  // Set caption to the viewer.
-  m_viewer.setCaption(getSummary(array_index));
-
-  // Return the viewer.
-  return m_viewer;
 }
