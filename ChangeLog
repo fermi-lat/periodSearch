@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: hirayama  Mon Dec 10 13:58:59 PST 2007
+periodSearch/src
+
+Modified Files:
+	ChiSquaredTestArray.cxx Z2nTestArray.cxx HTestArray.cxx 
+	PeriodSearch.cxx 
+Log Message:
+Assign default values to the internal StatisticViewer object in the constructor.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Dec 10 13:35:26 PST 2007
 periodSearch/src
 
