@@ -43,6 +43,9 @@ namespace periodSearch {
 
     // Compute Fourier resolution.
     m_fourier_res = 1. / duration;
+
+    // Add/modify plot title.
+    m_viewer.setTitle("Folding Analysis: " + m_test_array->getTestName());
   }
 
   void FoldingAnalysis::fill(double evt_time) {
@@ -121,16 +124,5 @@ namespace periodSearch {
 
     // Return the string.
     return os.str();
-  }
-
-  StatisticViewer & FoldingAnalysis::getViewer(double min_freq, double max_freq) {
-    // Let the base class create a viewer.
-    StatisticViewer & viewer = PeriodSearch::getViewer(min_freq, max_freq);
-
-    // Add/modify plot title.
-    viewer.setTitle("Folding Analysis: " + m_test_array->getTestName());
-
-    // Return the viewer.
-    return viewer;
   }
 }
