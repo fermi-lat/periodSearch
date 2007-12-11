@@ -6,6 +6,7 @@
 #ifndef periodSearch_HTestArray_h
 #define periodSearch_HTestArray_h
 
+#include <string>
 #include <utility>
 #include <vector>
 

@@ -6,6 +6,7 @@
 #ifndef periodSearch_ChiSquaredTestArray_h
 #define periodSearch_ChiSquaredTestArray_h
 
+#include <string>
 #include <utility>
 #include <vector>
 
