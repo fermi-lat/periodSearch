@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: hirayama  Mon Dec 10 16:34:07 PST 2007
+periodSearch/src
+
+Modified Files:
+	FourierAnalysis.h FourierAnalysis.cxx FoldingAnalysis.h 
+	FoldingAnalysis.cxx 
+Log Message:
+Remove implementation of getViewer method. Set plot title in the constructor.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Dec 10 16:32:13 PST 2007
 periodSearch/src
 
