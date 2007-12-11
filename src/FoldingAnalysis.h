@@ -55,12 +55,6 @@ class FoldingAnalysis : public periodSearch::PeriodSearch {
     */
     virtual std::string getDescription() const;
 
-    /** \brief Get a reference to an internal statistic viewer for an object of this class.
-        \param min_freq The minimum frequency to view.
-        \param max_freq The maximum frequency to view.
-    */
-    virtual StatisticViewer & getViewer(double min_freq = -1., double max_freq = -1.);
-
   protected:
     // The container of statistical trials.
     PeriodicityTestArray * m_test_array;
