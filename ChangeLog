@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Tue Dec 11 15:22:26 PST 2007
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearch.h 
+Log Message:
+Clean up header files.
+
+    *
+------------------------------------------------------------
 User: hirayama  Tue Dec 11 15:19:58 PST 2007
 periodSearch/src
 
