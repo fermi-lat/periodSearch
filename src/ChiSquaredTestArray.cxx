@@ -66,7 +66,6 @@ double ChiSquaredTestArray::testStat(size_type array_index) const {
 
 void ChiSquaredTestArray::updateViewer(size_type array_index) {
   // Copy a light curve to the viewer.
-  // TODO: Allow a caller to choose NOT to copy data for faster computation?
   const data_type & light_curve = m_curve_cont.at(array_index);
   StatisticViewer::data_type & viewer_curve = m_viewer.getData(1);
   for (StatisticViewer::data_type::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
@@ -74,7 +73,6 @@ void ChiSquaredTestArray::updateViewer(size_type array_index) {
   }
 
   // Set caption to the viewer.
-  // TODO: Allow a caller to choose NOT to update caption for faster computation?
   m_viewer.setCaption(getSummary(array_index));
 }
 
