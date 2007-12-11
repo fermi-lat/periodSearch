@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Dec 10 16:35:09 PST 2007
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Call PeriodSearch::search2 method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Dec 10 16:34:07 PST 2007
 periodSearch/src
 
