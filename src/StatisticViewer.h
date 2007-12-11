@@ -33,11 +33,6 @@ class StatisticViewer {
     */
     StatisticViewer(index_type num_axis, data_type::size_type num_element);
 
-    // TODO: Make this a base class? With two subclasses that copy/don't copy the data.
-    // TODO: Copy constructor that checks whether pointers point to array start and if so
-    // the destination pointer is reset to point to the start of the array.
-    // TODO: Assignment operator that behaves as copy constructor.
-    // TODO: split setData into two methods: copyData and setData (rename? connectData? ...)
     /** \brief Set a pair of iterators of data array to be viewed.
         \param axis_index The index of axis, for which a set of iterators is to be set.
         \param begin The iterator of data array, which points to the first element to be viewed.
