@@ -6,11 +6,11 @@
 #ifndef periodSearch_PeriodicityTestArray_h
 #define periodSearch_PeriodicityTestArray_h
 
-#include <complex>
+#include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "StatisticViewer.h"
 

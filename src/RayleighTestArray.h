@@ -6,9 +6,10 @@
 #ifndef periodSearch_RayleighTestArray_h
 #define periodSearch_RayleighTestArray_h
 
-#include "Z2nTestArray.h"
-
+#include <string>
 #include <sstream>
+
+#include "Z2nTestArray.h"
 
 /** \class RayleighTestArray
     \brief PeriodTest subclass which uses Rayleigh statistic (which is equal to Z2n statistic with n == 1) for its search/test.

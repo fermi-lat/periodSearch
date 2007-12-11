@@ -3,12 +3,15 @@
     \authors Masaharu Hirayama, GSSC
              James Peachey, HEASARC/GSSC
 */
+#include "Z2nTestArray.h"
 
+#include <cmath>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 #include "ChiSquaredProb.h"
-#include "Z2nTestArray.h"
 #include "StatisticViewer.h"
 
 Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmonics):

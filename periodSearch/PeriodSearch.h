@@ -6,7 +6,6 @@
 #ifndef periodSearch_PeriodSearch_h
 #define periodSearch_PeriodSearch_h
 
-#include <complex>
 #include <string>
 #include <utility>
 #include <vector>
