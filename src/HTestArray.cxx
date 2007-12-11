@@ -3,11 +3,12 @@
     \authors Masaharu Hirayama, GSSC
              James Peachey, HEASARC/GSSC
 */
+#include "HTestArray.h"
 
+#include <cmath>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
-
-#include "HTestArray.h"
 
 HTestArray::HTestArray(size_type array_size, data_type::size_type max_harmonics): Z2nTestArray(array_size, max_harmonics),
   m_max_harm(max_harmonics) {
@@ -72,12 +73,12 @@ std::pair<double, double> HTestArray::chanceProb(double stat) const {
   if (stat <= 23.0) {
      double a = 0.9999755;
      double b = 0.39802;
-     upper_limit = a * exp(-b * stat);
+     upper_limit = a * std::exp(-b * stat);
   } else if (stat < 50.0) {
      double c = 1.210597;
      double d = 0.45901;
      double e = 0.0022900;
-     upper_limit = c * exp(-d * stat + e * stat * stat);
+     upper_limit = c * std::exp(-d * stat + e * stat * stat);
   } else {
      upper_limit = 4.0e-8; /* or less */
      chance_prob_exact = false;
