@@ -185,7 +185,8 @@ void PSearchApp::run() {
   // Compute the statistics.
   search->computeStats();
 
-  // Create a viewer object, without copying data.
+  // Update the statistic viewer in PeriodSearch object, and get a reference to it.
+  search->search2();
   StatisticViewer & viewer(search->getViewer());
 
   // Set a plot title: use default title if user did not specify one.
