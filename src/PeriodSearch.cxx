@@ -65,6 +65,42 @@ namespace periodSearch {
     return PeriodSearchResult(getDescription(), min_freq, max_freq, num_bins, num_indep_trials, max, chance_prob);
   }
 
+  void PeriodSearch::search2(double min_freq, double max_freq) {
+    // Find position of the maximum in the range.
+    std::pair<double, double> max = findMax(min_freq, max_freq);
+
+    // Compute probability for one trial.
+    std::pair<double, double> chance_prob = chanceProbOneTrial(max.second);
+
+    // Compute the number of independent trials.
+    size_type num_indep_trials = numIndepTrials(min_freq, max_freq);
+
+    // Compute the multi-trial chance probability.
+    chance_prob.first = chanceProbMultiTrial(chance_prob.first, num_indep_trials);
+    chance_prob.second = chanceProbMultiTrial(chance_prob.second, num_indep_trials);
+
+    // Compute number of bins.
+    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
+    size_type num_bins = indices.second - indices.first;
+
+    // Reset min/max frequency if either bound was not explicitly specified (negative).
+    const StatisticViewer::data_type & freq = m_viewer.getData(0);
+    if (0. > min_freq) min_freq = freq[indices.first];
+    if (0. > max_freq && indices.second > 0) max_freq = freq[indices.second - 1];
+
+    // Create search result object.
+    // TODO: Remove this step. This is now only needed for setCaption below.
+    PeriodSearchResult result(getDescription(), min_freq, max_freq, num_bins, num_indep_trials, max, chance_prob);
+
+    // Impose range limits.
+    m_viewer.selectData(indices.first, indices.second);
+
+    // Set caption to the viewer.
+    std::ostringstream os;
+    result.write(os);
+    m_viewer.setCaption(os.str());
+  }
+
   std::pair<double, double> PeriodSearch::findMax(double min_freq, double max_freq) const {
     bool found_max = false;
     size_type max_idx = 0;
@@ -204,20 +240,7 @@ namespace periodSearch {
     return std::make_pair(begin_index, end_index);
   }
 
-  StatisticViewer & PeriodSearch::getViewer(double min_freq, double max_freq) {
-    // Impose range limits.
-    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
-    size_type begin_index = indices.first;
-    size_type end_index = indices.second;
-    m_viewer.selectData(begin_index, end_index);
-
-    // Set caption to the viewer.
-    PeriodSearchResult result = search(min_freq, max_freq);
-    std::ostringstream os;
-    result.write(os);
-    m_viewer.setCaption(os.str());
-
-    // Return the viewer.
+  StatisticViewer & PeriodSearch::getViewer() {
     return m_viewer;
   }
 
