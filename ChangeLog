@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Mon Dec 10 16:32:13 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodSearch.cxx 
+Log Message:
+Add search2 method to replace search method in the future. Remove all computations and arguments from getViewer method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Mon Dec 10 16:32:12 PST 2007
 periodSearch/periodSearch
 
