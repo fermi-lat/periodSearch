@@ -72,12 +72,6 @@ namespace periodSearch {
       */
       virtual std::string getDescription() const = 0;
 
-      //* \brief Get frequency data associated with this search object.
-      const cont_type getFreq() const;
-      
-      //* \brief Get spectral data associated with this search object.
-      const cont_type getSpec() const;
-      
       /* \brief Compute the probability that an event occurs at least once in N statistically
                 independent trials, given that the probability of the event occurring in a single trial is p.
          \param prob_one_trial The probability p of the event occuring in one trial.
@@ -97,17 +91,8 @@ namespace periodSearch {
       virtual StatisticViewer & getViewer();
 
     protected:
-
       // For convenience, compute once the value of 2 * pi.
       static const double s_2pi;
-
-      // The frequencies forming the domain of the search/test.
-      // TODO: Remove the below after ChiSquaredTest.{h,cxx} are cvs-removed.
-      cont_type m_freq;
-
-      // The statistical measure of the validity of each trial.
-      // TODO: Remove the below after ChiSquaredTest.{h,cxx} are cvs-removed.
-      cont_type m_spec;
 
       // The statistical measure of the validity of each trial.
       StatisticViewer m_viewer;

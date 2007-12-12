@@ -103,10 +103,6 @@ namespace periodSearch {
     return os << getDescription();
   }
 
-  const PeriodSearch::cont_type PeriodSearch::getFreq() const { return m_viewer.getData(0); }
-      
-  const PeriodSearch::cont_type PeriodSearch::getSpec() const { return m_viewer.getData(1); }
-
   double PeriodSearch::chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial) {
     static double epsilon = std::numeric_limits<double>::epsilon();
     double chance_prob = 0.;
