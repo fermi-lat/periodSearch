@@ -71,6 +71,12 @@ class Z2nTestArray : public PeriodicityTestArray {
     void computePower(size_type array_index, data_type & power) const;
 
   private:
+    /** \brief Compute the Z2n-value (i.e., the sum of Fourier powers upto a given harmonic number).
+        \param array_index The index of the element of the periodicity test array, for which the Z2n value is computed.
+        \param power The Fourier powers to be summed up.
+    */
+    double computeZ2n(size_type array_index, data_type & power) const;
+
     // The number of harmonics to sum up.
     size_type m_num_harm;
 

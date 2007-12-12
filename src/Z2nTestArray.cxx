@@ -67,9 +67,8 @@ void Z2nTestArray::computePower(size_type array_index, data_type & power) const 
   }
 }
 
-double Z2nTestArray::testStat(size_type array_index) const {
+double Z2nTestArray::computeZ2n(size_type array_index, data_type & power) const {
   // Compute the Fourier powers.
-  data_type power;
   computePower(array_index, power);
 
   // Sum up the Fourier powers over harmonics.
@@ -80,13 +79,19 @@ double Z2nTestArray::testStat(size_type array_index) const {
   return summed_power;
 }
 
+double Z2nTestArray::testStat(size_type array_index) const {
+  // Compute and return Z2n-value, without changing the viewer contents.
+  data_type power;
+  return computeZ2n(array_index, power);
+}
+
 void Z2nTestArray::updateViewer(size_type array_index) {
-  // Compute the Fourier powers.
+  // Compute Z2n-value, while keeping the Fourier powers in the viewer.
   StatisticViewer::data_type & power = m_viewer.getData(1);
-  computePower(array_index, power);
+  double Z2n_value = computeZ2n(array_index, power);
 
   // Set caption to the viewer.
-  m_viewer.setCaption(getSummary(array_index));
+  m_viewer.setCaption(createSummary(Z2n_value));
 }
 
 std::pair<double, double> Z2nTestArray::chanceProb(double stat) const {
