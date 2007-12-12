@@ -34,8 +34,7 @@ class PeriodicityTestArray {
                depend on the specific test being performed in the subclass.
         \param array_index The index of the element of the periodicity test array, of which a test statistic is to be computed.
     */
-    virtual double testStat(size_type array_index) const = 0;
-    // TODO: Rename the above to computeStat for consistency.
+    virtual double computeStat(size_type array_index) const = 0;
 
     /** \brief Compute a test statistic for pulse phases currently filled in this object, and set viewable data in
                the internal statistic viewer. Details depend on the specific test being performed in the subclass.
@@ -46,8 +45,7 @@ class PeriodicityTestArray {
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the test statistic.
     */
-    virtual std::pair<double, double> chanceProb(double stat) const = 0;
-    // TODO: Rename the above to computeChanceProb for consistency.
+    virtual std::pair<double, double> computeChanceProb(double stat) const = 0;
 
     /** \brief Return the size of this periodicity test array.
     */
@@ -95,7 +93,7 @@ class PeriodicityTestArray {
         \param stat The value of the test statistic.
     */
     std::string createSummary(double stat) {
-      std::pair<double, double> chance_prob = chanceProb(stat);
+      std::pair<double, double> chance_prob = computeChanceProb(stat);
 
       std::ostringstream os;
       os.precision(std::numeric_limits<double>::digits10);

@@ -38,7 +38,7 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     /** \brief Compute an S-value of this chi-squared test for pulse phases currently filled in this object.
         \param array_index The index of the element of the periodicity test array, of which an S-value is to be computed.
     */
-    virtual double testStat(size_type array_index) const;
+    virtual double computeStat(size_type array_index) const;
 
     /** \brief Compute an S-value of this chi-squared test for pulse phases currently filled in this object, and set
                the folded light curve to the internal statistic viewer.
@@ -49,7 +49,7 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
     */
-    virtual std::pair<double, double> chanceProb(double stat) const;
+    virtual std::pair<double, double> computeChanceProb(double stat) const;
 
     /** \brief Return the size of this periodicity test array.
     */
