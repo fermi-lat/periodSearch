@@ -12,6 +12,8 @@
 
 #include "facilities/commonUtilities.h"
 
+#include "periodSearch/PeriodSearch.h"
+
 #include "pulsarDb/EphChooser.h"
 #include "pulsarDb/EphComputer.h"
 #include "pulsarDb/PulsarDb.h"
@@ -33,13 +35,13 @@
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
 
-#include "periodSearch/PeriodTest.h"
-#include "periodSearch/PeriodSearchViewer.h"
-#include "ChiSquaredTest.h"
+#include "ChiSquaredTestArray.h"
+#include "FoldingAnalysis.h"
 #include "FourierAnalysis.h"
-#include "HTest.h"
-#include "RayleighTest.h"
-#include "Z2nTest.h"
+#include "HTestArray.h"
+#include "PeriodicityTestArray.h"
+#include "RayleighTestArray.h"
+#include "Z2nTestArray.h"
 
 static const std::string s_cvs_id = "$Name:  $";
 
@@ -59,8 +61,6 @@ class PSearchTestApp : public st_app::StApp {
     void testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
       double center, double step, long num_trials, double epoch, int num_bins,
       double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot);
-
-    void testFindMax(const periodSearch::PeriodTest & test);
 
     void testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name, double epoch);
 
@@ -236,33 +236,36 @@ void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<
   double duration = t_stop - t_start;
 
   // Test ChiSquared case.
-  ChiSquaredTest test(center, step, num_trials, epoch, num_bins, duration);
-
-  testOneSearch(events, test, "Chi Squared Statistic", "Folding Analysis: Chi Squared Statistic", prefix + "-chi-sq.fits",
+  ChiSquaredTestArray chi2_test(num_trials, num_bins);
+  FoldingAnalysis chi2_search(&chi2_test, center, step, epoch, duration);
+  testOneSearch(events, chi2_search, "Chi Squared Statistic", "Folding Analysis: Chi Squared Statistic", prefix + "-chi-sq.fits",
     plot);
 
   // Test Z2n case.
-  Z2nTest test_z2n(center, step, num_trials, epoch, num_bins, duration);
+  Z2nTestArray z2n_test(num_trials, num_bins);
+  FoldingAnalysis z2n_search(&z2n_test, center, step, epoch, duration);
 
-  testOneSearch(events, test_z2n, "Z2n Statistic", "Folding Analysis: Z2n Statistic", prefix + "-z2n.fits",
+  testOneSearch(events, z2n_search, "Z2n Statistic", "Folding Analysis: Z2n Statistic", prefix + "-z2n.fits",
     plot);
 
   // Test Rayleigh case.
-  RayleighTest test_rayleigh(center, step, num_trials, epoch, duration);
+  RayleighTestArray rayleigh_test(num_trials);
+  FoldingAnalysis rayleigh_search(&rayleigh_test, center, step, epoch, duration);
 
-  testOneSearch(events, test_rayleigh, "Rayleigh Statistic", "Folding Analysis: Rayleigh Statistic", prefix + "-rayleigh.fits",
+  testOneSearch(events, rayleigh_search, "Rayleigh Statistic", "Folding Analysis: Rayleigh Statistic", prefix + "-rayleigh.fits",
     plot);
 
   // Test H case.
-  HTest test_h(center, step, num_trials, epoch, num_bins, duration);
+  HTestArray h_test(num_trials, num_bins);
+  FoldingAnalysis h_search(&h_test, center, step, epoch, duration);
 
-  testOneSearch(events, test_h, "H Statistic", "Folding Analysis: H Statistic", prefix + "-h.fits",
+  testOneSearch(events, h_search, "H Statistic", "Folding Analysis: H Statistic", prefix + "-h.fits",
     plot);
 
   // Create analysis object.
-  FourierAnalysis test_fourier(t_start, t_stop, fourier_width, fourier_num_bins, events.size());
+  FourierAnalysis fourier_search(t_start, t_stop, fourier_width, fourier_num_bins, events.size());
 
-  testOneSearch(events, test_fourier, "Fourier Power", "Fourier Analysis: Power Spectrum", prefix + "-fourier.fits",
+  testOneSearch(events, fourier_search, "Fourier Power", "Fourier Analysis: Power Spectrum", prefix + "-fourier.fits",
     plot, fourier_min_freq, fourier_max_freq);
 }
 
@@ -390,8 +393,8 @@ std::string PSearchTestApp::findFile(const std::string & file_name) {
 void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search,
   const std::string & text_title, const std::string & plot_title, const std::string & out_file,
   bool plot, double min_freq, double max_freq) {
-
-  PeriodSearchViewer viewer(search, min_freq, max_freq);
+  // Get the viewer.
+  StatisticViewer & viewer = search.getViewer();
 
   // Fill the data into the search object.
   for (std::vector<double>::const_iterator itor = events.begin(); itor != events.end(); ++itor) {
@@ -400,6 +403,7 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
 
   // Perform the search operation.
   search.computeStats();
+  search.updateViewer(min_freq, max_freq);
 
   // Find the template file.
   std::string template_file = findFile("period-search-out.tpl");
@@ -411,21 +415,16 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
 
   // Write the summary to the output header, and the data to the output table.
-  viewer.writeData(*out_table);
+  viewer.write(*out_table);
 
-  enum ChatLevel {
-    eIncludeSummary= 2,
-    eAllDetails = 3
-  };
+  // Write the stats to the screen, with details of test result if chatter is high enough.
+  m_os.info(2) << text_title << std::endl;
+  viewer.write(m_os);
 
-  // Write the stats to the screen.
-  m_os.info(eIncludeSummary) << text_title << std::endl;
-  viewer.writeSummary(m_os.info(eIncludeSummary)) << std::endl;
-
-  // Write details of test result if chatter is high enough.
-  viewer.writeData(m_os.info(eAllDetails)) << std::endl;
-
-  if (plot) viewer.plot(plot_title, "(Hz)");
+  // Plot if requested.
+  viewer.setTitle(plot_title);
+  viewer.setLabel(0, "Hz");
+  if (plot) viewer.plot();
 }
 
 st_app::StAppFactory<PSearchTestApp> g_factory("test_periodSearch");
