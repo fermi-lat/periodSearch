@@ -33,15 +33,6 @@ class StatisticViewer {
     */
     StatisticViewer(index_type num_axis, data_type::size_type num_element);
 
-    /** \brief Set a pair of iterators of data array to be viewed.
-        \param axis_index The index of axis, for which a set of iterators is to be set.
-        \param begin The iterator of data array, which points to the first element to be viewed.
-        \param copy_data If true, the given data will be copied into an internal data storage of this object.
-                         If not, the data will not be copied and the original data will be read in
-                         every time this object needs them (in plot method, etc.).
-    */
-    void setData(index_type axis_index, const data_type::const_iterator & begin, bool copy_data);
-
     /** \brief Get a reference to an internal data storage for a given axis.
         \param axis_index The index of axis, for which a reference to the data storage is to be returned.
     */
