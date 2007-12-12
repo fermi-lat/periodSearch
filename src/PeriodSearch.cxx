@@ -19,50 +19,12 @@
 
 namespace periodSearch {
 
-  PeriodSearchResult::PeriodSearchResult(const std::string & description, double min_freq, double max_freq, size_type num_freq_bin,
-    size_type num_indep_trial, const std::pair<double, double> & max_stat, const std::pair<double, double> & chance_prob):
-    m_description(description),
-    m_min_freq(min_freq),
-    m_max_freq(max_freq),
-    m_num_freq_bin(num_freq_bin),
-    m_num_indep_trial(num_indep_trial),
-    m_max_stat(max_stat),
-    m_chance_prob(chance_prob) {}
-
-  st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearchResult & result) { return result.write(os); }
-
   const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
 
   PeriodSearch::PeriodSearch(size_type num_bins): m_viewer(2, num_bins) {
     // Set default labels to the viewer.
     m_viewer.setLabel(0, "FREQUENCY");
     m_viewer.setLabel(1, "STATISTIC");
-  }
-
-  PeriodSearchResult PeriodSearch::search(double min_freq, double max_freq) const {
-    // Find position of the maximum in the range.
-    std::pair<double, double> max = findMax(min_freq, max_freq);
-
-    // Compute probability for one trial.
-    std::pair<double, double> chance_prob = chanceProbOneTrial(max.second);
-
-    // Compute the number of independent trials.
-    size_type num_indep_trials = numIndepTrials(min_freq, max_freq);
-
-    // Compute the multi-trial chance probability.
-    chance_prob.first = chanceProbMultiTrial(chance_prob.first, num_indep_trials);
-    chance_prob.second = chanceProbMultiTrial(chance_prob.second, num_indep_trials);
-
-    // Compute number of bins.
-    std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
-    size_type num_bins = indices.second - indices.first;
-
-    // Reset min/max frequency if either bound was not explicitly specified (negative).
-    const StatisticViewer::data_type & freq = m_viewer.getData(0);
-    if (0. > min_freq) min_freq = freq[indices.first];
-    if (0. > max_freq && indices.second > 0) max_freq = freq[indices.second - 1];
-
-    return PeriodSearchResult(getDescription(), min_freq, max_freq, num_bins, num_indep_trials, max, chance_prob);
   }
 
   void PeriodSearch::updateViewer(double min_freq, double max_freq) {
