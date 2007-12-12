@@ -35,6 +35,12 @@ using namespace periodSearch;
 
     // Add/modify plot title.
     m_viewer.setTitle("Fourier Analysis: Power Spectrum");
+
+    // Set description of this period search.
+    std::ostringstream os;
+    os << "Data Binning: " << m_num_segments << " segments with " << m_num_bins << " time bins in each segment" << std::endl
+       << "Probability Distribution: Chi Squared with " << 2 * m_num_segments << " degrees of freedom";
+    setDescription("Fourier Analysis", m_fourier_res, m_fourier_res, os.str());
   }
 
   void FourierAnalysis::fill(double evt_time) {
@@ -122,14 +128,4 @@ using namespace periodSearch;
   std::pair<double,double> FourierAnalysis::chanceProbOneTrial(double stat) const {
     periodSearch::ChiSquaredProb prob(2 * m_num_segments);
     return prob(stat);
-  }
-
-  std::string FourierAnalysis::getDescription() const {
-    std::ostringstream os;
-    os << "Search Type: Fourier Analysis\n"
-       << "Fourier Resolution: " << m_fourier_res << " Hz\n"
-       << "Sampling Frequency: " << m_fourier_res << " Hz\n"
-       << "Data Binning: " << m_num_segments << " segments with " << m_num_bins << " time bins in each segment\n"
-       << "Probability Distribution: Chi Squared with " << 2 * m_num_segments << " degrees of freedom";
-    return os.str();
   }

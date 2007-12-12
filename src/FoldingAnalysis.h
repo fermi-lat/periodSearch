@@ -51,10 +51,6 @@ class FoldingAnalysis : public periodSearch::PeriodSearch {
     */
     virtual std::pair<double, double> chanceProbOneTrial(double stat) const; 
 
-    /** \brief Return a description of this search.
-    */
-    virtual std::string getDescription() const;
-
   protected:
     // The container of statistical trials.
     PeriodicityTestArray * m_test_array;

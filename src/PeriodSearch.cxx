@@ -21,7 +21,7 @@ namespace periodSearch {
 
   const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
 
-  PeriodSearch::PeriodSearch(size_type num_bins): m_viewer(2, num_bins) {
+  PeriodSearch::PeriodSearch(size_type num_bins): m_description(), m_viewer(2, num_bins) {
     // Set default labels to the viewer.
     m_viewer.setLabel(0, "FREQUENCY");
     m_viewer.setLabel(1, "STATISTIC");
@@ -204,8 +204,26 @@ namespace periodSearch {
     return std::make_pair(begin_index, end_index);
   }
 
+  std::string PeriodSearch::getDescription() const {
+    return m_description;
+  }
+
   StatisticViewer & PeriodSearch::getViewer() {
     return m_viewer;
+  }
+
+  void PeriodSearch::setDescription(const std::string & search_type, double fourier_res, double sampling_step,
+    const std::string & search_info) {
+    // Write out common parameters.
+    std::ostringstream os;
+    os << "Search Type: " << search_type << std::endl
+       << "Fourier Resolution: " << fourier_res << " Hz" << std::endl
+       << "Sampling Frequency: " << sampling_step << " Hz" << std::endl
+       << search_info;
+    // TODO: Remove hard-coded "Hz".
+
+    // Set the description.
+    m_description = os.str();
   }
 
   st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearch & test) {

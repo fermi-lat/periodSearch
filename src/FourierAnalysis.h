@@ -45,10 +45,6 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
     */
     virtual std::pair<double, double> chanceProbOneTrial(double stat) const; 
 
-    /** \brief Return a description of this search.
-    */
-    virtual std::string getDescription() const;
-
   private:
     typedef std::multimap<size_type, size_type> index_map_type;
     index_map_type m_index;
