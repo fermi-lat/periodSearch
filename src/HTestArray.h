@@ -46,14 +46,6 @@ class HTestArray : public Z2nTestArray {
     */
     virtual std::pair<double, double> chanceProb(double stat) const;
 
-    /** \brief Return a description of this test array.
-    */
-    virtual std::string getDescription() const;
-
-    /** \brief Return the name of this periodicity test.
-    */
-    virtual std::string getTestName() const;
-
   private:
     /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum
                of sine and cosine component), and return the H-value.
@@ -61,9 +53,6 @@ class HTestArray : public Z2nTestArray {
         \param candidate the container of the candidates of H-value (output).
     */
     double computeH(size_type array_index, data_type & candidate) const;
-
-    // The maximum number of harmonics (to be used only in getDescription method).
-    size_type m_max_harm;
 };
 
 #endif

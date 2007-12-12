@@ -17,6 +17,13 @@
 Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmonics):
   PeriodicityTestArray(2, num_harmonics), m_num_harm(num_harmonics), m_sine_cont(array_size, data_type(num_harmonics, 0.)),
   m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0) {
+  // Set description of this statistical test.
+  std::ostringstream os_cond;
+  os_cond << m_num_harm << " harmonics";
+  std::ostringstream os_dist;
+  os_dist << "Chi-squared, " << 2 * m_num_harm << " degrees of freedom";
+  setDescription("Z2n Test", os_cond.str(), os_dist.str());
+
   // Set harmonic numbers, starting with one (1).
   double harmonic_number = 1.;
   StatisticViewer::data_type & harmonic = m_viewer.getData(0);
@@ -104,18 +111,6 @@ std::pair<double, double> Z2nTestArray::chanceProb(double stat) const {
   return prob(stat);
 }
 
-std::string Z2nTestArray::getDescription() const {
-  // TODO: Move the below to the constructor, and hold it in a member data.
-  std::ostringstream os;
-  os << "Type of test: " << getTestName() << ", " << m_num_harm << " harmonics\n" <<
-    "Probability distribution: Chi-squared, " << 2 * m_num_harm << " degrees of freedom";
-  return os.str();
-}
-
 Z2nTestArray::size_type Z2nTestArray::size() const {
   return m_sine_cont.size();
-}
-
-std::string Z2nTestArray::getTestName() const {
-  return "Z2n Test";
 }
