@@ -49,32 +49,52 @@ class PeriodicityTestArray {
     virtual std::pair<double, double> chanceProb(double stat) const = 0;
     // TODO: Rename the above to computeChanceProb for consistency.
 
-    /** \brief Return a description of this periodicity test array.
-    */
-    virtual std::string getDescription() const = 0;
-
     /** \brief Return the size of this periodicity test array.
     */
     virtual size_type size() const = 0;
 
     /** \brief Return the name of periodicity test being performed in the subclass.
     */
-    virtual std::string getTestName() const = 0;
+    std::string getTestName() const { return m_name; };
+
+    /** \brief Return a description of this periodicity test array.
+    */
+    std::string getDescription() const { return m_description; };
 
     /** \brief Get a reference to an internal statistic viewer for an object of this class.
     */
-    virtual StatisticViewer & getViewer() { return m_viewer; };
+    StatisticViewer & getViewer() { return m_viewer; };
 
   protected:
     /** \brief Construct a periodicity test array object.
+        \param num_axis The number of axis for the internal data storage.
+        \param num_element The number of element for the internal data storage.
     */
     PeriodicityTestArray(StatisticViewer::index_type num_axis, StatisticViewer::data_type::size_type num_element):
-      m_viewer(num_axis, num_element) {};
+      m_name(), m_description(), m_viewer(num_axis, num_element) {};
+
+    /** \brief Set the name and the description of this periodicity test.
+        \param test_name The name of this periodicity test.
+        \param test_cond The description of test condition, such as "10 phase bins" for the chi-squared test.
+        \param prob_dist The description of the probability distribution that the test statistics follow.
+    */
+    void setDescription(const std::string & test_name, const std::string & test_cond, const std::string & prob_dist) {
+      // Set the test name.
+      m_name = test_name;
+
+      // Set the test description.
+      std::ostringstream os;
+      os << "Type of test: " << m_name;
+      if (!test_cond.empty()) os << ", " << test_cond;
+      os << std::endl;
+      os << "Probability distribution: " << prob_dist;
+      m_description = os.str();
+    };
 
     /** \brief Return a summary of this periodicity test array.
         \param stat The value of the test statistic.
     */
-    virtual std::string createSummary(double stat) {
+    std::string createSummary(double stat) {
       std::pair<double, double> chance_prob = chanceProb(stat);
 
       std::ostringstream os;
@@ -86,6 +106,8 @@ class PeriodicityTestArray {
       return os.str();
     }
 
+    std::string m_name;
+    std::string m_description;
     StatisticViewer m_viewer;
 };
 
