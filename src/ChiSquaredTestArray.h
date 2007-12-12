@@ -51,17 +51,9 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     */
     virtual std::pair<double, double> chanceProb(double stat) const;
 
-    /** \brief Return a description of this test array.
-    */
-    virtual std::string getDescription() const;
-
     /** \brief Return the size of this periodicity test array.
     */
     virtual size_type size() const;
-
-    /** \brief Return the name of this periodicity test.
-    */
-    virtual std::string getTestName() const;
 
   private:
     // The number of phase bins.

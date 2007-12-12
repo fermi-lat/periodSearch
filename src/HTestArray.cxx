@@ -10,8 +10,14 @@
 #include <sstream>
 #include <stdexcept>
 
-HTestArray::HTestArray(size_type array_size, data_type::size_type max_harmonics): Z2nTestArray(array_size, max_harmonics),
-  m_max_harm(max_harmonics) {
+HTestArray::HTestArray(size_type array_size, data_type::size_type max_harmonics): Z2nTestArray(array_size, max_harmonics) {
+  // Set description of this statistical test.
+  std::ostringstream os_cond;
+  os_cond << max_harmonics << " maximum harmonics";
+  std::ostringstream os_dist;
+  os_dist << "H Test-specific";
+  setDescription("H Test", os_cond.str(), os_dist.str());
+
   // Overwrite Y-label in the viewer.
   m_viewer.setLabel(1, "CANDIDATE_VALUE");
 
@@ -86,16 +92,4 @@ std::pair<double, double> HTestArray::chanceProb(double stat) const {
   lower_limit = chance_prob_exact ? upper_limit : 0.;
 
   return std::make_pair(lower_limit, upper_limit);
-}
-
-std::string HTestArray::getDescription() const {
-  // TODO: Move the below to the constructor, and hold it in a member data.
-  std::ostringstream os;
-  os << "Type of test: " << getTestName() << ", " << m_max_harm << " maximum harmonics\n" <<
-    "Probability distribution: H Test-specific";
-  return os.str();
-}
-
-std::string HTestArray::getTestName() const {
-  return "H Test";
 }

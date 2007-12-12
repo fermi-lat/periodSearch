@@ -16,20 +16,12 @@
 */
 class RayleighTestArray : public Z2nTestArray {
   public:
-    RayleighTestArray(size_type array_size): Z2nTestArray(array_size, 1) {}
-
-    /** \brief Return a description of this test array.
-    */
-    virtual std::string getDescription() const {
-      std::ostringstream os;
-      os << "Type of test: " << getTestName() << " (Z2n with n = 1 harmonic)" << std::endl
-         << "Probability distribution: Chi-squared, 2 degrees of freedom";
-      return os.str();
+    RayleighTestArray(size_type array_size): Z2nTestArray(array_size, 1) {
+      // Set description of this statistical test.
+      std::ostringstream os_dist;
+      os_dist << "Chi-squared, 2 degrees of freedom";
+      setDescription("Rayleigh Test", "", os_dist.str());
     }
-
-    /** \brief Return the name of this periodicity test.
-    */
-    virtual std::string getTestName() const { return "Rayleigh Test"; }
 };
 
 #endif

@@ -16,6 +16,13 @@
 ChiSquaredTestArray::ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins):
   PeriodicityTestArray(2, num_phase_bins), m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)),
   m_num_events(array_size, 0) {
+  // Set description of this statistical test.
+  std::ostringstream os_cond;
+  os_cond << m_num_phase_bins << " phase bins";
+  std::ostringstream os_dist;
+  os_dist << "Chi-squared, " << m_num_phase_bins - 1 << " degrees of freedom";
+  setDescription("Chi-squared Test", os_cond.str(), os_dist.str());
+
   // Set pulse phase values to the viewer.
   StatisticViewer::data_type & phase = m_viewer.getData(0);
   for (StatisticViewer::data_type::size_type ii=0; ii < StatisticViewer::data_type::size_type(m_num_phase_bins); ++ii) {
@@ -89,18 +96,6 @@ std::pair<double, double> ChiSquaredTestArray::chanceProb(double stat) const {
   return prob(stat);
 }
 
-std::string ChiSquaredTestArray::getDescription() const {
-  // TODO: Move the below to the constructor, and hold it in a member data.
-  std::ostringstream os;
-  os << "Type of test: " << getTestName() << ", " << m_num_phase_bins << " phase bins\n"
-     << "Probability distribution: Chi-squared, " << m_num_phase_bins - 1 << " degrees of freedom";
-  return os.str();
-}
-
 ChiSquaredTestArray::size_type ChiSquaredTestArray::size() const {
   return m_curve_cont.size();
-}
-
-std::string ChiSquaredTestArray::getTestName() const {
-  return "Chi-squared Test";
 }
