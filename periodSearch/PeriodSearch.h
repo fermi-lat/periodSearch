@@ -68,10 +68,6 @@ namespace periodSearch {
       */
       virtual st_stream::OStream & write(st_stream::OStream & os) const;
 
-      /** \brief Return a description of this search.
-      */
-      virtual std::string getDescription() const = 0;
-
       /* \brief Compute the probability that an event occurs at least once in N statistically
                 independent trials, given that the probability of the event occurring in a single trial is p.
          \param prob_one_trial The probability p of the event occuring in one trial.
@@ -86,13 +82,28 @@ namespace periodSearch {
       */
       std::pair<size_type, size_type> getRangeIndex(double min_freq, double max_freq) const;
 
+      /** \brief Return a description of this search.
+      */
+      std::string getDescription() const;
+
       /** \brief Get a reference to an internal statistic viewer for an object of this class.
       */
-      virtual StatisticViewer & getViewer();
+      StatisticViewer & getViewer();
 
     protected:
+      /** \brief Set the name and the description of this periodicity test.
+          \param search_type The type of this period search, such as "Folding Analysis".
+          \param fourier_res The Fourier resolution of this period search.
+          \param sampling_step The sampling step of this period search.
+          \param search_info The detailed information about this period search.
+      */
+      void setDescription(const std::string & search_type, double fourier_res, double sampling_step, const std::string & search_info);
+
       // For convenience, compute once the value of 2 * pi.
       static const double s_2pi;
+
+      // The description of this period search.
+      std::string m_description;
 
       // The statistical measure of the validity of each trial.
       StatisticViewer m_viewer;

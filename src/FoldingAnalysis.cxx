@@ -45,6 +45,9 @@ namespace periodSearch {
 
     // Add/modify plot title.
     m_viewer.setTitle("Folding Analysis: " + m_test_array->getTestName());
+
+    // Set description of this period search.
+    setDescription("Folding Analysis", m_fourier_res, m_step, m_test_array->getDescription());
   }
 
   void FoldingAnalysis::fill(double evt_time) {
@@ -109,19 +112,5 @@ namespace periodSearch {
   std::pair<double, double> FoldingAnalysis::chanceProbOneTrial(double stat) const {
     // Delegate the computation of a chance probablity.
     return m_test_array->computeChanceProb(stat);
-  }
-
-  std::string FoldingAnalysis::getDescription() const {
-    // Write out common parameters.
-    std::ostringstream os;
-    os << "Search Type: Folding Analysis\n"
-       << "Fourier Resolution: " << m_fourier_res << " Hz\n"
-       << "Sampling Frequency: " << m_step << " Hz";
-
-    // Write out the test-specific output.
-    os << "\n" << m_test_array->getDescription();
-
-    // Return the string.
-    return os.str();
   }
 }
