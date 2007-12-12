@@ -56,12 +56,11 @@ class HTestArray : public Z2nTestArray {
 
   private:
     /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum
-               of sine and cosine component).
-        \param power The container of the input Fourier powers.
-        \param H_candidate the container of the candidates of H-value (output).
+               of sine and cosine component), and return the H-value.
+        \param array_index The index of the element of the periodicity test array, of which an H-value is to be computed.
+        \param candidate the container of the candidates of H-value (output).
     */
-    void computeCandidate(data_type & power, data_type & H_candidate) const;
-    void computeCandidate();
+    double computeH(size_type array_index, data_type & candidate) const;
 
     // The maximum number of harmonics (to be used only in getDescription method).
     size_type m_max_harm;

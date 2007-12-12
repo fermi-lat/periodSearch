@@ -72,8 +72,11 @@ void ChiSquaredTestArray::updateViewer(size_type array_index) {
     viewer_curve[ii] = light_curve[ii];
   }
 
+  // Compute the S-value.
+  double S_value = testStat(array_index);
+
   // Set caption to the viewer.
-  m_viewer.setCaption(getSummary(array_index));
+  m_viewer.setCaption(createSummary(S_value));
 }
 
 std::pair<double, double> ChiSquaredTestArray::chanceProb(double stat) const {

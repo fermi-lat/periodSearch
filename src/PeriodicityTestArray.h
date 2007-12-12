@@ -44,7 +44,7 @@ class PeriodicityTestArray {
     virtual void updateViewer(size_type array_index) = 0;
 
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
-        \param stat The value of the statistic.
+        \param stat The value of the test statistic.
     */
     virtual std::pair<double, double> chanceProb(double stat) const = 0;
     // TODO: Rename the above to computeChanceProb for consistency.
@@ -52,22 +52,6 @@ class PeriodicityTestArray {
     /** \brief Return a description of this periodicity test array.
     */
     virtual std::string getDescription() const = 0;
-
-    /** \brief Return a summary of this periodicity test array.
-        \param array_index The index of the element of the periodicity test array, of which a summary is to be returned.
-    */
-    virtual std::string getSummary(size_type array_index) {
-      double test_stat = testStat(array_index);
-      std::pair<double, double> chance_prob = chanceProb(test_stat);
-
-      std::ostringstream os;
-      os.precision(std::numeric_limits<double>::digits10);
-      os << getDescription() << std::endl;
-      os << "Test Statistic: " << test_stat << std::endl;
-      os << "Chance Probability Range: " << "(" << chance_prob.first << ", " << chance_prob.second << ")";
-
-      return os.str();
-    }
 
     /** \brief Return the size of this periodicity test array.
     */
@@ -86,6 +70,21 @@ class PeriodicityTestArray {
     */
     PeriodicityTestArray(StatisticViewer::index_type num_axis, StatisticViewer::data_type::size_type num_element):
       m_viewer(num_axis, num_element) {};
+
+    /** \brief Return a summary of this periodicity test array.
+        \param stat The value of the test statistic.
+    */
+    virtual std::string createSummary(double stat) {
+      std::pair<double, double> chance_prob = chanceProb(stat);
+
+      std::ostringstream os;
+      os.precision(std::numeric_limits<double>::digits10);
+      os << getDescription() << std::endl;
+      os << "Test Statistic: " << stat << std::endl;
+      os << "Chance Probability Range: " << "(" << chance_prob.first << ", " << chance_prob.second << ")";
+
+      return os.str();
+    }
 
     StatisticViewer m_viewer;
 };
