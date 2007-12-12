@@ -65,7 +65,7 @@ namespace periodSearch {
     return PeriodSearchResult(getDescription(), min_freq, max_freq, num_bins, num_indep_trials, max, chance_prob);
   }
 
-  void PeriodSearch::search2(double min_freq, double max_freq) {
+  void PeriodSearch::updateViewer(double min_freq, double max_freq) {
     // Find position of the maximum in the range.
     std::pair<double, double> max = findMax(min_freq, max_freq);
 
@@ -88,17 +88,23 @@ namespace periodSearch {
     if (0. > min_freq) min_freq = freq[indices.first];
     if (0. > max_freq && indices.second > 0) max_freq = freq[indices.second - 1];
 
-    // Create search result object.
-    // TODO: Remove this step. This is now only needed for setCaption below.
-    PeriodSearchResult result(getDescription(), min_freq, max_freq, num_bins, num_indep_trials, max, chance_prob);
+    // Create caption for the viewer.
+    std::ostringstream os;
+    std::streamsize orig_precision = os.precision();
+    os.precision(std::numeric_limits<double>::digits10);
+    os << getDescription() << std::endl
+       << "Search Range (Hz): [" << min_freq << ", " << max_freq << "]" << std::endl
+       << "Number of Trial Frequencies: " << num_bins << std::endl
+       << "Number of Independent Trials: " << num_indep_trials << std::endl
+       << "Maximum Statistic: " << max.second << " at " << max.first << " Hz" << std::endl
+       << "Chance Probability Range: " << "(" << chance_prob.first << ", " << chance_prob.second << ")";
+    os.precision(orig_precision);
+
+    // Set caption to the viewer.
+    m_viewer.setCaption(os.str());
 
     // Impose range limits.
     m_viewer.selectData(indices.first, indices.second);
-
-    // Set caption to the viewer.
-    std::ostringstream os;
-    result.write(os);
-    m_viewer.setCaption(os.str());
   }
 
   std::pair<double, double> PeriodSearch::findMax(double min_freq, double max_freq) const {
