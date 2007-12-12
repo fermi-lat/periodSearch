@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: hirayama  Wed Dec 12 09:30:17 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodicityTestArray.h ChiSquaredTestArray.cxx Z2nTestArray.h 
+	Z2nTestArray.cxx HTestArray.h HTestArray.cxx 
+Log Message:
+Restructure statistic computation to remove unnecessary repetetion of computation.
+
+    *
+------------------------------------------------------------
 User: hirayama  Tue Dec 11 15:23:12 PST 2007
 periodSearch/src
 
