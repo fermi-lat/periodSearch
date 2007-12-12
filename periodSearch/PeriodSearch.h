@@ -16,58 +16,6 @@
 
 namespace periodSearch {
 
-  /** \class PeriodSearchResult
-      \brief Class encapsulating result of a PeriodSearch.
-  */
-  class PeriodSearchResult {
-    public:
-      typedef std::vector<double> cont_type;
-      typedef cont_type::size_type size_type;
-
-      /** \brief Create a search result.
-          \param description Description of the probability distribution of the statistic.
-          \param min_freq The minimum frequency in the range.
-          \param max_freq The maximum frequency in the range.
-          \param num_freq_bin The number of trial frequencies used.
-          \param num_indep_trial The number of independent trial frequencies used.
-          \param max_stat The frequency where the maximum statistic occurs and the value of the statistic at that frequency.
-          \param chance_prob Range of chance probabilities.
-      */
-      PeriodSearchResult(const std::string & description, double min_freq, double max_freq, size_type num_freq_bin,
-        size_type num_indep_trial, const std::pair<double, double> & max_stat, const std::pair<double, double> & chance_prob);
-
-      /** \brief Write this search result to the given stream.
-          \param os The stream.
-      */
-      template <typename StreamType>
-      StreamType & write(StreamType & os) const;
-
-    private:
-      std::string m_description;
-      double m_min_freq;
-      double m_max_freq;
-      size_type m_num_freq_bin;
-      size_type m_num_indep_trial;
-      std::pair<double, double> m_max_stat;
-      std::pair<double, double> m_chance_prob;
-  };
-
-  template <typename StreamType>
-  inline StreamType & PeriodSearchResult::write(StreamType & os) const {
-    std::streamsize orig_precision = os.precision();
-    os.precision(std::numeric_limits<double>::digits10);
-    os << m_description << "\n"
-       << "Search Range (Hz): [" << m_min_freq << ", " << m_max_freq << "]\n"
-       << "Number of Trial Frequencies: " << m_num_freq_bin << "\n"
-       << "Number of Independent Trials: " << m_num_indep_trial << "\n"
-       << "Maximum Statistic: " << m_max_stat.second << " at " << m_max_stat.first << " Hz\n"
-       << "Chance Probability Range: " << "(" << m_chance_prob.first << ", " << m_chance_prob.second << ")";
-    os.precision(orig_precision);
-    return os;
-  }
-
-  st_stream::OStream & operator <<(st_stream::OStream & os, const PeriodSearchResult & result);
-
   /** \class PeriodSearch
       \brief Base class for various statistical tests used to determine frequency of pulsation
              when an approximate frequency is known.
@@ -90,13 +38,6 @@ namespace periodSearch {
                  depend on the specific test being performed in the subclass.
       */
       virtual const std::vector<double> & computeStats() = 0;
-
-      /** \brief Perform a period search and return the result of the test.
-          \param min_freq The minimum frequency in the range.
-          \param max_freq The maximum frequency in the range.
-      */
-      virtual PeriodSearchResult search(double min_freq = -1., double max_freq = -1.) const;
-      // TODO: Remove the above.
 
       /** \brief Perform a period search and set the result to the internal statistic viewer.
           \param min_freq The minimum frequency in the range.
