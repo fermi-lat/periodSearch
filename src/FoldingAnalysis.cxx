@@ -82,7 +82,7 @@ namespace periodSearch {
     // Iterate over the number of trials.
     size_type num_trials = m_test_array->size();
     for (size_type ii = 0; ii < num_trials; ++ii) {
-      spec[ii] = m_test_array->testStat(ii);
+      spec[ii] = m_test_array->computeStat(ii);
     }
 
     // Return the result.
@@ -109,7 +109,7 @@ namespace periodSearch {
 
   std::pair<double, double> FoldingAnalysis::chanceProbOneTrial(double stat) const {
     // Delegate the computation of a chance probablity.
-    return m_test_array->chanceProb(stat);
+    return m_test_array->computeChanceProb(stat);
   }
 
   std::string FoldingAnalysis::getDescription() const {
