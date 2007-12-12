@@ -119,7 +119,7 @@ void PowerSpectrumApp::run() {
   search->computeStats();
 
   // Update the statistic viewer in PeriodSearch object, and get a reference to it.
-  search->search2(low_f_cut);
+  search->updateViewer(low_f_cut);
   StatisticViewer & viewer(search->getViewer());
 
   // Set a plot title: use default title if user did not specify one.
