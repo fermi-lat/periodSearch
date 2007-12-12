@@ -34,7 +34,7 @@ class HTestArray : public Z2nTestArray {
                candidate H values to the internal statistic viewer.
         \param array_index The index of the element of the periodicity test array, of which an H-value is to be computed.
     */
-    virtual double testStat(size_type array_index) const;
+    virtual double computeStat(size_type array_index) const;
 
     /** \brief Compute an H-value of this H test for pulse phases currently filled in this object.
         \param array_index The index of the element of the periodicity test array, of which an H-value is to be computed.
@@ -44,7 +44,7 @@ class HTestArray : public Z2nTestArray {
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
     */
-    virtual std::pair<double, double> chanceProb(double stat) const;
+    virtual std::pair<double, double> computeChanceProb(double stat) const;
 
   private:
     /** \brief Compute candidates for H-value for each harmonic numbers, from the given Fourier powers (i.e., squared sum

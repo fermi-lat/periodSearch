@@ -52,7 +52,7 @@ void ChiSquaredTestArray::fill(size_type array_index, double phase) {
   ++(m_num_events.at(array_index));
 }
 
-double ChiSquaredTestArray::testStat(size_type array_index) const {
+double ChiSquaredTestArray::computeStat(size_type array_index) const {
   // Compute average count rate.
   double avg = double(m_num_events.at(array_index)) / m_num_phase_bins;
 
@@ -80,13 +80,13 @@ void ChiSquaredTestArray::updateViewer(size_type array_index) {
   }
 
   // Compute the S-value.
-  double S_value = testStat(array_index);
+  double S_value = computeStat(array_index);
 
   // Set caption to the viewer.
   m_viewer.setCaption(createSummary(S_value));
 }
 
-std::pair<double, double> ChiSquaredTestArray::chanceProb(double stat) const {
+std::pair<double, double> ChiSquaredTestArray::computeChanceProb(double stat) const {
   //    /* Leahy et al. 1983, ApJ 266, 160 */
   //    chance_prob = chi2prob(S_value[imax], N_bin-1) * N_Fourier;
   //    [where function chi2prob(chisq, dof) returns the chi-squared

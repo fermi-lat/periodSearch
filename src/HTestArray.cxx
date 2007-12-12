@@ -52,7 +52,7 @@ double HTestArray::computeH(size_type array_index, data_type & candidate) const 
   return H_value;
 }
 
-double HTestArray::testStat(size_type array_index) const {
+double HTestArray::computeStat(size_type array_index) const {
   // Compute and return the H value, without changing the viewer contents.
   data_type candidate;
   return computeH(array_index, candidate);
@@ -67,7 +67,7 @@ void HTestArray::updateViewer(size_type array_index) {
   m_viewer.setCaption(createSummary(H_value));
 }
 
-std::pair<double, double> HTestArray::chanceProb(double stat) const {
+std::pair<double, double> HTestArray::computeChanceProb(double stat) const {
   /* De Jager et al. 1989, A&A 221, 180 */
   double lower_limit;
   double upper_limit;

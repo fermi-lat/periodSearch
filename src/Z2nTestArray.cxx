@@ -86,7 +86,7 @@ double Z2nTestArray::computeZ2n(size_type array_index, data_type & power) const 
   return summed_power;
 }
 
-double Z2nTestArray::testStat(size_type array_index) const {
+double Z2nTestArray::computeStat(size_type array_index) const {
   // Compute and return Z2n-value, without changing the viewer contents.
   data_type power;
   return computeZ2n(array_index, power);
@@ -101,7 +101,7 @@ void Z2nTestArray::updateViewer(size_type array_index) {
   m_viewer.setCaption(createSummary(Z2n_value));
 }
 
-std::pair<double, double> Z2nTestArray::chanceProb(double stat) const {
+std::pair<double, double> Z2nTestArray::computeChanceProb(double stat) const {
   //      /* Leahy et al. 1983, ApJ 266, 160 */
   //      chance_prob = chi2prob(test_stat[imax], 2*N_harm) * N_Fourier;
   //      [where function chi2prob(chi2, dof) returns the chi-squared

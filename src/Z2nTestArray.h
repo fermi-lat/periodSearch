@@ -38,7 +38,7 @@ class Z2nTestArray : public PeriodicityTestArray {
     /** \brief Compute a Z2n value of this Z2n test for pulse phases currently filled in this object.
         \param array_index The index of the element of the periodicity test array, of which a Z2n value is to be computed.
     */
-    virtual double testStat(size_type array_index) const;
+    virtual double computeStat(size_type array_index) const;
 
     /** \brief Compute a Z2n value of this Z2n test for pulse phases currently filled in this object, and set the Fourier
                powers for all harmonic numbers to the internal statistic viewer.
@@ -49,7 +49,7 @@ class Z2nTestArray : public PeriodicityTestArray {
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
     */
-    virtual std::pair<double, double> chanceProb(double stat) const;
+    virtual std::pair<double, double> computeChanceProb(double stat) const;
 
     /** \brief Return the size of this periodicity test array.
     */
