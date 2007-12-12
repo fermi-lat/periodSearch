@@ -10,7 +10,6 @@
 #include <stdexcept>
 
 #include "FoldingAnalysis.h"
-#include "PeriodicityTest.h"
 #include "PeriodicityTestArray.h"
 #include "StatisticViewer.h"
 
