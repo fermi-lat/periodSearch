@@ -91,13 +91,18 @@ namespace periodSearch {
       */
       virtual const std::vector<double> & computeStats() = 0;
 
-      /** \brief Perform a period search, set the result to the internal statistic viewer, and return the result of the test.
+      /** \brief Perform a period search and return the result of the test.
           \param min_freq The minimum frequency in the range.
           \param max_freq The maximum frequency in the range.
       */
       virtual PeriodSearchResult search(double min_freq = -1., double max_freq = -1.) const;
-      // TODO: Remove the above and rename the below to search.
-      virtual void search2(double min_freq = -1., double max_freq = -1.);
+      // TODO: Remove the above.
+
+      /** \brief Perform a period search and set the result to the internal statistic viewer.
+          \param min_freq The minimum frequency in the range.
+          \param max_freq The maximum frequency in the range.
+      */
+      virtual void updateViewer(double min_freq = -1., double max_freq = -1.);
 
       /** \brief Find the frequency for which the statistic is maximized in a given frequency range. Return the
                  frequency and the value of the statistic, as a pair.
