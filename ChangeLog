@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Wed Dec 12 15:06:26 PST 2007
+periodSearch/src
+
+Modified Files:
+	PeriodSearch.cxx 
+Log Message:
+Remove unused members (m_freq, m_spec, getFreq, and getSpec).
+
+    *
+------------------------------------------------------------
+User: hirayama  Wed Dec 12 15:06:26 PST 2007
 periodSearch/periodSearch
 
 Modified Files:
