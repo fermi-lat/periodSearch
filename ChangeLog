@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Wed Dec 12 16:10:50 PST 2007
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Rename methods for consistency (numIndepTrials -> computeNumIndepTrials, chanceProbOneTrial -> computeChanceProbOneTrial, chanceProbMultiTrial -> computeChanceProbMultiTrial).
+
+    *
+------------------------------------------------------------
+User: hirayama  Wed Dec 12 16:10:50 PST 2007
 periodSearch/src
 
 Modified Files:
