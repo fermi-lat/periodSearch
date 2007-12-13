@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Dec 12 16:35:40 PST 2007
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearch.h 
+Log Message:
+Add frequency unit to the constructor argument list.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Dec 12 16:10:50 PST 2007
 periodSearch/src/test
 
