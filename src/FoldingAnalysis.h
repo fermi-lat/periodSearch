@@ -21,13 +21,15 @@ class PeriodicityTestArray;
 class FoldingAnalysis : public periodSearch::PeriodSearch {
   public:
     /** \brief Construct a periodicity search object using given search criteria and a statistical test object.
-        \param center The central value to test.
-        \param step The step size to use.
+        \param center The central frequency to test.
+        \param step The step size of frequency sampling.
         \param test_array The statistical test array object to be used for this periodicity search.
         \param epoch The global time offset defining the origin for purposes of this computation.
         \param duration The total time duration (only used if chance probability will be computed).
+        \param freq_unit The unit of frequency, or the inverse of the unit of times given to this period search.
     */
-    FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration);
+    FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration,
+      const std::string & freq_unit);
 
     virtual ~FoldingAnalysis() {}
 

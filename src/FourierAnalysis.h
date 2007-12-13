@@ -24,8 +24,9 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
         \param num_bins The number of bins used in each FFT. Depending on the specific test, this
                         may be an upper limit on the actual number of bins used.
         \param num_events Hint giving the anticipated number of events to be filled.
+        \param freq_unit The unit of frequency, or the inverse of the unit of times given to this period search.
     */
-    FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, int num_events = 0);
+    FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, const std::string & freq_unit, int num_events = 0);
 
     /** \brief Fill given time into the internal storage of this object.
         \param evt_time The time of the event.
