@@ -52,16 +52,16 @@ namespace periodSearch {
       */
       virtual std::pair<double, double> findMax(double min_freq = -1., double max_freq = -1.) const;
 
-      /** \brief Return the number of independent trials for this search method.
+      /** \brief Compute the number of independent trials for this search method.
+          \param min_freq The minimum frequency.
+          \param max_freq The maximum frequency.
       */
-      virtual size_type numIndepTrials(double min_freq = -1., double max_freq = -1.) const = 0;
-      // TODO: Rename the above to getNumIndepTrials for consistency.
+      virtual size_type computeNumIndepTrials(double min_freq = -1., double max_freq = -1.) const = 0;
 
       /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
           \param stat The value of the statistic.
       */
-      virtual std::pair<double, double> chanceProbOneTrial(double stat) const = 0;
-      // TODO: Rename the above to computeChanceProb for consistency.
+      virtual std::pair<double, double> computeChanceProbOneTrial(double stat) const = 0;
 
       /** \brief Output a description of this search.
           \param os The stream.
@@ -73,8 +73,7 @@ namespace periodSearch {
          \param prob_one_trial The probability p of the event occuring in one trial.
          \param num_indep_trial The number N of statistically independent trials.
       */
-      static double chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial);
-      // TODO: Rename the above to computeChanceProb for consistency.
+      static double computeChanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial);
 
       /** \brief Given a frequency range, determine the indices of (inclusive) lower and upper bounds.
           \param min_freq The minimum frequency.

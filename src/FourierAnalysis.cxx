@@ -119,13 +119,13 @@ using namespace periodSearch;
     return spec;
   }
 
-  PeriodSearch::size_type FourierAnalysis::numIndepTrials(double min_freq, double max_freq) const {
+  PeriodSearch::size_type FourierAnalysis::computeNumIndepTrials(double min_freq, double max_freq) const {
     std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
     size_type num_indep_trials = indices.second >= indices.first ? indices.second - indices.first : 0;
     return num_indep_trials;
   }
 
-  std::pair<double,double> FourierAnalysis::chanceProbOneTrial(double stat) const {
+  std::pair<double,double> FourierAnalysis::computeChanceProbOneTrial(double stat) const {
     periodSearch::ChiSquaredProb prob(2 * m_num_segments);
     return prob(stat);
   }

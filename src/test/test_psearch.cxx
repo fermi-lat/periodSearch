@@ -365,19 +365,19 @@ void PSearchTestApp::testChanceProb() {
 
   for (std::vector<PeriodSearch::size_type>::size_type ii = 0; ii != trial_size; ++ii) {
     for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
-      double chance_prob = PeriodSearch::chanceProbMultiTrial(prob_one_trial[jj], num_indep_trial[ii]);
+      double chance_prob = PeriodSearch::computeChanceProbMultiTrial(prob_one_trial[jj], num_indep_trial[ii]);
       if (0. > chance_prob) {
         m_failed = true;
-        m_os.err() << "ERROR: chanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
+        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
           ") unexpectedly returned " << chance_prob << ", which is < 0." << std::endl;
       } else if (1. < chance_prob) {
         m_failed = true;
-        m_os.err() << "ERROR: chanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
+        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
           ") unexpectedly returned " << chance_prob << ", which is > 1." << std::endl;
       } else if ((0. == approx_chance_prob[ii][jj] && 0. != chance_prob) ||
         (0. != approx_chance_prob[ii][jj] && epsilon < std::fabs(chance_prob / approx_chance_prob[ii][jj] - 1.))) {
         m_failed = true;
-        m_os.err() << "ERROR: chanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] << ") returned " <<
+        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] << ") returned " <<
           chance_prob << ", not " << approx_chance_prob[ii][jj] << ", as expected." << std::endl;
       }
     }

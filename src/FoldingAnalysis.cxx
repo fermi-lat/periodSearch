@@ -91,7 +91,7 @@ namespace periodSearch {
     return spec;
   }
 
-  PeriodSearch::size_type FoldingAnalysis::numIndepTrials(double min_freq, double max_freq) const {
+  PeriodSearch::size_type FoldingAnalysis::computeNumIndepTrials(double min_freq, double max_freq) const {
     std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
 
     // Reset min/max frequency if either bound was not explicitly specified (negative).
@@ -109,7 +109,7 @@ namespace periodSearch {
     return (n_fourier < num_bins) ? n_fourier : num_bins;
   }
 
-  std::pair<double, double> FoldingAnalysis::chanceProbOneTrial(double stat) const {
+  std::pair<double, double> FoldingAnalysis::computeChanceProbOneTrial(double stat) const {
     // Delegate the computation of a chance probablity.
     return m_test_array->computeChanceProb(stat);
   }

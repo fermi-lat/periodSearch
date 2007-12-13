@@ -42,14 +42,16 @@ class FoldingAnalysis : public periodSearch::PeriodSearch {
     // TODO: Need to return an array?  Remove the return value if not.
     virtual const std::vector<double> & computeStats();
 
-    /** \brief Return the number of independent trials for this search method.
+    /** \brief Compute the number of independent trials for this search method.
+        \param min_freq The minimum frequency.
+        \param max_freq The maximum frequency.
     */
-    virtual size_type numIndepTrials(double min_freq = -1., double max_freq = -1.) const;
+    virtual size_type computeNumIndepTrials(double min_freq = -1., double max_freq = -1.) const;
 
     /** \brief Compute the chance probability for the given parameters. Return pair with lower, upper limit.
         \param stat The value of the statistic.
     */
-    virtual std::pair<double, double> chanceProbOneTrial(double stat) const; 
+    virtual std::pair<double, double> computeChanceProbOneTrial(double stat) const;
 
   protected:
     // The container of statistical trials.
