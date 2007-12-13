@@ -35,9 +35,10 @@ namespace periodSearch {
     if (0. >= min) throw std::logic_error("FoldingAnalysis constructor computed a non-positive trial frequency");
 
     // Step from minimum frequency on up, populating internal arrays.
+    StatisticViewer & viewer = getViewer();
     for (size_type ii = 0; ii < num_trials; ++ii) {
       // Populating frequency array.
-      StatisticViewer::data_type & freq = m_viewer.getData(0);
+      StatisticViewer::data_type & freq = viewer.getData(0);
       freq[ii] = min + ii * m_step;
     }
 
@@ -45,7 +46,7 @@ namespace periodSearch {
     m_fourier_res = 1. / duration;
 
     // Add/modify plot title.
-    m_viewer.setTitle("Folding Analysis: " + m_test_array->getTestName());
+    viewer.setTitle("Folding Analysis: " + m_test_array->getTestName());
 
     // Set description of this period search.
     setDescription("Folding Analysis", m_fourier_res, m_step, m_test_array->getDescription());
@@ -65,10 +66,11 @@ namespace periodSearch {
     //     }
 
     // Iterate over the number of trial frequencies.
+    StatisticViewer & viewer = getViewer();
     size_type num_trials = m_test_array->size();
     for (size_type ii = 0; ii < num_trials; ++ii) {
       // For each frequency, compute the phase.
-      const StatisticViewer::data_type & freq = m_viewer.getData(0);
+      const StatisticViewer::data_type & freq = viewer.getData(0);
       double phase = dt * freq[ii];
       phase -= floor(phase);
 
@@ -79,7 +81,8 @@ namespace periodSearch {
 
   const std::vector<double> & FoldingAnalysis::computeStats() {
     // Prepare a returning array.
-    StatisticViewer::data_type & spec = m_viewer.getData(1);
+    StatisticViewer & viewer = getViewer();
+    StatisticViewer::data_type & spec = viewer.getData(1);
     spec.assign(spec.size(), 0.);
 
     // Iterate over the number of trials.
@@ -96,7 +99,8 @@ namespace periodSearch {
     std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
 
     // Reset min/max frequency if either bound was not explicitly specified (negative).
-    const StatisticViewer::data_type & freq = m_viewer.getData(0);
+    const StatisticViewer & viewer = getViewer();
+    const StatisticViewer::data_type & freq = viewer.getData(0);
     if (0. > min_freq) min_freq = freq[indices.first];
     if (0. > max_freq && indices.second > 0) max_freq = freq[indices.second - 1];
 
