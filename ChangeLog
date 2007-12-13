@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Dec 12 16:52:34 PST 2007
+periodSearch/periodSearch
+
+Modified Files:
+	PeriodSearch.h 
+Log Message:
+Make data members private. Remove unused data member, s_2pi.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Dec 12 16:36:26 PST 2007
 periodSearch/src
 
