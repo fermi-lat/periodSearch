@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Wed Dec 12 16:36:26 PST 2007
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Add frequency unit in construction of PeriodSearch objects.
+
+    *
+------------------------------------------------------------
+User: hirayama  Wed Dec 12 16:36:26 PST 2007
 periodSearch/src/gtpsearch
 
 Modified Files:
