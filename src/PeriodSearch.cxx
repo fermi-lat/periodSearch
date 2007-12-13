@@ -19,8 +19,6 @@
 
 namespace periodSearch {
 
-  const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
-
   PeriodSearch::PeriodSearch(size_type num_bins, const std::string & freq_unit): m_freq_unit(freq_unit), m_description(),
     m_viewer(2, num_bins) {
     // Set default labels to the viewer.
@@ -213,6 +211,10 @@ namespace periodSearch {
   }
 
   StatisticViewer & PeriodSearch::getViewer() {
+    return m_viewer;
+  }
+
+  const StatisticViewer & PeriodSearch::getViewer() const {
     return m_viewer;
   }
 

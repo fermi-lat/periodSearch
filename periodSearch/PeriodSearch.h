@@ -92,6 +92,7 @@ namespace periodSearch {
       /** \brief Get a reference to an internal statistic viewer for an object of this class.
       */
       StatisticViewer & getViewer();
+      const StatisticViewer & getViewer() const;
 
     protected:
       /** \brief Set the name and the description of this periodicity test.
@@ -102,9 +103,7 @@ namespace periodSearch {
       */
       void setDescription(const std::string & search_type, double fourier_res, double sampling_step, const std::string & search_info);
 
-      // For convenience, compute once the value of 2 * pi.
-      static const double s_2pi;
-
+    private:
       // The unit of frequency.
       std::string m_freq_unit;
 

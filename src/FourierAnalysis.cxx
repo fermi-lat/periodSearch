@@ -28,14 +28,15 @@ using namespace periodSearch;
     // m_index.reserve(num_events);
 
     // Set up frequency array.
-    StatisticViewer::data_type & freq = m_viewer.getData(0);
+    StatisticViewer & viewer = getViewer();
+    StatisticViewer::data_type & freq = viewer.getData(0);
     m_fourier_res = 1. / (m_width * m_num_bins);
     for (size_t ii = 0; ii < freq.size(); ++ii) {
       freq[ii] = ii * m_fourier_res;
     }
 
     // Add/modify plot title.
-    m_viewer.setTitle("Fourier Analysis: Power Spectrum");
+    viewer.setTitle("Fourier Analysis: Power Spectrum");
 
     // Set description of this period search.
     std::ostringstream os;
@@ -62,8 +63,9 @@ using namespace periodSearch;
   }
 
   const std::vector<double> & FourierAnalysis::computeStats() {
-    const StatisticViewer::data_type & freq = m_viewer.getData(0);
-    StatisticViewer::data_type & spec = m_viewer.getData(1);
+    StatisticViewer & viewer = getViewer();
+    const StatisticViewer::data_type & freq = viewer.getData(0);
+    StatisticViewer::data_type & spec = viewer.getData(1);
 
     double * in = 0;
     fftw_complex * out = 0;
