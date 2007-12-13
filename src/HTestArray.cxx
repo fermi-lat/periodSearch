@@ -19,10 +19,11 @@ HTestArray::HTestArray(size_type array_size, data_type::size_type max_harmonics)
   setDescription("H Test", os_cond.str(), os_dist.str());
 
   // Overwrite Y-label in the viewer.
-  m_viewer.setLabel(1, "CANDIDATE_VALUE");
+  StatisticViewer & viewer = getViewer();
+  viewer.setLabel(1, "CANDIDATE_VALUE");
 
   // Overwrite title in the viewer.
-  m_viewer.setTitle("Candidates for H value");
+  viewer.setTitle("Candidates for H value");
 }
 
 double HTestArray::computeH(size_type array_index, data_type & candidate) const {
@@ -60,11 +61,12 @@ double HTestArray::computeStat(size_type array_index) const {
 
 void HTestArray::updateViewer(size_type array_index) {
   // Compute H value, while keeping candidate H values in the viewer.
-  StatisticViewer::data_type & candidate = m_viewer.getData(1);
+  StatisticViewer & viewer = getViewer();
+  StatisticViewer::data_type & candidate = viewer.getData(1);
   double H_value = computeH(array_index, candidate);
 
   // Set caption to the viewer.
-  m_viewer.setCaption(createSummary(H_value));
+  viewer.setCaption(createSummary(H_value));
 }
 
 std::pair<double, double> HTestArray::computeChanceProb(double stat) const {

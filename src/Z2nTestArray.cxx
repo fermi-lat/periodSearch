@@ -26,15 +26,16 @@ Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmon
 
   // Set harmonic numbers, starting with one (1).
   double harmonic_number = 1.;
-  StatisticViewer::data_type & harmonic = m_viewer.getData(0);
+  StatisticViewer & viewer = getViewer();
+  StatisticViewer::data_type & harmonic = viewer.getData(0);
   for (std::vector<double>::iterator itor = harmonic.begin(); itor != harmonic.end(); ++itor) *itor = harmonic_number++;
 
   // Set default labels to the viewer.
-  m_viewer.setLabel(0, "HARMONIC_NUMBER");
-  m_viewer.setLabel(1, "POWER");
+  viewer.setLabel(0, "HARMONIC_NUMBER");
+  viewer.setLabel(1, "POWER");
 
   // Set default title to the viewer.
-  m_viewer.setTitle("Fourier Powers");
+  viewer.setTitle("Fourier Powers");
 }
 
 void Z2nTestArray::fill(size_type array_index, double phase) {
@@ -94,11 +95,12 @@ double Z2nTestArray::computeStat(size_type array_index) const {
 
 void Z2nTestArray::updateViewer(size_type array_index) {
   // Compute Z2n-value, while keeping the Fourier powers in the viewer.
-  StatisticViewer::data_type & power = m_viewer.getData(1);
+  StatisticViewer & viewer = getViewer();
+  StatisticViewer::data_type & power = viewer.getData(1);
   double Z2n_value = computeZ2n(array_index, power);
 
   // Set caption to the viewer.
-  m_viewer.setCaption(createSummary(Z2n_value));
+  viewer.setCaption(createSummary(Z2n_value));
 }
 
 std::pair<double, double> Z2nTestArray::computeChanceProb(double stat) const {
