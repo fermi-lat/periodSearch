@@ -15,8 +15,9 @@
 
 namespace periodSearch {
 
-  FoldingAnalysis::FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration):
-    PeriodSearch(test_array->size()), m_test_array(test_array), m_step(step), m_epoch(epoch), m_fourier_res(0.) {
+  FoldingAnalysis::FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration,
+    const std::string & freq_unit): PeriodSearch(test_array->size(), freq_unit), m_test_array(test_array), m_step(step),
+    m_epoch(epoch), m_fourier_res(0.) {
     // Get the array size.
     size_type num_trials = test_array->size();
 

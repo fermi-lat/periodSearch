@@ -21,10 +21,14 @@ namespace periodSearch {
 
   const double PeriodSearch::s_2pi = 2. * 4. * atan(1.0);
 
-  PeriodSearch::PeriodSearch(size_type num_bins): m_description(), m_viewer(2, num_bins) {
+  PeriodSearch::PeriodSearch(size_type num_bins, const std::string & freq_unit): m_freq_unit(freq_unit), m_description(),
+    m_viewer(2, num_bins) {
     // Set default labels to the viewer.
     m_viewer.setLabel(0, "FREQUENCY");
     m_viewer.setLabel(1, "STATISTIC");
+
+    // Set default unit to the viewer.
+    m_viewer.setUnit(0, m_freq_unit);
   }
 
   void PeriodSearch::updateViewer(double min_freq, double max_freq) {
@@ -55,10 +59,10 @@ namespace periodSearch {
     std::streamsize orig_precision = os.precision();
     os.precision(std::numeric_limits<double>::digits10);
     os << getDescription() << std::endl
-       << "Search Range (Hz): [" << min_freq << ", " << max_freq << "]" << std::endl
+       << "Search Range (" << m_freq_unit << "): [" << min_freq << ", " << max_freq << "]" << std::endl
        << "Number of Trial Frequencies: " << num_bins << std::endl
        << "Number of Independent Trials: " << num_indep_trials << std::endl
-       << "Maximum Statistic: " << max.second << " at " << max.first << " Hz" << std::endl
+       << "Maximum Statistic: " << max.second << " at " << max.first << " " << m_freq_unit << std::endl
        << "Chance Probability Range: " << "(" << chance_prob.first << ", " << chance_prob.second << ")";
     os.precision(orig_precision);
 
@@ -197,7 +201,7 @@ namespace periodSearch {
 
     if (begin_index >= end_index) {
       std::ostringstream os;
-      os << "No bins contained in frequency search range [" << min_freq << ", " << max_freq << "] Hz";
+      os << "No bins contained in frequency search range [" << min_freq << ", " << max_freq << "] " << m_freq_unit;
       throw std::runtime_error(os.str());
     }
 
@@ -217,10 +221,9 @@ namespace periodSearch {
     // Write out common parameters.
     std::ostringstream os;
     os << "Search Type: " << search_type << std::endl
-       << "Fourier Resolution: " << fourier_res << " Hz" << std::endl
-       << "Sampling Frequency: " << sampling_step << " Hz" << std::endl
+       << "Fourier Resolution: " << fourier_res << " " << m_freq_unit << std::endl
+       << "Sampling Frequency: " << sampling_step << " " << m_freq_unit << std::endl
        << search_info;
-    // TODO: Remove hard-coded "Hz".
 
     // Set the description.
     m_description = os.str();

@@ -25,7 +25,11 @@ namespace periodSearch {
       typedef std::vector<double> cont_type;
       typedef cont_type::size_type size_type;
 
-      PeriodSearch(size_type num_bins);
+      /** \brief Construct a PeriodSearch object.
+          \param num_bins The number of frequency bins.
+          \param freq_unit The unit of frequency, or the inverse of the unit of times given to this period search.
+      */
+      PeriodSearch(size_type num_bins, const std::string & freq_unit);
 
       virtual ~PeriodSearch() {}
 
@@ -100,6 +104,9 @@ namespace periodSearch {
 
       // For convenience, compute once the value of 2 * pi.
       static const double s_2pi;
+
+      // The unit of frequency.
+      std::string m_freq_unit;
 
       // The description of this period search.
       std::string m_description;
