@@ -102,7 +102,7 @@ void PowerSpectrumApp::run() {
   double bin_width = pars["binwidth"];
 
   // Create the proper period search object..
-  std::auto_ptr<PeriodSearch> search(new FourierAnalysis(tstart, tstop, bin_width, num_bins));
+  std::auto_ptr<PeriodSearch> search(new FourierAnalysis(tstart, tstop, bin_width, num_bins, "Hz"));
 
   for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.

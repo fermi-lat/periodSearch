@@ -155,18 +155,18 @@ void PSearchApp::run() {
   if (algorithm == "CHI2") {
     long num_phase = pars["numphase"];
     test_array.reset(new ChiSquaredTestArray(num_trials, num_phase));
-    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
+    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration, "Hz"));
   } else if (algorithm == "RAYLEIGH") {
     test_array.reset(new RayleighTestArray(num_trials));
-    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
+    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration, "Hz"));
   } else if (algorithm == "Z2N") {
     long num_harm = pars["numharm"];
     test_array.reset(new Z2nTestArray(num_trials, num_harm));
-    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
+    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration, "Hz"));
   } else if (algorithm == "H") {
     long max_harm = pars["maxharm"];
     test_array.reset(new HTestArray(num_trials, max_harm));
-    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration));
+    search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration, "Hz"));
   } else {
     throw std::runtime_error("PSearchApp: invalid test algorithm " + algorithm);
   }
@@ -193,9 +193,6 @@ void PSearchApp::run() {
   std::string title_uc(title);
   for (std::string::iterator itor = title_uc.begin(); itor != title_uc.end(); ++itor) *itor = std::toupper(*itor);
   if (title_uc != "DEFAULT") viewer.setTitle(title);
-
-  // Set unit for a plot.
-  viewer.setUnit(0, "Hz");
 
   // Interpret output file parameter.
   std::string out_file_uc = out_file;
