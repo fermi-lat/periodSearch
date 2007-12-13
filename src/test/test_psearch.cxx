@@ -237,33 +237,33 @@ void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<
 
   // Test ChiSquared case.
   ChiSquaredTestArray chi2_test(num_trials, num_bins);
-  FoldingAnalysis chi2_search(&chi2_test, center, step, epoch, duration);
+  FoldingAnalysis chi2_search(&chi2_test, center, step, epoch, duration, "Hz");
   testOneSearch(events, chi2_search, "Chi Squared Statistic", "Folding Analysis: Chi Squared Statistic", prefix + "-chi-sq.fits",
     plot);
 
   // Test Z2n case.
   Z2nTestArray z2n_test(num_trials, num_bins);
-  FoldingAnalysis z2n_search(&z2n_test, center, step, epoch, duration);
+  FoldingAnalysis z2n_search(&z2n_test, center, step, epoch, duration, "Hz");
 
   testOneSearch(events, z2n_search, "Z2n Statistic", "Folding Analysis: Z2n Statistic", prefix + "-z2n.fits",
     plot);
 
   // Test Rayleigh case.
   RayleighTestArray rayleigh_test(num_trials);
-  FoldingAnalysis rayleigh_search(&rayleigh_test, center, step, epoch, duration);
+  FoldingAnalysis rayleigh_search(&rayleigh_test, center, step, epoch, duration, "Hz");
 
   testOneSearch(events, rayleigh_search, "Rayleigh Statistic", "Folding Analysis: Rayleigh Statistic", prefix + "-rayleigh.fits",
     plot);
 
   // Test H case.
   HTestArray h_test(num_trials, num_bins);
-  FoldingAnalysis h_search(&h_test, center, step, epoch, duration);
+  FoldingAnalysis h_search(&h_test, center, step, epoch, duration, "Hz");
 
   testOneSearch(events, h_search, "H Statistic", "Folding Analysis: H Statistic", prefix + "-h.fits",
     plot);
 
   // Create analysis object.
-  FourierAnalysis fourier_search(t_start, t_stop, fourier_width, fourier_num_bins, events.size());
+  FourierAnalysis fourier_search(t_start, t_stop, fourier_width, fourier_num_bins, "Hz", events.size());
 
   testOneSearch(events, fourier_search, "Fourier Power", "Fourier Analysis: Power Spectrum", prefix + "-fourier.fits",
     plot, fourier_min_freq, fourier_max_freq);
