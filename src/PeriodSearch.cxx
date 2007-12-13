@@ -32,14 +32,14 @@ namespace periodSearch {
     std::pair<double, double> max = findMax(min_freq, max_freq);
 
     // Compute probability for one trial.
-    std::pair<double, double> chance_prob = chanceProbOneTrial(max.second);
+    std::pair<double, double> chance_prob = computeChanceProbOneTrial(max.second);
 
     // Compute the number of independent trials.
-    size_type num_indep_trials = numIndepTrials(min_freq, max_freq);
+    size_type num_indep_trials = computeNumIndepTrials(min_freq, max_freq);
 
     // Compute the multi-trial chance probability.
-    chance_prob.first = chanceProbMultiTrial(chance_prob.first, num_indep_trials);
-    chance_prob.second = chanceProbMultiTrial(chance_prob.second, num_indep_trials);
+    chance_prob.first = computeChanceProbMultiTrial(chance_prob.first, num_indep_trials);
+    chance_prob.second = computeChanceProbMultiTrial(chance_prob.second, num_indep_trials);
 
     // Compute number of bins.
     std::pair<size_type, size_type> indices = getRangeIndex(min_freq, max_freq);
@@ -103,7 +103,7 @@ namespace periodSearch {
     return os << getDescription();
   }
 
-  double PeriodSearch::chanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial) {
+  double PeriodSearch::computeChanceProbMultiTrial(double prob_one_trial, size_type num_indep_trial) {
     static double epsilon = std::numeric_limits<double>::epsilon();
     double chance_prob = 0.;
 
