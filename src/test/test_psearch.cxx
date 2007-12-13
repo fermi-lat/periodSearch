@@ -58,26 +58,53 @@ class PSearchTestApp : public st_app::StApp {
     virtual ~PSearchTestApp() throw() {}
     virtual void run();
 
+    void testPeriodSearch();
+
+    void testChanceProb();
+
+    void testChiSquaredTestArray();
+
+    void testZ2nTestArray();
+
+    void testHTestArray();
+
+    void testRayleighTestArray();
+
+  private:
     void testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
       double center, double step, long num_trials, double epoch, int num_bins,
       double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot);
 
     void testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name, double epoch);
 
-    void testChanceProb();
-
-    std::string findFile(const std::string & file_name);
-
-  private:
     void testOneSearch(const std::vector<double> & events, PeriodSearch & search,
       const std::string & text_title, const std::string & plot_title, const std::string & out_file,
       bool plot, double min_freq = -1., double max_freq = -1.);
+
+    std::string findFile(const std::string & file_name);
 
     st_stream::StreamFormatter m_os;
     bool m_failed;
 };
 
 void PSearchTestApp::run() {
+  // Test PeriodSearch subclasses.
+  testPeriodSearch();
+
+  // Test computations of chance probability.
+  testChanceProb();
+
+  // Test PeriodicityTestArary subclasses.
+  testChiSquaredTestArray();
+  testZ2nTestArray();
+  testHTestArray();
+  testRayleighTestArray();
+
+  // Check test status.
+  if (m_failed) throw std::runtime_error("UNIT TEST FAILED");
+}
+
+void PSearchTestApp::testPeriodSearch() {
 
   // Trick up some fake events.
   int num_evts = 1000;
@@ -99,10 +126,6 @@ void PSearchTestApp::run() {
 
   // Test process of picking the ephemeris.
   testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", 212380785.922);
-
-
-
-  if (m_failed) throw std::runtime_error("UNIT TEST FAILED");
 
   bool plot = getParGroup()["plot"];
 
@@ -221,9 +244,123 @@ void PSearchTestApp::run() {
 
   // Test process of picking the ephemeris.
   testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", epoch);
+}
 
-  // Test computations of chance probability.
-  testChanceProb();
+void PSearchTestApp::testChanceProb() {
+  using namespace periodSearch;
+
+  // Vector to hold array of number of statistically independent trials to test chanceProb.
+  std::vector<PeriodSearch::size_type>::size_type trial_size = 11;
+  std::vector<PeriodSearch::size_type> num_indep_trial(trial_size, 0);
+  num_indep_trial[1] = 1;
+  num_indep_trial[2] = 2;
+  num_indep_trial[3] = 10;
+  for (std::vector<PeriodSearch::size_type>::size_type idx = 4; idx != trial_size; ++idx) {
+    num_indep_trial[idx] = 10 * num_indep_trial[idx - 1];
+  }
+
+  // Vector to hold array of single-trial probabilities used to test chanceProb calculation.
+  std::vector<double>::size_type prob_size = 201;
+  std::vector<double> prob_one_trial(prob_size, 0.);
+  for (std::vector<double>::size_type idx = 1; idx != prob_size; ++idx) {
+    prob_one_trial[idx] = std::pow(.9, double(prob_size - (idx + 1)));
+  }
+
+  // Populate array with approximate answers using a standard math library call. Note that this is
+  // inaccurate especially for probabilities near 0, and/or for large numbers of trials.
+  std::vector<std::vector<double> > approx_chance_prob(trial_size, std::vector<double>(prob_size, 0.));
+  for (std::vector<PeriodSearch::size_type>::size_type ii = 0; ii != trial_size; ++ii) {
+    for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
+      approx_chance_prob[ii][jj] = 1. - std::pow(1. - prob_one_trial[jj], double(num_indep_trial[ii]));
+    }
+  }
+
+  // Require the agreement between the approximate simple formula and the form used in the PeriodSearch class
+  // to be to about 6.5 digits. Note that this limit cannot be refined because the approximate values are
+  // not sufficiently accurate.
+  double epsilon = 1.e-7;
+
+  for (std::vector<PeriodSearch::size_type>::size_type ii = 0; ii != trial_size; ++ii) {
+    for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
+      double chance_prob = PeriodSearch::computeChanceProbMultiTrial(prob_one_trial[jj], num_indep_trial[ii]);
+      if (0. > chance_prob) {
+        m_failed = true;
+        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
+          ") unexpectedly returned " << chance_prob << ", which is < 0." << std::endl;
+      } else if (1. < chance_prob) {
+        m_failed = true;
+        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
+          ") unexpectedly returned " << chance_prob << ", which is > 1." << std::endl;
+      } else if ((0. == approx_chance_prob[ii][jj] && 0. != chance_prob) ||
+        (0. != approx_chance_prob[ii][jj] && epsilon < std::fabs(chance_prob / approx_chance_prob[ii][jj] - 1.))) {
+        m_failed = true;
+        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] << ") returned " <<
+          chance_prob << ", not " << approx_chance_prob[ii][jj] << ", as expected." << std::endl;
+      }
+    }
+  }
+}
+
+void PSearchTestApp::testChiSquaredTestArray() {
+  // Prepare a ChiSquaredTestArray object.
+  int num_axis = 3;
+  int num_bins = 4;
+  ChiSquaredTestArray chi2_test(num_axis, num_bins);
+  const StatisticViewer & chi2_viewer(chi2_test.getViewer());
+
+  // Fill events.
+  int num_events = 10;
+  for (int ii = 0; ii < num_events; ++ii) {
+    double phase = (ii + 0.1) / num_events;
+    chi2_test.fill(0, phase);
+    chi2_test.fill(1, phase); chi2_test.fill(1, phase);
+    chi2_test.fill(2, phase); chi2_test.fill(2, phase); chi2_test.fill(2, phase);
+  }
+  chi2_test.updateViewer(0);
+
+  // Check size.
+  int test_size = chi2_test.size();
+  if (test_size != num_axis) {
+    m_failed = true;
+    m_os.err() << "Size of the test array was reported as " << test_size << ", not " << num_axis << "." << std::endl;
+  }
+
+  // Set the comparison precision.
+  const double epsilon = 1.e-12;
+
+  // Check the folded light curve.
+  double expected_counts[] = {3., 2., 3., 2.};
+  for (int axis = 0; axis < num_axis; ++axis) {
+    for (int ii = 0; ii < num_bins; ++ii) {
+      double result = chi2_viewer.getData(1)[ii];
+      double expected = expected_counts[ii] * (axis + 1);
+      if (result/expected - 1. > epsilon) {
+        m_failed = true;
+        m_os.err() << "Photon counts in phase bin " << ii << " of axis " << axis << " was " << result
+          << ", not " << expected << "." << std::endl;
+      }
+    }
+  }
+
+  // Check S-value.
+  double expected_values[] = {0.4, 0.8, 1.2};
+  for (int axis = 0; axis < num_axis; ++axis) {
+    double result = chi2_test.computeStat(axis);
+    double expected = expected_values[axis];
+    if (result/expected - 1. > epsilon) {
+      m_failed = true;
+      m_os.err() << "S-value for axis " << axis << " was " << result << ", not " << expected << "." << std::endl;
+    }
+  }
+}
+
+void PSearchTestApp::testZ2nTestArray() {
+}
+
+void PSearchTestApp::testHTestArray() {
+}
+
+void PSearchTestApp::testRayleighTestArray() {
 }
 
 void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
@@ -329,67 +466,6 @@ void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::strin
   }
 }
 
-void PSearchTestApp::testChanceProb() {
-  using namespace periodSearch;
-
-  // Vector to hold array of number of statistically independent trials to test chanceProb.
-  std::vector<PeriodSearch::size_type>::size_type trial_size = 11;
-  std::vector<PeriodSearch::size_type> num_indep_trial(trial_size, 0);
-  num_indep_trial[1] = 1;
-  num_indep_trial[2] = 2;
-  num_indep_trial[3] = 10;
-  for (std::vector<PeriodSearch::size_type>::size_type idx = 4; idx != trial_size; ++idx) {
-    num_indep_trial[idx] = 10 * num_indep_trial[idx - 1];
-  }
-
-  // Vector to hold array of single-trial probabilities used to test chanceProb calculation.
-  std::vector<double>::size_type prob_size = 201;
-  std::vector<double> prob_one_trial(prob_size, 0.);
-  for (std::vector<double>::size_type idx = 1; idx != prob_size; ++idx) {
-    prob_one_trial[idx] = std::pow(.9, double(prob_size - (idx + 1)));
-  }
-
-  // Populate array with approximate answers using a standard math library call. Note that this is
-  // inaccurate especially for probabilities near 0, and/or for large numbers of trials.
-  std::vector<std::vector<double> > approx_chance_prob(trial_size, std::vector<double>(prob_size, 0.));
-  for (std::vector<PeriodSearch::size_type>::size_type ii = 0; ii != trial_size; ++ii) {
-    for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
-      approx_chance_prob[ii][jj] = 1. - std::pow(1. - prob_one_trial[jj], double(num_indep_trial[ii]));
-    }
-  }
-
-  // Require the agreement between the approximate simple formula and the form used in the PeriodSearch class
-  // to be to about 6.5 digits. Note that this limit cannot be refined because the approximate values are
-  // not sufficiently accurate.
-  double epsilon = 1.e-7;
-
-  for (std::vector<PeriodSearch::size_type>::size_type ii = 0; ii != trial_size; ++ii) {
-    for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
-      double chance_prob = PeriodSearch::computeChanceProbMultiTrial(prob_one_trial[jj], num_indep_trial[ii]);
-      if (0. > chance_prob) {
-        m_failed = true;
-        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
-          ") unexpectedly returned " << chance_prob << ", which is < 0." << std::endl;
-      } else if (1. < chance_prob) {
-        m_failed = true;
-        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
-          ") unexpectedly returned " << chance_prob << ", which is > 1." << std::endl;
-      } else if ((0. == approx_chance_prob[ii][jj] && 0. != chance_prob) ||
-        (0. != approx_chance_prob[ii][jj] && epsilon < std::fabs(chance_prob / approx_chance_prob[ii][jj] - 1.))) {
-        m_failed = true;
-        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] << ") returned " <<
-          chance_prob << ", not " << approx_chance_prob[ii][jj] << ", as expected." << std::endl;
-      }
-    }
-  }
-}
-
-
-std::string PSearchTestApp::findFile(const std::string & file_name) {
-  using namespace facilities;
-  return commonUtilities::joinPath(commonUtilities::getDataPath("periodSearch"), file_name);
-}
-
 void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search,
   const std::string & text_title, const std::string & plot_title, const std::string & out_file,
   bool plot, double min_freq, double max_freq) {
@@ -425,6 +501,11 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   viewer.setTitle(plot_title);
   viewer.setLabel(0, "Hz");
   if (plot) viewer.plot();
+}
+
+std::string PSearchTestApp::findFile(const std::string & file_name) {
+  using namespace facilities;
+  return commonUtilities::joinPath(commonUtilities::getDataPath("periodSearch"), file_name);
 }
 
 st_app::StAppFactory<PSearchTestApp> g_factory("test_periodSearch");
