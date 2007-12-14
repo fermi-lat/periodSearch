@@ -105,6 +105,7 @@ void PSearchTestApp::run() {
 }
 
 void PSearchTestApp::testPeriodSearch() {
+  m_os.setMethod("testPeriodSearch");
 
   // Trick up some fake events.
   int num_evts = 1000;
@@ -249,6 +250,8 @@ void PSearchTestApp::testPeriodSearch() {
 void PSearchTestApp::testChanceProb() {
   using namespace periodSearch;
 
+  m_os.setMethod("testChanceProb");
+
   // Vector to hold array of number of statistically independent trials to test chanceProb.
   std::vector<PeriodSearch::size_type>::size_type trial_size = 11;
   std::vector<PeriodSearch::size_type> num_indep_trial(trial_size, 0);
@@ -302,65 +305,133 @@ void PSearchTestApp::testChanceProb() {
 }
 
 void PSearchTestApp::testChiSquaredTestArray() {
+  m_os.setMethod("testChiSquaredTestArray");
+
   // Prepare a ChiSquaredTestArray object.
-  int num_axis = 3;
-  int num_bins = 4;
-  ChiSquaredTestArray chi2_test(num_axis, num_bins);
+  const int num_trial = 3;
+  const int num_bin = 4;
+  ChiSquaredTestArray chi2_test(num_trial, num_bin);
   const StatisticViewer & chi2_viewer(chi2_test.getViewer());
 
   // Fill events.
-  int num_events = 10;
+  const int num_events = 10;
   for (int ii = 0; ii < num_events; ++ii) {
     double phase = (ii + 0.1) / num_events;
     chi2_test.fill(0, phase);
     chi2_test.fill(1, phase); chi2_test.fill(1, phase);
     chi2_test.fill(2, phase); chi2_test.fill(2, phase); chi2_test.fill(2, phase);
   }
-  chi2_test.updateViewer(0);
 
   // Check size.
   int test_size = chi2_test.size();
-  if (test_size != num_axis) {
+  if (test_size != num_trial) {
     m_failed = true;
-    m_os.err() << "Size of the test array was reported as " << test_size << ", not " << num_axis << "." << std::endl;
+    m_os.err() << "Size of the ChiSquaredTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
   }
 
   // Set the comparison precision.
   const double epsilon = 1.e-12;
 
   // Check the folded light curve.
-  double expected_counts[] = {3., 2., 3., 2.};
-  for (int axis = 0; axis < num_axis; ++axis) {
-    for (int ii = 0; ii < num_bins; ++ii) {
-      double result = chi2_viewer.getData(1)[ii];
-      double expected = expected_counts[ii] * (axis + 1);
-      if (result/expected - 1. > epsilon) {
+  const StatisticViewer::data_type & result_counts = chi2_viewer.getData(1);
+  const double expected_counts[] = {3., 2., 3., 2.};
+  for (int trial = 0; trial < num_trial; ++trial) {
+    chi2_test.updateViewer(trial);
+    for (int ii = 0; ii < num_bin; ++ii) {
+      double result = result_counts[ii];
+      double expected = expected_counts[ii] * (trial + 1);
+      if (std::fabs(result/expected - 1.) > epsilon) {
         m_failed = true;
-        m_os.err() << "Photon counts in phase bin " << ii << " of axis " << axis << " was " << result
+        m_os.err() << "Photon count in phase bin " << ii << " of trial " << trial << " was " << result
           << ", not " << expected << "." << std::endl;
       }
     }
   }
 
   // Check S-value.
-  double expected_values[] = {0.4, 0.8, 1.2};
-  for (int axis = 0; axis < num_axis; ++axis) {
-    double result = chi2_test.computeStat(axis);
-    double expected = expected_values[axis];
-    if (result/expected - 1. > epsilon) {
+  const double expected_values[] = {0.4, 0.8, 1.2};
+  for (int trial = 0; trial < num_trial; ++trial) {
+    double result = chi2_test.computeStat(trial);
+    double expected = expected_values[trial];
+    if (std::fabs(result/expected - 1.) > epsilon) {
       m_failed = true;
-      m_os.err() << "S-value for axis " << axis << " was " << result << ", not " << expected << "." << std::endl;
+      m_os.err() << "S-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
     }
   }
 }
 
 void PSearchTestApp::testZ2nTestArray() {
+  m_os.setMethod("testZ2nTestArray");
+
+  // Prepare a Z2nTestArray object.
+  const int num_trial = 3;
+  const int num_harm = 4;
+  Z2nTestArray z2n_test(num_trial, num_harm);
+  const StatisticViewer & z2n_viewer(z2n_test.getViewer());
+
+  // Fill events.
+  const int num_events = 12;
+  for (int ii = 0; ii < num_events; ++ii) {
+    z2n_test.fill(0, 0.123);
+    double phase = (ii % 3 + 1) / 8.; // 45, 90, and 135 degrees.
+    z2n_test.fill(1, phase);
+    phase = ii / 12.; // one whole round.
+    z2n_test.fill(2, phase);
+  }
+
+  // Check size.
+  int test_size = z2n_test.size();
+  if (test_size != num_trial) {
+    m_failed = true;
+    m_os.err() << "Size of the Z2nTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
+  }
+
+  // Set the comparison precision.
+  const double epsilon = 1.e-12;
+
+  // Check the power spectrum.
+  const StatisticViewer::data_type & result_powers = z2n_viewer.getData(1);
+  const double norm = 2. / num_events;
+  double power10 = 4. * (std::sqrt(2.) + 1.);
+  power10 = norm * power10 * power10;
+  double power11 = norm * 4. * 4.;
+  double power12 = 4. * (std::sqrt(2.) - 1.);
+  power12 = norm * power12 * power12;
+  double power13 = norm * 4. * 4.;
+  const double expected_powers[][num_harm] = { {24., 24., 24., 24.}, {power10, power11, power12, power13}, {0., 0., 0., 0.} };
+  for (int trial = 0; trial < num_trial; ++trial) {
+    z2n_test.updateViewer(trial);
+    for (int ii = 0; ii < num_harm; ++ii) {
+      double result = result_powers[ii];
+      double expected = expected_powers[trial][ii];
+      if ((expected == 0. && std::fabs(result) > epsilon)
+          || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
+        m_failed = true;
+        m_os.err() << "Power for harmonic nubmer " << ii << " of trial " << trial << " was " << result
+          << ", not " << expected << "." << std::endl;
+      }
+    }
+  }
+
+  // Check Z2n-value.
+  double expected_values[] = {96., power10 + power11 + power12 + power13, 0.};
+  for (int trial = 0; trial < num_trial; ++trial) {
+    double result = z2n_test.computeStat(trial);
+    double expected = expected_values[trial];
+    if ((expected == 0. && std::fabs(result) > epsilon)
+        || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
+      m_failed = true;
+      m_os.err() << "Z2n-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+    }
+  }
 }
 
 void PSearchTestApp::testHTestArray() {
+  m_os.setMethod("testHTestArray");
 }
 
 void PSearchTestApp::testRayleighTestArray() {
+  m_os.setMethod("testRayleighTestArray");
 }
 
 void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
