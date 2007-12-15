@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Fri Dec 14 17:03:10 PST 2007
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Rename computeStats method to computeStat (plural to singular) to match PeriodicityTestArray method, and remove its return value (not used).
+
+    *
+------------------------------------------------------------
+User: hirayama  Fri Dec 14 17:03:10 PST 2007
 periodSearch/src/gtpsearch
 
 Modified Files:
