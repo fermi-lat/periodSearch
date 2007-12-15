@@ -669,7 +669,7 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   }
 
   // Perform the search operation.
-  search.computeStats();
+  search.computeStat();
   search.updateViewer(min_freq, max_freq);
 
   // Find the template file.

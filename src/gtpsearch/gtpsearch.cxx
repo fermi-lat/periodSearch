@@ -183,7 +183,7 @@ void PSearchApp::run() {
   }
 
   // Compute the statistics.
-  search->computeStats();
+  search->computeStat();
 
   // Update the statistic viewer in PeriodSearch object, and get a reference to it.
   search->updateViewer();

@@ -79,7 +79,7 @@ namespace periodSearch {
     }
   }
 
-  const std::vector<double> & FoldingAnalysis::computeStats() {
+  void FoldingAnalysis::computeStat() {
     // Prepare a returning array.
     StatisticViewer & viewer = getViewer();
     StatisticViewer::data_type & spec = viewer.getData(1);
@@ -90,9 +90,6 @@ namespace periodSearch {
     for (size_type ii = 0; ii < num_trials; ++ii) {
       spec[ii] = m_test_array->computeStat(ii);
     }
-
-    // Return the result.
-    return spec;
   }
 
   PeriodSearch::size_type FoldingAnalysis::computeNumIndepTrials(double min_freq, double max_freq) const {
