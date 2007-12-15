@@ -41,8 +41,7 @@ class FoldingAnalysis : public periodSearch::PeriodSearch {
     /** \brief Compute test statistics for currently filled event times at all trial frequencies.
                Details depend on the a specific test object given upon construction of this object.
     */
-    // TODO: Need to return an array?  Remove the return value if not.
-    virtual const std::vector<double> & computeStats();
+    virtual void computeStat();
 
     /** \brief Compute the number of independent trials for this search method.
         \param min_freq The minimum frequency.

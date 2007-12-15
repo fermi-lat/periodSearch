@@ -35,7 +35,7 @@ class FourierAnalysis : public periodSearch::PeriodSearch {
 
     /** \brief Compute Fourier powers at trial frequencies with Discrete Fast Fourier Transform algorighm.
     */
-    virtual const std::vector<double> & computeStats();
+    virtual void computeStat();
 
     /** \brief Compute the number of independent trials for this search method.
         \param min_freq The minimum frequency.

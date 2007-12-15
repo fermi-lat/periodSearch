@@ -41,7 +41,7 @@ namespace periodSearch {
       /** \brief Use the trials as currently filled by data to compute statistics for this test. Details
                  depend on the specific test being performed in the subclass.
       */
-      virtual const std::vector<double> & computeStats() = 0;
+      virtual void computeStat() = 0;
 
       /** \brief Perform a period search and set the result to the internal statistic viewer.
           \param min_freq The minimum frequency in the range.

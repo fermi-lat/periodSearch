@@ -62,7 +62,7 @@ using namespace periodSearch;
     }
   }
 
-  const std::vector<double> & FourierAnalysis::computeStats() {
+  void FourierAnalysis::computeStat() {
     StatisticViewer & viewer = getViewer();
     const StatisticViewer::data_type & freq = viewer.getData(0);
     StatisticViewer::data_type & spec = viewer.getData(1);
@@ -118,8 +118,6 @@ using namespace periodSearch;
 
     fftw_destroy_plan(p);
     fftw_free(in);
-
-    return spec;
   }
 
   PeriodSearch::size_type FourierAnalysis::computeNumIndepTrials(double min_freq, double max_freq) const {
