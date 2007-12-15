@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Dec 14 16:38:20 PST 2007
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Add tests of HTestArray and RayleighTestArray classes.
+
+    *
+------------------------------------------------------------
 User: hirayama  Thu Dec 13 16:21:17 PST 2007
 periodSearch/src/test
 
