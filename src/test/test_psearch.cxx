@@ -428,10 +428,130 @@ void PSearchTestApp::testZ2nTestArray() {
 
 void PSearchTestApp::testHTestArray() {
   m_os.setMethod("testHTestArray");
+
+  // Prepare a HTestArray object.
+  const int num_trial = 3;
+  const int num_harm = 4;
+  HTestArray h_test(num_trial, num_harm);
+  const StatisticViewer & h_viewer(h_test.getViewer());
+
+  // Fill events.
+  const int num_events = 12;
+  for (int ii = 0; ii < num_events; ++ii) {
+    h_test.fill(0, 0.123);
+    double phase = (ii % 3 + 1) / 8.; // 45, 90, and 135 degrees.
+    h_test.fill(1, phase);
+    phase = ii / 12.; // one whole round.
+    h_test.fill(2, phase);
+  }
+
+  // Check size.
+  int test_size = h_test.size();
+  if (test_size != num_trial) {
+    m_failed = true;
+    m_os.err() << "Size of the HTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
+  }
+
+  // Set the comparison precision.
+  const double epsilon = 1.e-12;
+
+  // Check the power spectrum.
+  const StatisticViewer::data_type & result_powers = h_viewer.getData(1);
+  const double norm = 2. / num_events;
+  double power10 = 4. * (std::sqrt(2.) + 1.);
+  power10 = norm * power10 * power10;
+  double power11 = norm * 4. * 4.;
+  double power12 = 4. * (std::sqrt(2.) - 1.);
+  power12 = norm * power12 * power12;
+  double power13 = norm * 4. * 4.;
+  const double expected_powers[][num_harm] = {
+    {24., 44., 64., 84.},
+    {power10, power10 + power11 - 4., power10 + power11 + power12 - 8., power10 + power11 + power12 + power13 - 12.},
+    {0., -4., -8., -12.}
+  };
+  for (int trial = 0; trial < num_trial; ++trial) {
+    h_test.updateViewer(trial);
+    for (int ii = 0; ii < num_harm; ++ii) {
+      double result = result_powers[ii];
+      double expected = expected_powers[trial][ii];
+      if ((expected == 0. && std::fabs(result) > epsilon)
+          || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
+        m_failed = true;
+        m_os.err() << "Candidate H value for harmonic nubmer " << ii << " of trial " << trial << " was " << result
+          << ", not " << expected << "." << std::endl;
+      }
+    }
+  }
+
+  // Check H-value.
+  double expected_values[] = {84., power10, 0.};
+  for (int trial = 0; trial < num_trial; ++trial) {
+    double result = h_test.computeStat(trial);
+    double expected = expected_values[trial];
+    if ((expected == 0. && std::fabs(result) > epsilon)
+        || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
+      m_failed = true;
+      m_os.err() << "H-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+    }
+  }
 }
 
 void PSearchTestApp::testRayleighTestArray() {
   m_os.setMethod("testRayleighTestArray");
+
+  // Prepare a RayleighTestArray object.
+  const int num_trial = 3;
+  RayleighTestArray rayleigh_test(num_trial);
+  const StatisticViewer & rayleigh_viewer(rayleigh_test.getViewer());
+
+  // Fill events.
+  const int num_events = 12;
+  for (int ii = 0; ii < num_events; ++ii) {
+    rayleigh_test.fill(0, 0.123);
+    double phase = (ii % 3 + 1) / 8.; // 45, 90, and 135 degrees.
+    rayleigh_test.fill(1, phase);
+    phase = ii / 12.; // one whole round.
+    rayleigh_test.fill(2, phase);
+  }
+
+  // Check size.
+  int test_size = rayleigh_test.size();
+  if (test_size != num_trial) {
+    m_failed = true;
+    m_os.err() << "Size of the RayleighTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
+  }
+
+  // Set the comparison precision.
+  const double epsilon = 1.e-12;
+
+  // Check the power spectrum.
+  const StatisticViewer::data_type & result_powers = rayleigh_viewer.getData(1);
+  const double norm = 2. / num_events;
+  double power10 = 4. * (std::sqrt(2.) + 1.);
+  power10 = norm * power10 * power10;
+  const double expected_powers[] = {24., power10, 0.};
+  for (int trial = 0; trial < num_trial; ++trial) {
+    rayleigh_test.updateViewer(trial);
+    double result = result_powers[0];
+    double expected = expected_powers[trial];
+    if ((expected == 0. && std::fabs(result) > epsilon)
+        || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
+      m_failed = true;
+      m_os.err() << "Viewer content for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+    }
+  }
+
+  // Check Rayleigh-value.
+  double expected_values[] = {24., power10, 0.};
+  for (int trial = 0; trial < num_trial; ++trial) {
+    double result = rayleigh_test.computeStat(trial);
+    double expected = expected_values[trial];
+    if ((expected == 0. && std::fabs(result) > epsilon)
+        || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
+      m_failed = true;
+      m_os.err() << "Rayleigh statistic for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+    }
+  }
 }
 
 void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
