@@ -24,7 +24,7 @@ namespace periodSearch {
     // Make certain there is no error in the input.
     if (0. >= center) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive center");
     if (0. >= m_step) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive step");
-    if (0  >= num_trials) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive num_trials");
+    if (0  >= num_trials) throw std::logic_error("FoldingAnalysis constructor was passed a periodicity test array of a non-positive size");
     if (0. >= duration) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive duration");
 
     // Create vector containing the trial frequencies.

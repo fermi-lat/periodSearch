@@ -16,6 +16,9 @@
 ChiSquaredTestArray::ChiSquaredTestArray(size_type array_size, data_type::size_type num_phase_bins):
   PeriodicityTestArray(2, num_phase_bins), m_num_phase_bins(num_phase_bins), m_curve_cont(array_size, data_type(num_phase_bins, 0)),
   m_num_events(array_size, 0) {
+  // Check argument values.
+  if (0 >= num_phase_bins) throw std::logic_error("ChiSquaredTestArray constructor was passed a non-positive number of phase bins");
+
   // Set description of this statistical test.
   std::ostringstream os_cond;
   os_cond << m_num_phase_bins << " phase bins";
@@ -54,8 +57,16 @@ void ChiSquaredTestArray::fill(size_type array_index, double phase) {
 }
 
 double ChiSquaredTestArray::computeStat(size_type array_index) const {
+  // Check the number of events.
+  long num_events = m_num_events.at(array_index);
+  if (num_events == 0) {
+    std::ostringstream os;
+    os << "ChiSquaredTestArray::computeStat was called with no events filled for test #" << array_index << std::endl;
+    throw std::logic_error(os.str());
+  }
+
   // Compute average count rate.
-  double avg = double(m_num_events.at(array_index)) / m_num_phase_bins;
+  double avg = double(num_events) / m_num_phase_bins;
 
   // Compute S-value.
   double S_value = 0.;

@@ -17,6 +17,9 @@
 Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmonics):
   PeriodicityTestArray(2, num_harmonics), m_num_harm(num_harmonics), m_sine_cont(array_size, data_type(num_harmonics, 0.)),
   m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0) {
+  // Check argument values.
+  if (0 >= num_harmonics) throw std::logic_error("Z2nTestArray constructor was passed a non-positive number of harmonics");
+
   // Set description of this statistical test.
   std::ostringstream os_cond;
   os_cond << m_num_harm << " harmonics";
@@ -58,6 +61,14 @@ void Z2nTestArray::fill(size_type array_index, double phase) {
 }
 
 void Z2nTestArray::computePower(size_type array_index, data_type & power) const {
+  // Check the number of events.
+  long num_events = m_num_events.at(array_index);
+  if (num_events == 0) {
+    std::ostringstream os;
+    os << "Z2nTestArray::computePower was called with no events filled for test #" << array_index << std::endl;
+    throw std::logic_error(os.str());
+  }
+
   // Initialize the container of the Fourier powers to return.
   power.resize(m_num_harm);
   power.assign(m_num_harm, 0.);
@@ -67,7 +78,7 @@ void Z2nTestArray::computePower(size_type array_index, data_type & power) const 
   const data_type & cosine_array = m_cosine_cont.at(array_index);
 
   // Compute normalization.
-  double fourier_norm = 2. / m_num_events.at(array_index);
+  double fourier_norm = 2. / num_events;
 
   // Compute the Fourier powers.
   for (size_type jj = 0; jj < m_num_harm; ++jj) {

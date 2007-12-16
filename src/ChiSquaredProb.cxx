@@ -9,8 +9,9 @@
 namespace periodSearch {
 
   ChiSquaredProb::ChiSquaredProb(int dof, double min_pdf): m_dof(dof), m_dof_minus_2(dof-2), m_lognorm(0.0) {
-    // check if dof is positive or not
+    // check if dof and min_pdf are positive or not
     if (dof <= 0) throw std::logic_error("ChiSquaredProb::ChiSquaredProb: non-positive number of degrees of freedom");
+    if (min_pdf <= 0.) throw std::logic_error("ChiSquaredProb::ChiSquaredProb: non-positive minimum number of probability density function");
 
     // pre-compute normalization
     double nterm;
