@@ -25,6 +25,8 @@ using namespace periodSearch;
     PeriodSearch(num_bins / 2 + 1, freq_unit), m_index(), m_t_start(t_start), m_t_stop(t_stop), m_width(width),
     m_fourier_res(0.), m_num_segments(0) , m_num_bins(num_bins) {
     if (t_start > t_stop) throw std::runtime_error("FourierAnalysis: start time is > stop time");
+    if (0. >= width) throw std::runtime_error("FourierAnalysis: width is non-positive");
+    if (0  >= num_bins) throw std::runtime_error("FourierAnalysis: the number of bins is non-positive");
     // m_index.reserve(num_events);
 
     // Set up frequency array.
@@ -98,21 +100,27 @@ using namespace periodSearch;
         ++num_events;
       }
 
-      // Shift origin by the average number of events per bin.
-      double events_per_bin = num_events / m_num_bins;
-      for (size_t ii = 0; ii < m_num_bins; ++ii) {
-        //in[ii][0] -= events_per_bin;
-        in[ii] -= events_per_bin;
-      }
+      if (num_events == 0) {
+	// Pack zeros into the array holding the power density.
+	for (size_t ii = 0; ii < num_cpx_elements; ++ii) spec[ii] = 0.;
 
-      // Do the transformation.
-      fftw_execute(p);
+      } else {
+	// Shift origin by the average number of events per bin.
+	double events_per_bin = num_events / m_num_bins;
+	for (size_t ii = 0; ii < m_num_bins; ++ii) {
+	  //in[ii][0] -= events_per_bin;
+	  in[ii] -= events_per_bin;
+	}
 
-      // Pack results into the array holding the power density.
-      for (size_t ii = 0; ii < num_cpx_elements; ++ii) {
-        const double & real = out[ii][0];
-        const double & imag = out[ii][1];
-        spec[ii] += (real * real + imag * imag) * 2. / num_events;
+	// Do the transformation.
+	fftw_execute(p);
+
+	// Pack results into the array holding the power density.
+	for (size_t ii = 0; ii < num_cpx_elements; ++ii) {
+	  const double & real = out[ii][0];
+	  const double & imag = out[ii][1];
+	  spec[ii] += (real * real + imag * imag) * 2. / num_events;
+	}
       }
     }
 
