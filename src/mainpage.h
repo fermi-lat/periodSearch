@@ -13,8 +13,9 @@
     H, and Rayleigh (Z2N with N == 1). 
     The application gtpspec searches for pulsations in a much wider range of frequencies.
     It uses the Discrete Fast Fourier Transfer (FFT) technique to compute power spectrum 
-    density. For details about how
-    each of these is computed, see
+    density. The application gtptest applies all the statistical tests available with
+    gtpsearch application to a series of pulse phase values stored in given event files.
+    For details about how each of these is computed, see
     <a href="http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/algorithm.html"> pulsar_algorithms </a>
 
     \section parameters Application Parameters
@@ -41,7 +42,7 @@ infile [file]
     default value is yes (true).
 \endverbatim
 
-    \subsection general gtpsearch Parameters
+    \subsection gtpsearch_parameters gtpsearch Parameters
 \verbatim
 evfile [file name]
     Name of input event file, FT1 format or equivalent.
@@ -414,5 +415,44 @@ p2p0ratio = 0. [double]
     OGIP-compliant leap second table format. If leapsecfile is the
     string DEFAULT, the default leap-second file (leapsec.fits), which
     is distributed with the extFiles package, will be used.
+\endverbatim
+
+    \subsection gtptest_parameters gtptest Parameters
+\verbatim
+evfile [file name]
+    Name of input event file, FT1 format or equivalent.
+
+outfile [file name]
+    Name of output FITS file that contains a search result.  If
+    outfile is NONE, no FITS output will be created.
+
+numphase = 10 [integer]
+    Number of phase bins in each trial for the chi-squared test.  This
+    parameter only has effect if algorithm is CHI2.
+
+numharm = 10 [integer]
+    Number of harmonics in each trial for the Z2n/Rayleigh test.  This
+    parameter only has effect if algorithm is Z2N.  For the Rayleigh
+    test, set algorithm to Z2N, and set numharm to 1.
+
+maxharm = 10 [integer]
+    Maximum number of harmonics in each trial for the H test.  This
+    parameter only has effect if algorithm is H.
+
+(evtable = EVENTS) [string]
+    Name of the FITS table containing the event data.
+
+(pphasefield = PULSE_PHASE) [string]
+    Name of the output column to contain the assigned pulse phase.
+
+(plot = yes) [bool]
+    If plot is yes, the result will be displayed in a separate plot
+    window, as well as the numerical results will be output in a text
+    screen.  If plot is no, only the text output will be displayed,
+    and no plot window will be displayed.
+
+(title = DEFAULT) [string]
+    Title for the graph. By default a title indicating the type of
+    test and other pertinent information will be displayed.
 \endverbatim
 */
