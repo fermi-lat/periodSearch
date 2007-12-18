@@ -153,12 +153,17 @@ tip::Table & StatisticViewer::write(tip::Table & table) const {
   // Append FITS columns if missing.
   for (index_type axis_index = 0; axis_index < m_num_axis; ++axis_index) {
     const std::string & field_name = m_label_cont[axis_index];
-    // TODO: Set the field unit (below) to each column, if not blank.
-    //const std::string & field_unit = m_unit_cont[axis_index];
     try {
       table.getFieldIndex(field_name);
     } catch (const tip::TipException &) {
       table.appendField(field_name, "1D");
+    }
+
+    // Set the field unit to each column, if unit is not blank.
+    const std::string & field_unit = m_unit_cont[axis_index];
+    if (!field_unit.empty()) {
+      tip::IColumn * column = table.getColumn(table.getFieldIndex(field_name));
+      column->getColumnKeyword("TUNIT").set(field_unit);
     }
   }
 
