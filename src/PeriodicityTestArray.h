@@ -6,6 +6,7 @@
 #ifndef periodSearch_PeriodicityTestArray_h
 #define periodSearch_PeriodicityTestArray_h
 
+#include <cstddef>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -19,8 +20,7 @@
 */
 class PeriodicityTestArray {
   public:
-    // TODO: Is there any other way to do this?
-    typedef int size_type;
+    typedef std::size_t size_type;
 
     virtual ~PeriodicityTestArray() {}
 
