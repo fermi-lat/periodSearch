@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: peachey  Tue Jan 15 12:52:28 PST 2008
+periodSearch/src
+
+Modified Files:
+	FoldingAnalysis.cxx 
+Log Message:
+Put implementation outside periodSearch namespace, to match header file.
+    *
+------------------------------------------------------------
 User: peachey  Tue Jan 15 12:52:02 PST 2008
 periodSearch/src
 
