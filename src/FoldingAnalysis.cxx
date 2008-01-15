@@ -13,7 +13,9 @@
 #include "PeriodicityTestArray.h"
 #include "StatisticViewer.h"
 
-namespace periodSearch {
+using namespace periodSearch;
+
+//namespace periodSearch {
 
   FoldingAnalysis::FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration,
     const std::string & freq_unit): PeriodSearch(test_array->size(), freq_unit), m_test_array(test_array), m_step(step),
@@ -115,4 +117,4 @@ namespace periodSearch {
     // Delegate the computation of a chance probablity.
     return m_test_array->computeChanceProb(stat);
   }
-}
+//}
