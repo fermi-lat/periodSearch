@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: peachey  Tue Jan 15 12:52:02 PST 2008
+periodSearch/src
+
+Modified Files:
+	StatisticViewer.cxx 
+Log Message:
+Include limits header for use of numeric_limits.
+    *
+------------------------------------------------------------
 TAG
 Tag name: v9, operation: add
 Package: periodSearch
