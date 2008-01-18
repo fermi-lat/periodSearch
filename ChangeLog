@@ -1,5 +1,15 @@
 ------------------------------------------------------------
 User: hirayama  Fri Jan 18 14:46:42 PST 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Remove use of TimingModel class object.
+
+    *
+------------------------------------------------------------
+User: hirayama  Fri Jan 18 14:46:42 PST 2008
 periodSearch/src
 
 Modified Files:
