@@ -14,7 +14,6 @@
 #include "facilities/commonUtilities.h"
 
 #include "pulsarDb/EphChooser.h"
-#include "pulsarDb/TimingModel.h"
 
 #include "timeSystem/AbsoluteTime.h"
 #include "timeSystem/TimeSystem.h"
@@ -86,9 +85,8 @@ void PowerSpectrumApp::run() {
   selectTimeCorrectionMode(pars);
 
   // Set up EphComputer for arrival time corrections.
-  pulsarDb::TimingModel model;
   pulsarDb::SloppyEphChooser chooser;
-  initEphComputer(pars, model, chooser, "NONE");
+  initEphComputer(pars, chooser, "NONE");
 
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool guess_pdot = false;
