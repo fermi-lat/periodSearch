@@ -74,8 +74,6 @@ class PSearchTestApp : public st_app::StApp {
       double center, double step, long num_trials, double epoch, int num_bins,
       double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot);
 
-    void testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name, double epoch);
-
     void testOneSearch(const std::vector<double> & events, PeriodSearch & search,
       const std::string & text_title, const std::string & plot_title, const std::string & out_file,
       bool plot, double min_freq = -1., double max_freq = -1.);
@@ -123,9 +121,6 @@ void PSearchTestApp::testPeriodSearch() {
   double epoch = .2;
   int num_bins = 10;
   double duration = 1000.;
-
-  // Test process of picking the ephemeris.
-  testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", 212380785.922);
 
   bool plot = getParGroup()["plot"];
 
@@ -240,9 +235,6 @@ void PSearchTestApp::testPeriodSearch() {
   // Repeat test with the pdot corrected data.
   testAllStats("psrb0540-pdot", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000,
     19.82, 19.85, plot);
-
-  // Test process of picking the ephemeris.
-  testChooseEph(findFile("ft1tiny.fits"), findFile("groD4-dc2v4.fits"), "crab", epoch);
 }
 
 void PSearchTestApp::testChanceProb() {
@@ -593,65 +585,6 @@ void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<
 
   testOneSearch(events, fourier_search, "Fourier Power", "Fourier Analysis: Power Spectrum", prefix + "-fourier.fits",
     plot, fourier_min_freq, fourier_max_freq);
-}
-
-void PSearchTestApp::testChooseEph(const std::string & ev_file, const std::string & eph_file, const std::string & pulsar_name,
-  double epoch) {
-  using namespace pulsarDb;
-  using namespace timeSystem;
-  using namespace tip;
-
-  m_os.setMethod("testChooseEph");
-
-  // Open event file.
-  std::auto_ptr<const Table> ev_table(IFileSvc::instance().readTable(ev_file, "EVENTS"));
-
-  // Need some keywords.
-  const Header & header(ev_table->getHeader());
-  double mjdref = 0.L;
-  header["MJDREF"].get(mjdref);
-
-  // Create an ephemeris chooser object.
-  SloppyEphChooser chooser;
-
-  // Create a computer.
-  EphComputer computer(chooser);
-
-  // Get database access.
-  PulsarDb db(eph_file);
-
-  // Limit database to this pulsar only.
-  db.filterName(pulsar_name);
-
-  // Load ephemerides into computer.
-  computer.load(db);
-
-  MetRep glast_tdb("TDB", 51910, 0., epoch);
-  FrequencyEph freq = computer.calcPulsarEph(AbsoluteTime(glast_tdb));
-
-  const double epsilon = 1.e-8;
-
-  double correct_f0 = 29.93633350069171;
-  if (fabs(correct_f0/freq.f0() - 1.) > epsilon) {
-    m_failed = true;
-    m_os.err() << "f0 was computed to be " << freq.f0() << ", not " << correct_f0 << std::endl;
-  }
-
-  double correct_f1 = -3.772519499263467e-10;
-  if (fabs(correct_f1/freq.f1() - 1.) > epsilon) {
-    m_failed = true;
-    m_os.err() << "f1 was computed to be " << freq.f1() << ", not " << correct_f1 << std::endl;
-  }
-
-  // Select the best ephemeris for this time.
-  glast_tdb.setValue(epoch);
-  const PulsarEph & chosen_eph(chooser.choose(computer.getPulsarEphCont(), AbsoluteTime(glast_tdb)));
-
-  double correct_f2 = chosen_eph.f2();
-  if (fabs(correct_f2/freq.f2() - 1.) > epsilon) {
-    m_failed = true;
-    m_os.err() << "ERROR: in testChooseEph, f2 was computed to be " << freq.f2() << ", not " << correct_f2 << std::endl;
-  }
 }
 
 void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search,
