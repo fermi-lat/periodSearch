@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: peachey  Tue Feb  5 13:59:06 PST 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Remove unneeded and redundant unit test of functions in pulsarDb.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-09-00-02, operation: add
 Package: periodSearch
