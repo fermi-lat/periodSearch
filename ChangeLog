@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Feb  6 13:35:06 PST 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Use PdotCanceler for pdot cancellation.
+
+    *
+------------------------------------------------------------
 User: peachey  Tue Feb  5 13:59:06 PST 2008
 periodSearch/src/test
 
