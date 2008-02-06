@@ -136,7 +136,7 @@ void PSearchApp::run() {
   // Compute central frequency of periodicity search, which is an expected pulse frequency at the time origin for the search.
   double origin = 0.;
   AbsoluteTime abs_origin = computeAbsoluteTime(origin);
-  double f_center = getEphComputer().calcPulsarEph(abs_origin).f0();
+  double f_center = getEphComputer().calcFrequency(abs_origin);
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
   // using start/stop of the observation interval with all corrections applied.
