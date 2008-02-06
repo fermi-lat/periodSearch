@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Wed Feb  6 15:40:50 PST 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Use EphComputer::calcFrequency method instead of EphComputer::calcPulsarEph method.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Feb  6 13:35:06 PST 2008
 periodSearch/src/test
 
