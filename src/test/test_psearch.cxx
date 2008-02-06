@@ -16,6 +16,7 @@
 
 #include "pulsarDb/EphChooser.h"
 #include "pulsarDb/EphComputer.h"
+#include "pulsarDb/PdotCanceler.h"
 #include "pulsarDb/PulsarDb.h"
 #include "pulsarDb/PulsarEph.h"
 
@@ -202,13 +203,14 @@ void PSearchTestApp::testPeriodSearch() {
   AbsoluteTime abs_epoch(glast_tdb);
 
   PeriodEph eph("TDB", abs_epoch, abs_epoch, abs_epoch, 0., 0., phi0, 1. / central, pdot, p2dot);
+  PdotCanceler canceler(abs_epoch, eph, 2);
 
   // Correct the data.
   AbsoluteTime evt_time(glast_tdb);
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
     glast_tdb.setValue(*itor);
     evt_time = glast_tdb;
-    eph.cancelPdot(evt_time);
+    canceler.cancelPdot(evt_time);
     glast_tdb = evt_time;
     *itor = glast_tdb.getValue();
   }
@@ -216,19 +218,19 @@ void PSearchTestApp::testPeriodSearch() {
   // Cancel pdot in tstart, tstop and epoch to be consistent.
   glast_tdb.setValue(tstart);
   evt_time = glast_tdb;
-  eph.cancelPdot(evt_time);
+  canceler.cancelPdot(evt_time);
   glast_tdb = evt_time;
   tstart = glast_tdb.getValue();
 
   glast_tdb.setValue(tstop);
   evt_time = glast_tdb;
-  eph.cancelPdot(evt_time);
+  canceler.cancelPdot(evt_time);
   glast_tdb = evt_time;
   tstop = glast_tdb.getValue();
 
   glast_tdb.setValue(epoch);
   evt_time = glast_tdb;
-  eph.cancelPdot(evt_time);
+  canceler.cancelPdot(evt_time);
   glast_tdb = evt_time;
   epoch = glast_tdb.getValue();
 
