@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Feb  8 13:19:06 PST 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Modify how to compute the scan center (f_center) to remove a call of EphComputer::calcFrequency method. Stop using namespace timeSystem.
+
+    *
+------------------------------------------------------------
 User: hirayama  Wed Feb  6 15:40:50 PST 2008
 periodSearch/src/gtpsearch
 
