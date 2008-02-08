@@ -40,7 +40,6 @@
 #include "Z2nTestArray.h"
 
 using namespace periodSearch;
-using namespace timeSystem;
 
 static const std::string s_cvs_id = "$Name:  $";
 
@@ -135,8 +134,11 @@ void PSearchApp::run() {
 
   // Compute central frequency of periodicity search, which is an expected pulse frequency at the time origin for the search.
   double origin = 0.;
-  AbsoluteTime abs_origin = computeAbsoluteTime(origin);
-  double f_center = getEphComputer().calcFrequency(abs_origin);
+  timeSystem::AbsoluteTime abs_origin = computeAbsoluteTime(origin);
+  const pulsarDb::PulsarEph & eph = getEphComputer().choosePulsarEph(abs_origin);
+  double f_center = eph.calcFrequency(abs_origin);
+  // Note: The time system in which the frequency (f_center) is measured is ignored here, because it is only a rough estimate
+  // of the frequency at the time origin (abs_origin) for the purpose of finding a reasonable scan range.
 
   // Compute frequency step from scan step and the Fourier resolution == 1. / duration,
   // using start/stop of the observation interval with all corrections applied.
@@ -171,7 +173,7 @@ void PSearchApp::run() {
 
   for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
-    AbsoluteTime abs_evt_time(getEventTime());
+    timeSystem::AbsoluteTime abs_evt_time(getEventTime());
 
     // Convert event time to target time representation.
     double target_evt_time = computeElapsedSecond(abs_evt_time);
