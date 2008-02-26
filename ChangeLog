@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: glastrm  Mon Feb 25 21:23:06 PST 2008
+ScienceTools-scons/periodSearch
+
+Modified Files:
+	periodSearchLib.py SConscript 
+Log Message:
+Set lib dependencies up for when building libraries
+    *
+------------------------------------------------------------
 User: hirayama  Fri Feb  8 13:19:06 PST 2008
 periodSearch/src/gtpsearch
 
