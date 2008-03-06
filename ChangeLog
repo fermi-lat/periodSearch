@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Thu Mar  6 13:51:55 PST 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Remove unnecessary header files to include. Remove use of namespaces pulsarDb and timeSystem.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-09-00-02, operation: mov
 Package: periodSearch
