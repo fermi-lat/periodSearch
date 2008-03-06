@@ -14,10 +14,7 @@
 
 #include "periodSearch/PeriodSearch.h"
 
-#include "pulsarDb/EphChooser.h"
-#include "pulsarDb/EphComputer.h"
 #include "pulsarDb/PdotCanceler.h"
-#include "pulsarDb/PulsarDb.h"
 #include "pulsarDb/PulsarEph.h"
 
 #include "st_app/AppParGroup.h"
@@ -195,18 +192,15 @@ void PSearchTestApp::testPeriodSearch() {
   double pdot = 4.7967744e-13;
   double p2dot = 0.; // Not available.
 
-  using namespace pulsarDb;
-  using namespace timeSystem;
-
-  MetRep glast_tdb("TDB", 51910, 0., 0.);
+  timeSystem::MetRep glast_tdb("TDB", 51910, 0., 0.);
   glast_tdb.setValue(epoch);
-  AbsoluteTime abs_epoch(glast_tdb);
+  timeSystem::AbsoluteTime abs_epoch(glast_tdb);
 
-  PeriodEph eph("TDB", abs_epoch, abs_epoch, abs_epoch, 0., 0., phi0, 1. / central, pdot, p2dot);
-  PdotCanceler canceler(abs_epoch, eph, 2);
+  pulsarDb::PeriodEph eph("TDB", abs_epoch, abs_epoch, abs_epoch, 0., 0., phi0, 1. / central, pdot, p2dot);
+  pulsarDb::PdotCanceler canceler(abs_epoch, eph, 2);
 
   // Correct the data.
-  AbsoluteTime evt_time(glast_tdb);
+  timeSystem::AbsoluteTime evt_time(glast_tdb);
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
     glast_tdb.setValue(*itor);
     evt_time = glast_tdb;
