@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 TAG
+Tag name: periodSearch-09-00-02, operation: mov
+Package: periodSearch
+User: glast  Wed Mar 19 13:54:33 2008
+Files:
+  periodSearch/SConscript  1.4
+
+    *
+------------------------------------------------------------
+TAG
 Tag name: v9r0p2, operation: mov
 Package: periodSearch
 User: glast  Wed Mar 19 13:54:17 2008
