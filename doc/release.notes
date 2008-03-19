@@ -2,9 +2,11 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.26 2007/11/13 23:45:22 hirayama Exp $
+$Id: release.notes,v 1.28 2008/01/15 20:53:11 peachey Exp $
 
 \verbatim
+29-jan-2008    v9r0p2 JP  Add gtpspec, gtptest, unit test code to SConscript.
+15-jan-2008    v9r0p1 JP  Fix compile errors on Windows.
 18-dec-2007        v9 JP  Add gtptest application. Refactor code for plotting and
                           writing test results. Refactor PeriodSearch subclasses to
                           make a cleaner data encapsulation to support the new application.
