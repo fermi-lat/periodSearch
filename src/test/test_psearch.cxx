@@ -15,8 +15,6 @@
 #include "periodSearch/PeriodSearch.h"
 
 #include "pulsarDb/PdotCanceler.h"
-#include "pulsarDb/PeriodEph.h"
-#include "pulsarDb/PulsarEph.h"
 
 #include "st_app/AppParGroup.h"
 #include "st_app/StApp.h"
@@ -189,16 +187,12 @@ void PSearchTestApp::testPeriodSearch() {
   testAllStats("psrb0540", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000, 19.82, 19.85, plot);
 
   // Now test pdot correction.
-  double phi0 = 0.; // Ignored for these purposes anyway.
-  double pdot = 4.7967744e-13;
-  double p2dot = 0.; // Not available.
-
   timeSystem::MetRep glast_tdb("TDB", 51910, 0., 0.);
   glast_tdb.setValue(epoch);
   timeSystem::AbsoluteTime abs_epoch(glast_tdb);
-
-  pulsarDb::PeriodEph eph("TDB", abs_epoch, abs_epoch, abs_epoch, 0., 0., phi0, 1. / central, pdot, p2dot);
-  pulsarDb::PdotCanceler canceler(abs_epoch, eph, 2);
+  double pdot = 4.7967744e-13;
+  std::vector<double> fdot_ratio(1, -pdot * central);
+  pulsarDb::PdotCanceler canceler("TDB", abs_epoch, fdot_ratio);
 
   // Correct the data.
   timeSystem::AbsoluteTime evt_time(glast_tdb);
