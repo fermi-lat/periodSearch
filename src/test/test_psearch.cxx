@@ -15,6 +15,7 @@
 #include "periodSearch/PeriodSearch.h"
 
 #include "pulsarDb/PdotCanceler.h"
+#include "pulsarDb/PeriodEph.h"
 #include "pulsarDb/PulsarEph.h"
 
 #include "st_app/AppParGroup.h"
