@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sun Mar 30 18:30:14 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Make the unit test PulsarEph-free.
+    *
+------------------------------------------------------------
 User: hirayama  Sun Mar 30 17:19:22 PDT 2008
 periodSearch/src/test
 
