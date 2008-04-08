@@ -2,9 +2,12 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.28 2008/01/15 20:53:11 peachey Exp $
+$Id: release.notes,v 1.29 2008/01/29 20:56:57 peachey Exp $
 
 \verbatim
+08-apr-2008      v9r1 JP  Internal change (removed pulsarDb::TimingModel; introduced
+                          pulsarDb::PdotCanceler class; changed computation of extrapolated
+                          frequency.) Updated reference test data.
 29-jan-2008    v9r0p2 JP  Add gtpspec, gtptest, unit test code to SConscript.
 15-jan-2008    v9r0p1 JP  Fix compile errors on Windows.
 18-dec-2007        v9 JP  Add gtptest application. Refactor code for plotting and
