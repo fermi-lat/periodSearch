@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed May 21 14:26:15 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Stop using MetRep (use ElapsedTime instead).
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-09-01-00, operation: add
 Package: periodSearch
