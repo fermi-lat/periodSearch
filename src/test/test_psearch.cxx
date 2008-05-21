@@ -25,7 +25,9 @@
 #include "st_stream/st_stream.h"
 
 #include "timeSystem/AbsoluteTime.h"
-#include "timeSystem/TimeRep.h"
+#include "timeSystem/Duration.h"
+#include "timeSystem/ElapsedTime.h"
+#include "timeSystem/TimeInterval.h"
 
 #include "tip/Header.h"
 #include "tip/IFileSvc.h"
@@ -146,13 +148,10 @@ void PSearchTestApp::testPeriodSearch() {
   fake_evts.resize(evt_table->getNumRecords());
 
   // Correct event times for changed MJDREF.
-  timeSystem::MetRep orig_glast_time("TDB", 54101, 0., 0.);
-  timeSystem::MetRep current_glast_time("TDB", 51910, 0., 0.);
+  const double event_time_offset = (54101 - 51910) * 86400.;
   std::vector<double>::iterator event_itor = fake_evts.begin();
   for (tip::Table::ConstIterator itor = evt_table->begin(); itor != evt_table->end(); ++itor, ++event_itor) {
-    orig_glast_time.setValue((*itor)["TIME"].get());
-    current_glast_time = timeSystem::AbsoluteTime(orig_glast_time);
-    *event_itor = current_glast_time.getValue();
+    *event_itor = (*itor)["TIME"].get() + event_time_offset;
   }
 
   double tstart = 0.;
@@ -175,53 +174,40 @@ void PSearchTestApp::testPeriodSearch() {
   }
 
   // Correct tstart and tstop for changed MJDREF.
-  orig_glast_time.setValue(tstart);
-  current_glast_time = timeSystem::AbsoluteTime(orig_glast_time);
-  tstart = current_glast_time.getValue();
-  orig_glast_time.setValue(tstop);
-  current_glast_time = timeSystem::AbsoluteTime(orig_glast_time);
-  tstop = current_glast_time.getValue();
+  tstart += event_time_offset;
+  tstop += event_time_offset;
 
   // Repeat simple test with this somewhat less artificial data.
   // Note for Fourier test: width of .01 s -> Nyquist = 1/.02s = 50 Hz.
   testAllStats("psrb0540", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000, 19.82, 19.85, plot);
 
   // Now test pdot correction.
-  timeSystem::MetRep glast_tdb("TDB", 51910, 0., 0.);
-  glast_tdb.setValue(epoch);
-  timeSystem::AbsoluteTime abs_epoch(glast_tdb);
+  timeSystem::AbsoluteTime glast_origin("TDB", 51910, 0.);
+  timeSystem::AbsoluteTime abs_epoch = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, epoch));
   double pdot = 4.7967744e-13;
   std::vector<double> fdot_ratio(1, -pdot * central);
   pulsarDb::PdotCanceler canceler("TDB", abs_epoch, fdot_ratio);
 
   // Correct the data.
-  timeSystem::AbsoluteTime evt_time(glast_tdb);
+  timeSystem::AbsoluteTime evt_time("TDB", 0, 0.);
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
-    glast_tdb.setValue(*itor);
-    evt_time = glast_tdb;
+    evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, *itor));
     canceler.cancelPdot(evt_time);
-    glast_tdb = evt_time;
-    *itor = glast_tdb.getValue();
+    *itor = (evt_time - glast_origin).computeElapsedTime("TDB").getTime().getValue(timeSystem::Sec).getDouble();
   }
 
   // Cancel pdot in tstart, tstop and epoch to be consistent.
-  glast_tdb.setValue(tstart);
-  evt_time = glast_tdb;
+  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, tstart));
   canceler.cancelPdot(evt_time);
-  glast_tdb = evt_time;
-  tstart = glast_tdb.getValue();
+  tstart = (evt_time - glast_origin).computeElapsedTime("TDB").getTime().getValue(timeSystem::Sec).getDouble();
 
-  glast_tdb.setValue(tstop);
-  evt_time = glast_tdb;
+  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, tstop));
   canceler.cancelPdot(evt_time);
-  glast_tdb = evt_time;
-  tstop = glast_tdb.getValue();
+  tstop = (evt_time - glast_origin).computeElapsedTime("TDB").getTime().getValue(timeSystem::Sec).getDouble();
 
-  glast_tdb.setValue(epoch);
-  evt_time = glast_tdb;
+  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, epoch));
   canceler.cancelPdot(evt_time);
-  glast_tdb = evt_time;
-  epoch = glast_tdb.getValue();
+  epoch = (evt_time - glast_origin).computeElapsedTime("TDB").getTime().getValue(timeSystem::Sec).getDouble();
 
   // Repeat test with the pdot corrected data.
   testAllStats("psrb0540-pdot", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000,
