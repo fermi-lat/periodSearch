@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sun Jun  1 15:25:53 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Modify to use new Duration interface.
+    *
+------------------------------------------------------------
 User: hirayama  Wed May 21 14:26:15 PDT 2008
 periodSearch/src/test
 
