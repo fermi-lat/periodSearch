@@ -193,21 +193,21 @@ void PSearchTestApp::testPeriodSearch() {
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
     evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, *itor));
     canceler.cancelPdot(evt_time);
-    *itor = (evt_time - glast_origin).computeElapsedTime("TDB").getTime().get("Sec");
+    *itor = (evt_time - glast_origin).computeDuration("TDB", "Sec");
   }
 
   // Cancel pdot in tstart, tstop and epoch to be consistent.
   evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, tstart));
   canceler.cancelPdot(evt_time);
-  tstart = (evt_time - glast_origin).computeElapsedTime("TDB").getTime().get("Sec");
+  tstart = (evt_time - glast_origin).computeDuration("TDB", "Sec");
 
   evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, tstop));
   canceler.cancelPdot(evt_time);
-  tstop = (evt_time - glast_origin).computeElapsedTime("TDB").getTime().get("Sec");
+  tstop = (evt_time - glast_origin).computeDuration("TDB", "Sec");
 
   evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, epoch));
   canceler.cancelPdot(evt_time);
-  epoch = (evt_time - glast_origin).computeElapsedTime("TDB").getTime().get("Sec");
+  epoch = (evt_time - glast_origin).computeDuration("TDB", "Sec");
 
   // Repeat test with the pdot corrected data.
   testAllStats("psrb0540-pdot", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000,
