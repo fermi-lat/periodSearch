@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: glastrm  Thu Jun 19 16:32:22 PDT 2008
+ScienceTools-scons/periodSearch
+
+Modified Files:
+	SConscript 
+Log Message:
+Added Author and Version fields
+    *
+------------------------------------------------------------
 User: hirayama  Mon Jun  2 18:28:10 PDT 2008
 periodSearch/src/test
 
