@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+TAG
+Tag name: periodSearch-09-00-01, operation: mov
+Package: periodSearch
+User: glastrm  Thu Jun 19 16:32:32 2008
+Files:
+  periodSearch/SConscript  1.5
+
+    *
+------------------------------------------------------------
 User: glastrm  Thu Jun 19 16:32:22 PDT 2008
 ScienceTools-scons/periodSearch
 
