@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Tue Jul  8 18:49:53 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Move PeriodSearch.h from periodSearch/ to src/. Remove namespace periodSearch and indentations for it.
+    *
+------------------------------------------------------------
+User: hirayama  Tue Jul  8 18:49:53 PDT 2008
 periodSearch/src/gtpsearch
 
 Modified Files:
