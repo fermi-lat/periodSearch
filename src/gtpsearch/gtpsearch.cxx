@@ -31,15 +31,13 @@
 #include "st_stream/StreamFormatter.h"
 #include "st_stream/st_stream.h"
 
-#include "periodSearch/PeriodSearch.h"
 #include "ChiSquaredTestArray.h"
 #include "FoldingAnalysis.h"
 #include "HTestArray.h"
+#include "PeriodSearch.h"
 #include "RayleighTestArray.h"
 #include "StatisticViewer.h"
 #include "Z2nTestArray.h"
-
-using namespace periodSearch;
 
 static const std::string s_cvs_id = "$Name:  $";
 

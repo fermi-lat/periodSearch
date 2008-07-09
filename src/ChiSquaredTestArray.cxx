@@ -105,7 +105,7 @@ std::pair<double, double> ChiSquaredTestArray::computeChanceProb(double stat) co
   //    [where function chi2prob(chisq, dof) returns the chi-squared
   //     distribution for "dof" degrees of freedom, integrated from "chisq"
   //     to infinity];
-  periodSearch::ChiSquaredProb prob(m_num_phase_bins - 1);
+  ChiSquaredProb prob(m_num_phase_bins - 1);
   return prob(stat);
 }
 
