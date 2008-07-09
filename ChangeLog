@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Tue Jul  8 18:49:53 PDT 2008
+periodSearch/periodSearch
+
+Removed Files:
+	PeriodSearch.h 
+Log Message:
+Move PeriodSearch.h from periodSearch/ to src/. Remove namespace periodSearch and indentations for it.
+    *
+------------------------------------------------------------
 User: hirayama  Mon Jul  7 20:10:58 PDT 2008
 periodSearch/pfiles
 
