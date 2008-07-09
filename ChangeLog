@@ -1,5 +1,19 @@
 ------------------------------------------------------------
 User: hirayama  Tue Jul  8 18:49:53 PDT 2008
+periodSearch/src
+
+Modified Files:
+	ChiSquaredProb.h ChiSquaredProb.cxx ChiSquaredTestArray.cxx 
+	FoldingAnalysis.cxx FoldingAnalysis.h FourierAnalysis.cxx 
+	FourierAnalysis.h PeriodSearch.cxx PowerSpectrumApp.cxx 
+	Z2nTestArray.cxx 
+Added Files:
+	PeriodSearch.h 
+Log Message:
+Move PeriodSearch.h from periodSearch/ to src/. Remove namespace periodSearch and indentations for it.
+    *
+------------------------------------------------------------
+User: hirayama  Tue Jul  8 18:49:53 PDT 2008
 periodSearch/periodSearch
 
 Removed Files:
