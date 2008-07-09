@@ -120,7 +120,7 @@ std::pair<double, double> Z2nTestArray::computeChanceProb(double stat) const {
   //      [where function chi2prob(chi2, dof) returns the chi-squared
   //       distribution for "dof" degrees of freedom, integrated from "chi2"
   //       to infinity];
-  periodSearch::ChiSquaredProb prob(2 * m_num_harm);
+  ChiSquaredProb prob(2 * m_num_harm);
   return prob(stat);
 }
 

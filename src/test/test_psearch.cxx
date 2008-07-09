@@ -12,8 +12,6 @@
 
 #include "facilities/commonUtilities.h"
 
-#include "periodSearch/PeriodSearch.h"
-
 #include "pulsarDb/PdotCanceler.h"
 
 #include "st_app/AppParGroup.h"
@@ -38,12 +36,11 @@
 #include "FourierAnalysis.h"
 #include "HTestArray.h"
 #include "PeriodicityTestArray.h"
+#include "PeriodSearch.h"
 #include "RayleighTestArray.h"
 #include "Z2nTestArray.h"
 
 static const std::string s_cvs_id = "$Name:  $";
-
-using namespace periodSearch;
 
 class PSearchTestApp : public st_app::StApp {
   public:
@@ -215,8 +212,6 @@ void PSearchTestApp::testPeriodSearch() {
 }
 
 void PSearchTestApp::testChanceProb() {
-  using namespace periodSearch;
-
   m_os.setMethod("testChanceProb");
 
   // Vector to hold array of number of statistically independent trials to test chanceProb.
@@ -524,8 +519,6 @@ void PSearchTestApp::testRayleighTestArray() {
 void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
   double center, double step, long num_trials, double epoch, int num_bins,
   double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot) {
-  using namespace periodSearch;
-
   m_os.setMethod("testAllStats");
 
   double duration = t_stop - t_start;

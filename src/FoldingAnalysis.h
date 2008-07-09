@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "periodSearch/PeriodSearch.h"
+#include "PeriodSearch.h"
 
 class PeriodicityTestArray;
 
@@ -18,7 +18,7 @@ class PeriodicityTestArray;
     \brief Class for periodicity search based on various statistical tests used to determine frequency of pulsation
            when an approximate frequency is known, using the epoch-folding technique.
 */
-class FoldingAnalysis : public periodSearch::PeriodSearch {
+class FoldingAnalysis : public PeriodSearch {
   public:
     /** \brief Construct a periodicity search object using given search criteria and a statistical test object.
         \param center The central frequency to test.

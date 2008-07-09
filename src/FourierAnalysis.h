@@ -11,11 +11,11 @@
 #include <utility>
 #include <vector>
 
-#include "periodSearch/PeriodSearch.h"
+#include "PeriodSearch.h"
 
 /** \class FourierAnalysis
 */
-class FourierAnalysis : public periodSearch::PeriodSearch {
+class FourierAnalysis : public PeriodSearch {
   public:
     /** \brief Construct a FourierAnalysis.
         \param t_start Time lower boundary.

@@ -27,11 +27,10 @@
 #include "st_stream/StreamFormatter.h"
 #include "st_stream/st_stream.h"
 
-#include "periodSearch/PeriodSearch.h"
 #include "FourierAnalysis.h"
+#include "PeriodSearch.h"
 #include "StatisticViewer.h"
 
-using namespace periodSearch;
 using namespace timeSystem;
 
 static const std::string s_cvs_id = "$Name:  $";
