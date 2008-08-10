@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Sat Aug  9 19:40:45 PDT 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Adopt to the EventTimeHandler restructure.
+    *
+------------------------------------------------------------
+User: hirayama  Sat Aug  9 19:40:45 PDT 2008
 periodSearch/src
 
 Modified Files:
