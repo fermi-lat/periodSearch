@@ -88,8 +88,9 @@ void PowerSpectrumApp::run() {
   initEphComputer(pars, chooser, "NONE");
 
   // Use user input (parameters) together with computer to determine corrections to apply.
+  bool vary_ra_dec = false;
   bool guess_pdot = false;
-  initTimeCorrection(pars, guess_pdot);
+  initTimeCorrection(pars, vary_ra_dec, guess_pdot);
 
   // Compute start time of the data set.
   double tstart = computeElapsedSecond(getStartTime());
