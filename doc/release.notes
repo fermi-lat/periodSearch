@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.29 2008/01/29 20:56:57 peachey Exp $
+$Id: release.notes,v 1.30 2008/04/08 21:12:23 peachey Exp $
 
 \verbatim
+14-aug-2008      v9r2 MH  Changed to work with timeSystem v4r1.
 08-apr-2008      v9r1 JP  Internal change (removed pulsarDb::TimingModel; introduced
                           pulsarDb::PdotCanceler class; changed computation of extrapolated
                           frequency.) Updated reference test data.
