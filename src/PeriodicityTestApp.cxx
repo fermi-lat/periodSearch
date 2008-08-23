@@ -175,8 +175,8 @@ void PeriodicityTestApp::run() {
   }
 
   // Delete the event table(s).
-  for (table_list_type::iterator itor = table_list.begin(); itor != table_list.end(); ++itor) delete *itor;
+  for (table_list_type::reverse_iterator itor = table_list.rbegin(); itor != table_list.rend(); ++itor) delete *itor;
 
   // Delete the peridicity tests.
-  for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) delete *itor;
+  for (test_list_type::reverse_iterator itor = test_list.rbegin(); itor != test_list.rend(); ++itor) delete *itor;
 }
