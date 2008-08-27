@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Wed Aug 27 15:24:56 PDT 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Call getParGroup with no argument.
+    *
+------------------------------------------------------------
+User: hirayama  Wed Aug 27 15:24:56 PDT 2008
 periodSearch/src
 
 Modified Files:
