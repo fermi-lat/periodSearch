@@ -41,7 +41,7 @@ PeriodicityTestApp::~PeriodicityTestApp() throw() {}
 
 void PeriodicityTestApp::run() {
   m_os.setMethod("run()");
-  st_app::AppParGroup & pars(getParGroup("gtptest"));
+  st_app::AppParGroup & pars(getParGroup());
 
   // Prompt and save.
   pars.Prompt();

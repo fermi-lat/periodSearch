@@ -40,7 +40,7 @@ PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2) {
   setName("gtpspec");
   setVersion(s_cvs_id);
 
-  st_app::AppParGroup & pars(getParGroup("gtpspec"));
+  st_app::AppParGroup & pars(getParGroup());
   pars.setSwitch("ephstyle");
   pars.setCase("ephstyle", "FREQ", "f1f0ratio");
   pars.setCase("ephstyle", "FREQ", "f2f0ratio");
@@ -55,7 +55,7 @@ void PowerSpectrumApp::run() {
   resetApp();
 
   m_os.setMethod("run()");
-  st_app::AppParGroup & pars(getParGroup("gtpspec"));
+  st_app::AppParGroup & pars(getParGroup());
 
   // Prompt for all parameters and save them.
   prompt(pars);
