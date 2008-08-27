@@ -1,5 +1,20 @@
 ------------------------------------------------------------
 User: hirayama  Wed Aug 27 14:51:50 PDT 2008
+periodSearch/data/outref
+
+Modified Files:
+	artificial-chi-sq.fits artificial-fourier.fits 
+	artificial-h.fits artificial-rayleigh.fits artificial-z2n.fits 
+	psrb0540-chi-sq.fits psrb0540-fourier.fits psrb0540-h.fits 
+	psrb0540-pdot-chi-sq.fits psrb0540-pdot-fourier.fits 
+	psrb0540-pdot-h.fits psrb0540-pdot-rayleigh.fits 
+	psrb0540-pdot-z2n.fits psrb0540-rayleigh.fits 
+	psrb0540-z2n.fits 
+Log Message:
+Fill empty header keywords.
+    *
+------------------------------------------------------------
+User: hirayama  Wed Aug 27 14:51:50 PDT 2008
 periodSearch/src/gtpsearch
 
 Modified Files:
