@@ -22,7 +22,7 @@ TFORM#  = 'E       '           / data format of field: 4-byte REAL
 EXTNAME = 'POWER_SPECTRUM'     / name of this binary table extension
 DATE    = '        '           / file creation date (YYYY-MM-DDThh:mm:ss UT)
 CREATOR = '        '           / Name of program that created this file
-ORIGIN  = '        '
+ORIGIN  = 'LISOC'              / name of organization making file
 OBJECT  = '        '
 # The following commented-out keywords are used by the HEASOFT/Ftools/Xronos
 # application powspec, but are not used by current applications in the
