@@ -20,6 +20,7 @@
 #include "st_graph/IPlot.h"
 #include "st_graph/Sequence.h"
 
+#include "tip/Header.h"
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
 
@@ -157,6 +158,14 @@ void PeriodicityTestApp::run() {
 
       // Write the summary to the output header, and the data to the output table.
       test_array.getViewer().write(*out_table);
+
+      // Update header keywords.
+      tip::Header & header(out_table->getHeader());
+      tip::Header::KeyValCont_t keywords;
+      keywords.push_back(tip::Header::KeyValPair_t("DATE", header.formatTime(time(0))));
+      keywords.push_back(tip::Header::KeyValPair_t("CREATOR", getName() + " " + getVersion()));
+      keywords.push_back(tip::Header::KeyValPair_t("DATASUM", "-1")); // Force update of DATASUM keyword.
+      header.update(keywords);
     }
   }
 
