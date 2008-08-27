@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Aug 27 14:50:25 PDT 2008
+periodSearch/data
+
+Modified Files:
+	periodicity-test-out.tpl 
+Log Message:
+Fill ORIGIN value. Remove OBJECT (not applicable).
+    *
+------------------------------------------------------------
 User: hirayama  Wed Aug 27 14:50:06 PDT 2008
 periodSearch/data
 
