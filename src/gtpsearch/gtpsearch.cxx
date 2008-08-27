@@ -20,6 +20,7 @@
 #include "timeSystem/GlastTimeHandler.h"
 #include "timeSystem/TimeSystem.h"
 
+#include "tip/Header.h"
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
 
@@ -210,6 +211,19 @@ void PSearchApp::run() {
 
     // Write the summary to the output header, and the data to the output table.
     viewer.write(*out_table);
+
+    // Get a target name to put in the output file.
+    std::string psr_name = pars["psrname"];
+    for (std::string::iterator itor = psr_name.begin(); itor != psr_name.end(); ++itor) *itor = std::toupper(*itor);
+
+    // Update header keywords.
+    tip::Header & header(out_table->getHeader());
+    tip::Header::KeyValCont_t keywords;
+    keywords.push_back(tip::Header::KeyValPair_t("DATE", header.formatTime(time(0))));
+    keywords.push_back(tip::Header::KeyValPair_t("CREATOR", getName() + " " + getVersion()));
+    keywords.push_back(tip::Header::KeyValPair_t("OBJECT", psr_name));
+    keywords.push_back(tip::Header::KeyValPair_t("DATASUM", "-1")); // Force update of DATASUM keyword.
+    header.update(keywords);
   }
 
   // Write the stats to the screen.
