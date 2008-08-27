@@ -21,11 +21,11 @@ TFORM#  = 'D       '           / data format of field: 4-byte REAL
 EXTNAME = 'CHI2TEST'           / name of this binary table extension
 DATE    = '        '           / file creation date (YYYY-MM-DDThh:mm:ss UT)
 CREATOR = '        '           / Name of program that created this file
-ORIGIN  = '        '
-OBJECT  = '        '
+ORIGIN  = 'LISOC'              / name of organization making file
 # The following commented-out keywords are used by the HEASOFT/Ftools/Xronos
 # application powspec, but are not used by current applications in the
 # periodSearch package.
+#OBJECT  = '        '
 #HDUCLASS= 'OGIP    '
 #HDUCLAS1= 'LIGHTCURVE'
 #HDUCLAS2= 'TOTAL'
@@ -48,11 +48,11 @@ TFORM#  = 'D       '           / data format of field: 4-byte REAL
 EXTNAME = 'Z2NTEST'            / name of this binary table extension
 DATE    = '        '           / file creation date (YYYY-MM-DDThh:mm:ss UT)
 CREATOR = '        '           / Name of program that created this file
-ORIGIN  = '        '
-OBJECT  = '        '
+ORIGIN  = 'LISOC'              / name of organization making file
 # The following commented-out keywords are used by the HEASOFT/Ftools/Xronos
 # application powspec, but are not used by current applications in the
 # periodSearch package.
+#OBJECT  = '        '
 #HDUCLASS= 'OGIP    '
 #HDUCLAS1= 'TEMPORALDATA'
 #HDUCLAS2= 'POWER SPECTRA'
@@ -75,11 +75,11 @@ TFORM#  = 'D       '           / data format of field: 4-byte REAL
 EXTNAME = 'RAYLEIGHTEST'       / name of this binary table extension
 DATE    = '        '           / file creation date (YYYY-MM-DDThh:mm:ss UT)
 CREATOR = '        '           / Name of program that created this file
-ORIGIN  = '        '
-OBJECT  = '        '
+ORIGIN  = 'LISOC'              / name of organization making file
 # The following commented-out keywords are used by the HEASOFT/Ftools/Xronos
 # application powspec, but are not used by current applications in the
 # periodSearch package.
+#OBJECT  = '        '
 #HDUCLASS= 'OGIP    '
 #HDUCLAS1= 'TEMPORALDATA'
 #HDUCLAS2= 'POWER SPECTRA'
@@ -102,11 +102,11 @@ TFORM#  = 'D       '           / data format of field: 4-byte REAL
 EXTNAME = 'HTEST'              / name of this binary table extension
 DATE    = '        '           / file creation date (YYYY-MM-DDThh:mm:ss UT)
 CREATOR = '        '           / Name of program that created this file
-ORIGIN  = '        '
-OBJECT  = '        '
+ORIGIN  = 'LISOC'              / name of organization making file
 # The following commented-out keywords are used by the HEASOFT/Ftools/Xronos
 # application powspec, but are not used by current applications in the
 # periodSearch package.
+#OBJECT  = '        '
 #HDUCLASS= 'OGIP    '
 #HDUCLAS1= 'TEMPORALDATA'
 #HDUCLAS2= 'POWER SPECTRA'
