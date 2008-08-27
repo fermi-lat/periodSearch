@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Aug 27 14:50:06 PDT 2008
+periodSearch/data
+
+Modified Files:
+	period-search-out.tpl 
+Log Message:
+Fill ORIGIN value.
+    *
+------------------------------------------------------------
 User: hirayama  Fri Aug 22 17:13:49 PDT 2008
 periodSearch/src
 
