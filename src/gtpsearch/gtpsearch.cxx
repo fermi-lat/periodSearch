@@ -55,10 +55,10 @@ class PSearchApp : public pulsarDb::PulsarToolApp {
 };
 
 PSearchApp::PSearchApp(): m_os("PSearchApp", "", 2) {
-  st_app::AppParGroup & pars(getParGroup("gtpsearch"));
-
   setName("gtpsearch");
   setVersion(s_cvs_id);
+
+  st_app::AppParGroup & pars(getParGroup());
 
   pars.setSwitch("algorithm");
   pars.setSwitch("ephstyle");
@@ -94,7 +94,7 @@ void PSearchApp::run() {
   resetApp();
 
   m_os.setMethod("run()");
-  st_app::AppParGroup & pars(getParGroup("gtpsearch"));
+  st_app::AppParGroup & pars(getParGroup());
 
   // Prompt for all parameters and save them.
   prompt(pars);
