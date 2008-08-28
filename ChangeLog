@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Aug 27 22:12:31 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Check output FITS files against reference files.
+    *
+------------------------------------------------------------
 User: hirayama  Wed Aug 27 15:24:56 PDT 2008
 periodSearch/src/gtpsearch
 
