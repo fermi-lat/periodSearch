@@ -45,9 +45,11 @@ static const std::string s_cvs_id = "$Name:  $";
 class PSearchTestApp : public st_app::StApp {
   public:
 
-    PSearchTestApp(): m_os("PSearchTestApp", "", 2), m_failed(false) {
+    PSearchTestApp(): m_os("PSearchTestApp", "", 2), m_failed(false), m_outref_dir() {
       setName("test_stpsearch");
       setVersion(s_cvs_id);
+      std::string data_dir = facilities::commonUtilities::getDataPath("periodSearch");
+      m_outref_dir = facilities::commonUtilities::joinPath(data_dir, "outref");
     }
 
     virtual ~PSearchTestApp() throw() {}
@@ -74,10 +76,13 @@ class PSearchTestApp : public st_app::StApp {
       const std::string & text_title, const std::string & plot_title, const std::string & out_file,
       bool plot, double min_freq = -1., double max_freq = -1.);
 
+    void checkOutputFits(const std::string & file_name);
+
     std::string findFile(const std::string & file_name);
 
     st_stream::StreamFormatter m_os;
     bool m_failed;
+    std::string m_outref_dir;
 };
 
 void PSearchTestApp::run() {
@@ -579,19 +584,102 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   tip::IFileSvc::instance().createFile(out_file, template_file, true);
 
   // Open output file.
-  std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
+  tip::Table * out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
 
   // Write the summary to the output header, and the data to the output table.
   viewer.write(*out_table);
+
+  // Close output file. This is necessary before checking output file against reference file.
+  delete out_table;
 
   // Write the stats to the screen, with details of test result if chatter is high enough.
   m_os.info(2) << text_title << std::endl;
   viewer.write(m_os);
 
+  // Check the result against its reference file in data/outref/ directory.
+  checkOutputFits(out_file);
+
   // Plot if requested.
   viewer.setTitle(plot_title);
   viewer.setLabel(0, "Hz");
   if (plot) viewer.plot();
+}
+
+void PSearchTestApp::checkOutputFits(const std::string & file_name) {
+  // Set reference file name.
+  std::string out_file(file_name);
+  std::string ref_file = facilities::commonUtilities::joinPath(m_outref_dir, out_file);
+
+  // Check file existence.
+  if (!tip::IFileSvc::instance().fileExists(out_file)) {
+    m_os.err() << "File to check does not exist: " << out_file << std::endl;
+  }
+  if (!tip::IFileSvc::instance().fileExists(ref_file)) {
+    m_os.err() << "Reference file for " << out_file << " does not exist: " << ref_file << std::endl;
+  }
+
+  // Get fille summaries for FITS files to compare.
+  tip::FileSummary out_summary;
+  tip::IFileSvc::instance().getFileSummary(out_file, out_summary);
+  tip::FileSummary ref_summary;
+  tip::IFileSvc::instance().getFileSummary(ref_file, ref_summary);
+
+  // Compare the number of extensions.
+  tip::FileSummary::size_type out_size = out_summary.size();
+  tip::FileSummary::size_type ref_size = ref_summary.size();
+  if (out_size != ref_summary.size()) {
+    m_os.err() << "File " << out_file << " has " << out_size << " HDU('s), not " << ref_size << " as in reference file " <<
+      ref_file << std::endl;
+  } else {
+    int num_extension = ref_size;
+
+    // Compare each extension.
+    for (int ext_number = 0; ext_number < num_extension; ++ext_number) {
+      // Open extensions by extension number.
+      std::ostringstream os;
+      os << ext_number;
+      std::string ext_name = os.str();
+      std::auto_ptr<tip::Extension> out_ext(tip::IFileSvc::instance().editExtension(out_file, ext_name));
+      tip::Header & out_header(out_ext->getHeader());
+      std::auto_ptr<tip::Extension> ref_ext(tip::IFileSvc::instance().editExtension(ref_file, ext_name));
+      tip::Header & ref_header(ref_ext->getHeader());
+
+      // Compare the sizes of header.
+      tip::Header::KeySeq_t::size_type out_num_key = out_header.getNumKeywords();
+      tip::Header::KeySeq_t::size_type ref_num_key = ref_header.getNumKeywords();
+      if (out_num_key != ref_num_key) {
+        m_os.err() << "HDU " << ext_name << " of file " << out_file << " has " << out_num_key << " header keyword(s), not " <<
+          ref_num_key << " as in reference file " << ref_file << std::endl;
+
+      } else {
+        // Compare each header keyword.
+        int card_number = 1;
+        tip::Header::Iterator out_itor = out_header.begin();
+        tip::Header::Iterator ref_itor = ref_header.begin();
+        for (; out_itor != out_header.end() && ref_itor != ref_header.end(); ++out_itor, ++ref_itor, ++card_number) {
+          // Compare keyword name.
+          std::string out_name = out_itor->getName();
+          std::string ref_name = ref_itor->getName();
+          if (out_name != ref_name) {
+            m_os.err() << "Card " << card_number << " of HDU " << ext_name << " in file " << out_file << " is header keyword " <<
+              out_name << ", not " << ref_name << " as in reference file " << ref_file << std::endl;
+          }
+
+          // Compare keyword value.
+          // Note: Do not compare CHECKSUM, CREATOR, DATE, HISTORY, COMMENT, a blank name.
+          if (!ref_name.empty() && "CHECKSUM" != ref_name && "CREATOR" != ref_name && "DATE" != ref_name && "HISTORY" != ref_name &&
+              "COMMENT" != ref_name) {
+            std::string out_value = out_itor->getValue();
+            std::string ref_value = ref_itor->getValue();
+            if (out_value != ref_value) {
+              m_os.err() << "Header keyword " << out_name << " on card " << card_number << " of HDU " << ext_name << " in file " <<
+                out_file << " has value " << out_value << ", not " << ref_value << " as in reference file " << ref_file << std::endl;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 std::string PSearchTestApp::findFile(const std::string & file_name) {
