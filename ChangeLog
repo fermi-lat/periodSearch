@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep 10 01:42:28 PDT 2008
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par gtpspec.par 
+Log Message:
+Add ephemeris status reporting capability.
+    *
+------------------------------------------------------------
 User: hirayama  Wed Aug 27 22:12:31 PDT 2008
 periodSearch/src/test
 
