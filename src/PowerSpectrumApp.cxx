@@ -7,6 +7,7 @@
 
 #include <cctype>
 #include <memory>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "facilities/commonUtilities.h"
 
 #include "pulsarDb/EphChooser.h"
+#include "pulsarDb/EphStatus.h"
 
 #include "timeSystem/AbsoluteTime.h"
 #include "timeSystem/TimeSystem.h"
@@ -92,6 +94,11 @@ void PowerSpectrumApp::run() {
   bool vary_ra_dec = false;
   bool guess_pdot = false;
   initTimeCorrection(pars, vary_ra_dec, guess_pdot);
+
+  // Report ephemeris status.
+  std::set<pulsarDb::EphStatusCodeType> code_to_report;
+  code_to_report.insert(pulsarDb::Remarked);
+  reportEphStatus(m_os.warn(), code_to_report);
 
   // Compute start time of the data set.
   double tstart = computeElapsedSecond(getStartTime());
