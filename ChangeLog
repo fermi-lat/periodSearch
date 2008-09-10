@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Wed Sep 10 01:42:28 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Add ephemeris status reporting capability.
+    *
+------------------------------------------------------------
+User: hirayama  Wed Sep 10 01:42:28 PDT 2008
 periodSearch/pfiles
 
 Modified Files:
