@@ -5,6 +5,7 @@
 */
 #include <cctype>
 #include <memory>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@
 
 #include "pulsarDb/EphChooser.h"
 #include "pulsarDb/EphComputer.h"
+#include "pulsarDb/EphStatus.h"
 #include "pulsarDb/PulsarToolApp.h"
 
 #include "timeSystem/AbsoluteTime.h"
@@ -131,6 +133,11 @@ void PSearchApp::run() {
   bool vary_ra_dec = true;
   bool guess_pdot = true;
   initTimeCorrection(pars, vary_ra_dec, guess_pdot);
+
+  // Report ephemeris status.
+  std::set<pulsarDb::EphStatusCodeType> code_to_report;
+  code_to_report.insert(pulsarDb::Remarked);
+  reportEphStatus(m_os.warn(), code_to_report);
 
   // Compute central frequency of periodicity search, which is an expected pulse frequency at the time origin for the search.
   double origin = 0.;
