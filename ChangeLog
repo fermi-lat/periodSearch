@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep 10 17:30:02 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Prompt for reportephstatus parameter explicitly.
+    *
+------------------------------------------------------------
 User: hirayama  Wed Sep 10 17:30:01 PDT 2008
 periodSearch/src/gtpsearch
 
