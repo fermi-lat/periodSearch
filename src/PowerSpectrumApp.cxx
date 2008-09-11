@@ -226,6 +226,7 @@ void PowerSpectrumApp::prompt(st_app::AppParGroup & pars) {
   pars.Prompt("plot");
   pars.Prompt("title");
   pars.Prompt("leapsecfile");
+  pars.Prompt("reportephstatus");
   pars.Prompt("chatter");
   pars.Prompt("clobber");
   pars.Prompt("debug");
