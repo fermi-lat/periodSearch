@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep 10 17:30:01 PDT 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Prompt for reportephstatus parameter explicitly.
+    *
+------------------------------------------------------------
 User: hirayama  Wed Sep 10 01:42:28 PDT 2008
 periodSearch/src/gtpsearch
 
