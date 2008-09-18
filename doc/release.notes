@@ -2,9 +2,11 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.30 2008/04/08 21:12:23 peachey Exp $
+$Id: release.notes,v 1.31 2008/08/14 20:47:05 hirayama Exp $
 
 \verbatim
+17-sep-2008       v10 MH  Add support for ephemeris-related warning messages, such ephemeris gaps
+                          and glitches. Rationalize output FITS header and fill appropriate values.
 14-aug-2008      v9r2 MH  Changed to work with timeSystem v4r1.
 08-apr-2008      v9r1 JP  Internal change (removed pulsarDb::TimingModel; introduced
                           pulsarDb::PdotCanceler class; changed computation of extrapolated
