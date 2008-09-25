@@ -20,6 +20,7 @@
 
 #include "tip/Header.h"
 #include "tip/Table.h"
+#include "tip/TipException.h"
 
 StatisticViewer::StatisticViewer(index_type num_axis, data_type::size_type num_element): m_num_axis(num_axis),
   m_num_element(num_element), m_data_cont(num_axis, data_type(num_element, 0.)), m_begin_index(0), m_end_index(num_element),
