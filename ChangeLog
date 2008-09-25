@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Thu Sep 25 14:39:37 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PeriodicityTestApp.cxx StatisticViewer.cxx 
+Log Message:
+Include tip/TipException.h.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-10-00-00, operation: add
 Package: periodSearch
