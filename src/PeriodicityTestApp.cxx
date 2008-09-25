@@ -23,6 +23,7 @@
 #include "tip/Header.h"
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
+#include "tip/TipException.h"
 
 #include "ChiSquaredTestArray.h"
 #include "HTestArray.h"
