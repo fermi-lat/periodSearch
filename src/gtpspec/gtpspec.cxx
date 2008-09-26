@@ -10,7 +10,7 @@
 #include "timeSystem/EventTimeHandler.h"
 #include "timeSystem/GlastTimeHandler.h"
 
-// List supported mission(s).
-timeSystem::EventTimeHandlerFactory<timeSystem::GlastTimeHandler> glast_handler;
+// List supported event file format(s).
+timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_handler;
 
 st_app::StAppFactory<PowerSpectrumApp> g_factory("gtpspec");
