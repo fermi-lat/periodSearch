@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Thu Sep 25 18:32:19 PDT 2008
+periodSearch/src/gtpspec
+
+Modified Files:
+	gtpspec.cxx 
+Log Message:
+Remove capability of reading event files that are already barycentered.
+    *
+------------------------------------------------------------
+User: hirayama  Thu Sep 25 18:32:19 PDT 2008
 periodSearch/src/gtpsearch
 
 Modified Files:
