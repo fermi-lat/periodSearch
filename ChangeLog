@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Sun Sep 28 19:47:19 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Report ephemeris loading summary.
+    *
+------------------------------------------------------------
+User: hirayama  Sun Sep 28 19:47:19 PDT 2008
 periodSearch/src/gtpsearch
 
 Modified Files:
