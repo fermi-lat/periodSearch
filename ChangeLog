@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Mon Sep 29 15:50:44 PDT 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Write parameter values to HISTORY keywords of the output file (all extensions except for the primary HDU).
+    *
+------------------------------------------------------------
+User: hirayama  Mon Sep 29 15:50:44 PDT 2008
 periodSearch/src
 
 Modified Files:
