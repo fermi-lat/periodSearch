@@ -88,7 +88,7 @@ void PowerSpectrumApp::run() {
 
   // Set up EphComputer for arrival time corrections.
   pulsarDb::SloppyEphChooser chooser;
-  initEphComputer(pars, chooser, "NONE");
+  initEphComputer(pars, chooser, "NONE", m_os.info(4));
 
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool vary_ra_dec = false;
