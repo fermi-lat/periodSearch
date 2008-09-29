@@ -5,6 +5,7 @@
 */
 #include "PeriodicityTestApp.h"
 
+#include <ctime>
 #include <limits>
 #include <list>
 #include <stdexcept>
@@ -149,6 +150,10 @@ void PeriodicityTestApp::run() {
     // Create output file.
     tip::IFileSvc::instance().createFile(out_file, template_file, clobber);
 
+    // Prepare values for CREATOR and DATE keywords.
+    const std::string creator_value = getName() + " " + getVersion();
+    const time_t modification_time = time(0);
+
     // Loop over periodicity tests.
     for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
       PeriodicityTestArray & test_array = **itor;
@@ -163,10 +168,20 @@ void PeriodicityTestApp::run() {
       // Update header keywords.
       tip::Header & header(out_table->getHeader());
       tip::Header::KeyValCont_t keywords;
-      keywords.push_back(tip::Header::KeyValPair_t("DATE", header.formatTime(time(0))));
-      keywords.push_back(tip::Header::KeyValPair_t("CREATOR", getName() + " " + getVersion()));
+      const std::string date_value = header.formatTime(modification_time);
+      keywords.push_back(tip::Header::KeyValPair_t("DATE", date_value));
+      keywords.push_back(tip::Header::KeyValPair_t("CREATOR", creator_value));
       keywords.push_back(tip::Header::KeyValPair_t("DATASUM", "-1")); // Force update of DATASUM keyword.
       header.update(keywords);
+
+      // Write out all the parameters into HISTORY keywords.
+      header.addHistory("File created by " + creator_value + " on " + date_value);
+      const st_app::AppParGroup & const_pars(pars);
+      for (hoops::ConstGenParItor par_itor = const_pars.begin(); par_itor != const_pars.end(); ++par_itor) {
+        std::ostringstream oss_par;
+        oss_par << getName() << ".par: " << **par_itor;
+        header.addHistory(oss_par.str());
+      }
     }
   }
 
