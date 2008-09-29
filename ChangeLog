@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Mon Sep 29 15:50:44 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PeriodicityTestApp.cxx PowerSpectrumApp.cxx 
+Log Message:
+Write parameter values to HISTORY keywords of the output file (all extensions except for the primary HDU).
+    *
+------------------------------------------------------------
 User: hirayama  Sun Sep 28 19:47:19 PDT 2008
 periodSearch/src
 
