@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sun Sep 28 19:47:19 PDT 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Report ephemeris loading summary.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-10-01-00, operation: add
 Package: periodSearch
