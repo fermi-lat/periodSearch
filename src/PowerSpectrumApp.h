@@ -10,10 +10,6 @@
 
 #include "st_stream/StreamFormatter.h"
 
-namespace st_app {
-  class AppParGroup;
-}
-
 class PowerSpectrumApp : public pulsarDb::PulsarToolApp {
   public:
     PowerSpectrumApp();

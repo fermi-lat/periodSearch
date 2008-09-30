@@ -10,12 +10,6 @@
 
 #include "st_stream/StreamFormatter.h"
 
-namespace st_app {
-  class AppParGroup;
-}
-
-class PeriodicityTestArray;
-
 class PeriodicityTestApp : public st_app::StApp {
   public:
     PeriodicityTestApp();
