@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sat Oct  4 20:13:31 PDT 2008
+periodSearch/src/gtpsearch
+
+Modified Files:
+	gtpsearch.cxx 
+Log Message:
+Split application file into implementation and definition.
+    *
+------------------------------------------------------------
 User: hirayama  Sat Oct  4 20:13:30 PDT 2008
 periodSearch/src
 
