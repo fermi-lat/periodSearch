@@ -8,6 +8,8 @@
 
 #include "pulsarDb/PulsarToolApp.h"
 
+#include "st_app/AppParGroup.h"
+
 #include "st_stream/StreamFormatter.h"
 
 class PowerSpectrumApp : public pulsarDb::PulsarToolApp {
@@ -16,10 +18,10 @@ class PowerSpectrumApp : public pulsarDb::PulsarToolApp {
     virtual ~PowerSpectrumApp() throw();
     virtual void run();
 
-    virtual void prompt(st_app::AppParGroup & pars);
-
   private:
     st_stream::StreamFormatter m_os;
+
+    virtual void prompt(st_app::AppParGroup & pars);
 };
 
 #endif
