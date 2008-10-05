@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sat Oct  4 20:14:33 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.h 
+Log Message:
+Make prompt method private. Add necessary header.
+    *
+------------------------------------------------------------
 User: hirayama  Sat Oct  4 20:13:31 PDT 2008
 periodSearch/src/gtpsearch
 
