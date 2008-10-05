@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sat Oct  4 20:14:58 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PowerSpectrumApp.cxx 
+Log Message:
+Remove unnecessary header.
+    *
+------------------------------------------------------------
 User: hirayama  Sat Oct  4 20:14:33 PDT 2008
 periodSearch/src
 
