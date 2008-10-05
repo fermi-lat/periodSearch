@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sat Oct  4 20:15:33 PDT 2008
+periodSearch/src/gtpspec
+
+Modified Files:
+	gtpspec.cxx 
+Log Message:
+Change variable name for clarity (cosmetic).
+    *
+------------------------------------------------------------
 User: hirayama  Sat Oct  4 20:14:58 PDT 2008
 periodSearch/src
 
