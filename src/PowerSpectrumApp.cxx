@@ -25,8 +25,6 @@
 #include "tip/IFileSvc.h"
 #include "tip/Table.h"
 
-#include "st_app/AppParGroup.h"
-
 #include "st_stream/Stream.h"
 #include "st_stream/StreamFormatter.h"
 #include "st_stream/st_stream.h"
