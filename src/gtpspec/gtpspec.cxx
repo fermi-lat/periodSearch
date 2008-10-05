@@ -11,6 +11,6 @@
 #include "timeSystem/GlastTimeHandler.h"
 
 // List supported event file format(s).
-timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_handler;
+timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_sctime_handler;
 
 st_app::StAppFactory<PowerSpectrumApp> g_factory("gtpspec");
