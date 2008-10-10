@@ -2,9 +2,12 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.33 2008/09/26 20:01:30 hirayama Exp $
+$Id: release.notes,v 1.34 2008/09/30 21:31:15 peachey Exp $
 
 \verbatim
+09-oct-2008   v10r2p1 MH  Separate StApp subclass from gtpsearch.cxx. Add necessary headers
+                          and remove unnecessary headers. Make prompt methods of StApp
+                          subclasses private.
 30-sep-2008     v10r2 JP  Write tool parameter values in history keywords. Print ephmeris
                           evolution details if chatter==4.
 26-sep-2008     v10r1 MH  Remove support for event files that are already barycentered.
