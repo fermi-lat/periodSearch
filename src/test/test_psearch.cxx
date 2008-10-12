@@ -25,6 +25,7 @@
 #include "timeSystem/AbsoluteTime.h"
 #include "timeSystem/Duration.h"
 #include "timeSystem/ElapsedTime.h"
+#include "timeSystem/PulsarTestApp.h"
 #include "timeSystem/TimeInterval.h"
 
 #include "tip/Header.h"
@@ -42,17 +43,10 @@
 
 static const std::string s_cvs_id = "$Name:  $";
 
-class PSearchTestApp : public st_app::StApp {
+class TestPeriodSearchApp : public timeSystem::PulsarTestApp {
   public:
-
-    PSearchTestApp(): m_os("PSearchTestApp", "", 2), m_failed(false), m_outref_dir() {
-      setName("test_stpsearch");
-      setVersion(s_cvs_id);
-      std::string data_dir = facilities::commonUtilities::getDataPath("periodSearch");
-      m_outref_dir = facilities::commonUtilities::joinPath(data_dir, "outref");
-    }
-
-    virtual ~PSearchTestApp() throw() {}
+    TestPeriodSearchApp();
+    virtual ~TestPeriodSearchApp() throw() {}
     virtual void run();
 
     void testPeriodSearch();
@@ -72,20 +66,16 @@ class PSearchTestApp : public st_app::StApp {
       double center, double step, long num_trials, double epoch, int num_bins,
       double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot);
 
-    void testOneSearch(const std::vector<double> & events, PeriodSearch & search,
-      const std::string & text_title, const std::string & plot_title, const std::string & out_file,
-      bool plot, double min_freq = -1., double max_freq = -1.);
-
-    void checkOutputFits(const std::string & file_name);
-
-    std::string findFile(const std::string & file_name);
-
-    st_stream::StreamFormatter m_os;
-    bool m_failed;
-    std::string m_outref_dir;
+    void testOneSearch(const std::vector<double> & events, PeriodSearch & search, const std::string & plot_title,
+      const std::string & out_file, bool plot, double min_freq = -1., double max_freq = -1.);
 };
 
-void PSearchTestApp::run() {
+TestPeriodSearchApp::TestPeriodSearchApp(): PulsarTestApp("periodSearch") {
+  setName("test_stpsearch");
+  setVersion(s_cvs_id);
+}
+
+void TestPeriodSearchApp::run() {
   // Test PeriodSearch subclasses.
   testPeriodSearch();
 
@@ -99,18 +89,17 @@ void PSearchTestApp::run() {
   testRayleighTestArray();
 
   // Check test status.
-  if (m_failed) throw std::runtime_error("UNIT TEST FAILED");
+  reportStatus();
 }
 
-void PSearchTestApp::testPeriodSearch() {
-  m_os.setMethod("testPeriodSearch");
+void TestPeriodSearchApp::testPeriodSearch() {
+  setMethod("testPeriodSearch");
 
   // Trick up some fake events.
   int num_evts = 1000;
 
   std::vector<double> fake_evts(num_evts);
-  m_os.out().precision(16);
-  m_os.err().precision(16);
+  setPrecision(16);
 
   for (int ii = 0; ii < num_evts; ++ii)
     fake_evts[ii] = ii + 1;
@@ -141,10 +130,11 @@ void PSearchTestApp::testPeriodSearch() {
   fake_evts.clear();
 
   // Read some real data.
-  std::auto_ptr<const tip::Table> evt_table(tip::IFileSvc::instance().readTable(findFile("step-01.fits"), "EVENTS"));
+  std::string event_file = facilities::commonUtilities::joinPath(getDataPath(), "step-01.fits");
+  std::auto_ptr<const tip::Table> evt_table(tip::IFileSvc::instance().readTable(event_file, "EVENTS"));
 
   // Get gti_table.
-  std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(findFile("step-01.fits"), "GTI"));
+  std::auto_ptr<const tip::Table> gti_table(tip::IFileSvc::instance().readTable(event_file, "GTI"));
 
   // Make the array big enough to hold these events.
   fake_evts.resize(evt_table->getNumRecords());
@@ -216,8 +206,8 @@ void PSearchTestApp::testPeriodSearch() {
     19.82, 19.85, plot);
 }
 
-void PSearchTestApp::testChanceProb() {
-  m_os.setMethod("testChanceProb");
+void TestPeriodSearchApp::testChanceProb() {
+  setMethod("testChanceProb");
 
   // Vector to hold array of number of statistically independent trials to test chanceProb.
   std::vector<PeriodSearch::size_type>::size_type trial_size = 11;
@@ -254,25 +244,22 @@ void PSearchTestApp::testChanceProb() {
     for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
       double chance_prob = PeriodSearch::computeChanceProbMultiTrial(prob_one_trial[jj], num_indep_trial[ii]);
       if (0. > chance_prob) {
-        m_failed = true;
-        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
+        err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
           ") unexpectedly returned " << chance_prob << ", which is < 0." << std::endl;
       } else if (1. < chance_prob) {
-        m_failed = true;
-        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
+        err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] <<
           ") unexpectedly returned " << chance_prob << ", which is > 1." << std::endl;
       } else if ((0. == approx_chance_prob[ii][jj] && 0. != chance_prob) ||
         (0. != approx_chance_prob[ii][jj] && epsilon < std::fabs(chance_prob / approx_chance_prob[ii][jj] - 1.))) {
-        m_failed = true;
-        m_os.err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] << ") returned " <<
+        err() << "ERROR: computeChanceProbMultiTrial(" << prob_one_trial[jj] << ", " << num_indep_trial[ii] << ") returned " <<
           chance_prob << ", not " << approx_chance_prob[ii][jj] << ", as expected." << std::endl;
       }
     }
   }
 }
 
-void PSearchTestApp::testChiSquaredTestArray() {
-  m_os.setMethod("testChiSquaredTestArray");
+void TestPeriodSearchApp::testChiSquaredTestArray() {
+  setMethod("testChiSquaredTestArray");
 
   // Prepare a ChiSquaredTestArray object.
   const int num_trial = 3;
@@ -292,8 +279,7 @@ void PSearchTestApp::testChiSquaredTestArray() {
   // Check size.
   int test_size = chi2_test.size();
   if (test_size != num_trial) {
-    m_failed = true;
-    m_os.err() << "Size of the ChiSquaredTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
+    err() << "Size of the ChiSquaredTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
   }
 
   // Set the comparison precision.
@@ -308,8 +294,7 @@ void PSearchTestApp::testChiSquaredTestArray() {
       double result = result_counts[ii];
       double expected = expected_counts[ii] * (trial + 1);
       if (std::fabs(result/expected - 1.) > epsilon) {
-        m_failed = true;
-        m_os.err() << "Photon count in phase bin " << ii << " of trial " << trial << " was " << result
+        err() << "Photon count in phase bin " << ii << " of trial " << trial << " was " << result
           << ", not " << expected << "." << std::endl;
       }
     }
@@ -321,14 +306,13 @@ void PSearchTestApp::testChiSquaredTestArray() {
     double result = chi2_test.computeStat(trial);
     double expected = expected_values[trial];
     if (std::fabs(result/expected - 1.) > epsilon) {
-      m_failed = true;
-      m_os.err() << "S-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+      err() << "S-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
     }
   }
 }
 
-void PSearchTestApp::testZ2nTestArray() {
-  m_os.setMethod("testZ2nTestArray");
+void TestPeriodSearchApp::testZ2nTestArray() {
+  setMethod("testZ2nTestArray");
 
   // Prepare a Z2nTestArray object.
   const int num_trial = 3;
@@ -349,8 +333,7 @@ void PSearchTestApp::testZ2nTestArray() {
   // Check size.
   int test_size = z2n_test.size();
   if (test_size != num_trial) {
-    m_failed = true;
-    m_os.err() << "Size of the Z2nTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
+    err() << "Size of the Z2nTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
   }
 
   // Set the comparison precision.
@@ -373,8 +356,7 @@ void PSearchTestApp::testZ2nTestArray() {
       double expected = expected_powers[trial][ii];
       if ((expected == 0. && std::fabs(result) > epsilon)
           || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
-        m_failed = true;
-        m_os.err() << "Power for harmonic nubmer " << ii << " of trial " << trial << " was " << result
+        err() << "Power for harmonic nubmer " << ii << " of trial " << trial << " was " << result
           << ", not " << expected << "." << std::endl;
       }
     }
@@ -387,14 +369,13 @@ void PSearchTestApp::testZ2nTestArray() {
     double expected = expected_values[trial];
     if ((expected == 0. && std::fabs(result) > epsilon)
         || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
-      m_failed = true;
-      m_os.err() << "Z2n-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+      err() << "Z2n-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
     }
   }
 }
 
-void PSearchTestApp::testHTestArray() {
-  m_os.setMethod("testHTestArray");
+void TestPeriodSearchApp::testHTestArray() {
+  setMethod("testHTestArray");
 
   // Prepare a HTestArray object.
   const int num_trial = 3;
@@ -415,8 +396,7 @@ void PSearchTestApp::testHTestArray() {
   // Check size.
   int test_size = h_test.size();
   if (test_size != num_trial) {
-    m_failed = true;
-    m_os.err() << "Size of the HTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
+    err() << "Size of the HTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
   }
 
   // Set the comparison precision.
@@ -443,8 +423,7 @@ void PSearchTestApp::testHTestArray() {
       double expected = expected_powers[trial][ii];
       if ((expected == 0. && std::fabs(result) > epsilon)
           || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
-        m_failed = true;
-        m_os.err() << "Candidate H value for harmonic nubmer " << ii << " of trial " << trial << " was " << result
+        err() << "Candidate H value for harmonic nubmer " << ii << " of trial " << trial << " was " << result
           << ", not " << expected << "." << std::endl;
       }
     }
@@ -457,14 +436,13 @@ void PSearchTestApp::testHTestArray() {
     double expected = expected_values[trial];
     if ((expected == 0. && std::fabs(result) > epsilon)
         || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
-      m_failed = true;
-      m_os.err() << "H-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+      err() << "H-value for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
     }
   }
 }
 
-void PSearchTestApp::testRayleighTestArray() {
-  m_os.setMethod("testRayleighTestArray");
+void TestPeriodSearchApp::testRayleighTestArray() {
+  setMethod("testRayleighTestArray");
 
   // Prepare a RayleighTestArray object.
   const int num_trial = 3;
@@ -484,8 +462,7 @@ void PSearchTestApp::testRayleighTestArray() {
   // Check size.
   int test_size = rayleigh_test.size();
   if (test_size != num_trial) {
-    m_failed = true;
-    m_os.err() << "Size of the RayleighTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
+    err() << "Size of the RayleighTestArray was reported as " << test_size << ", not " << num_trial << "." << std::endl;
   }
 
   // Set the comparison precision.
@@ -503,8 +480,7 @@ void PSearchTestApp::testRayleighTestArray() {
     double expected = expected_powers[trial];
     if ((expected == 0. && std::fabs(result) > epsilon)
         || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
-      m_failed = true;
-      m_os.err() << "Viewer content for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+      err() << "Viewer content for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
     }
   }
 
@@ -515,56 +491,50 @@ void PSearchTestApp::testRayleighTestArray() {
     double expected = expected_values[trial];
     if ((expected == 0. && std::fabs(result) > epsilon)
         || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
-      m_failed = true;
-      m_os.err() << "Rayleigh statistic for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+      err() << "Rayleigh statistic for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
     }
   }
 }
 
-void PSearchTestApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
+void TestPeriodSearchApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
   double center, double step, long num_trials, double epoch, int num_bins,
   double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot) {
-  m_os.setMethod("testAllStats");
+  setMethod("testAllStats");
 
   double duration = t_stop - t_start;
 
   // Test ChiSquared case.
   ChiSquaredTestArray chi2_test(num_trials, num_bins);
   FoldingAnalysis chi2_search(&chi2_test, center, step, epoch, duration, "Hz");
-  testOneSearch(events, chi2_search, "Chi Squared Statistic", "Folding Analysis: Chi Squared Statistic", prefix + "-chi-sq.fits",
-    plot);
+  testOneSearch(events, chi2_search, "Folding Analysis: Chi Squared Statistic", prefix + "-chi-sq.fits", plot);
 
   // Test Z2n case.
   Z2nTestArray z2n_test(num_trials, num_bins);
   FoldingAnalysis z2n_search(&z2n_test, center, step, epoch, duration, "Hz");
 
-  testOneSearch(events, z2n_search, "Z2n Statistic", "Folding Analysis: Z2n Statistic", prefix + "-z2n.fits",
-    plot);
+  testOneSearch(events, z2n_search, "Folding Analysis: Z2n Statistic", prefix + "-z2n.fits", plot);
 
   // Test Rayleigh case.
   RayleighTestArray rayleigh_test(num_trials);
   FoldingAnalysis rayleigh_search(&rayleigh_test, center, step, epoch, duration, "Hz");
 
-  testOneSearch(events, rayleigh_search, "Rayleigh Statistic", "Folding Analysis: Rayleigh Statistic", prefix + "-rayleigh.fits",
-    plot);
+  testOneSearch(events, rayleigh_search, "Folding Analysis: Rayleigh Statistic", prefix + "-rayleigh.fits", plot);
 
   // Test H case.
   HTestArray h_test(num_trials, num_bins);
   FoldingAnalysis h_search(&h_test, center, step, epoch, duration, "Hz");
 
-  testOneSearch(events, h_search, "H Statistic", "Folding Analysis: H Statistic", prefix + "-h.fits",
-    plot);
+  testOneSearch(events, h_search, "Folding Analysis: H Statistic", prefix + "-h.fits", plot);
 
   // Create analysis object.
   FourierAnalysis fourier_search(t_start, t_stop, fourier_width, fourier_num_bins, "Hz", events.size());
 
-  testOneSearch(events, fourier_search, "Fourier Power", "Fourier Analysis: Power Spectrum", prefix + "-fourier.fits",
-    plot, fourier_min_freq, fourier_max_freq);
+  testOneSearch(events, fourier_search, "Fourier Analysis: Power Spectrum", prefix + "-fourier.fits", plot,
+    fourier_min_freq, fourier_max_freq);
 }
 
-void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search,
-  const std::string & text_title, const std::string & plot_title, const std::string & out_file,
-  bool plot, double min_freq, double max_freq) {
+void TestPeriodSearchApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search, const std::string & plot_title,
+  const std::string & out_file, bool plot, double min_freq, double max_freq) {
   // Get the viewer.
   StatisticViewer & viewer = search.getViewer();
 
@@ -578,7 +548,7 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   search.updateViewer(min_freq, max_freq);
 
   // Find the template file.
-  std::string template_file = findFile("period-search-out.tpl");
+  std::string template_file = facilities::commonUtilities::joinPath(getDataPath(), "period-search-out.tpl");
 
   // Create output file.
   tip::IFileSvc::instance().createFile(out_file, template_file, true);
@@ -592,12 +562,8 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   // Close output file. This is necessary before checking output file against reference file.
   delete out_table;
 
-  // Write the stats to the screen, with details of test result if chatter is high enough.
-  m_os.info(2) << text_title << std::endl;
-  viewer.write(m_os);
-
   // Check the result against its reference file in data/outref/ directory.
-  checkOutputFits(out_file);
+  checkOutputFits(out_file, true);
 
   // Plot if requested.
   viewer.setTitle(plot_title);
@@ -605,86 +571,4 @@ void PSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSea
   if (plot) viewer.plot();
 }
 
-void PSearchTestApp::checkOutputFits(const std::string & file_name) {
-  // Set reference file name.
-  std::string out_file(file_name);
-  std::string ref_file = facilities::commonUtilities::joinPath(m_outref_dir, out_file);
-
-  // Check file existence.
-  if (!tip::IFileSvc::instance().fileExists(out_file)) {
-    m_os.err() << "File to check does not exist: " << out_file << std::endl;
-  }
-  if (!tip::IFileSvc::instance().fileExists(ref_file)) {
-    m_os.err() << "Reference file for " << out_file << " does not exist: " << ref_file << std::endl;
-  }
-
-  // Get fille summaries for FITS files to compare.
-  tip::FileSummary out_summary;
-  tip::IFileSvc::instance().getFileSummary(out_file, out_summary);
-  tip::FileSummary ref_summary;
-  tip::IFileSvc::instance().getFileSummary(ref_file, ref_summary);
-
-  // Compare the number of extensions.
-  tip::FileSummary::size_type out_size = out_summary.size();
-  tip::FileSummary::size_type ref_size = ref_summary.size();
-  if (out_size != ref_summary.size()) {
-    m_os.err() << "File " << out_file << " has " << out_size << " HDU('s), not " << ref_size << " as in reference file " <<
-      ref_file << std::endl;
-  } else {
-    int num_extension = ref_size;
-
-    // Compare each extension.
-    for (int ext_number = 0; ext_number < num_extension; ++ext_number) {
-      // Open extensions by extension number.
-      std::ostringstream os;
-      os << ext_number;
-      std::string ext_name = os.str();
-      std::auto_ptr<tip::Extension> out_ext(tip::IFileSvc::instance().editExtension(out_file, ext_name));
-      tip::Header & out_header(out_ext->getHeader());
-      std::auto_ptr<tip::Extension> ref_ext(tip::IFileSvc::instance().editExtension(ref_file, ext_name));
-      tip::Header & ref_header(ref_ext->getHeader());
-
-      // Compare the sizes of header.
-      tip::Header::KeySeq_t::size_type out_num_key = out_header.getNumKeywords();
-      tip::Header::KeySeq_t::size_type ref_num_key = ref_header.getNumKeywords();
-      if (out_num_key != ref_num_key) {
-        m_os.err() << "HDU " << ext_name << " of file " << out_file << " has " << out_num_key << " header keyword(s), not " <<
-          ref_num_key << " as in reference file " << ref_file << std::endl;
-
-      } else {
-        // Compare each header keyword.
-        int card_number = 1;
-        tip::Header::Iterator out_itor = out_header.begin();
-        tip::Header::Iterator ref_itor = ref_header.begin();
-        for (; out_itor != out_header.end() && ref_itor != ref_header.end(); ++out_itor, ++ref_itor, ++card_number) {
-          // Compare keyword name.
-          std::string out_name = out_itor->getName();
-          std::string ref_name = ref_itor->getName();
-          if (out_name != ref_name) {
-            m_os.err() << "Card " << card_number << " of HDU " << ext_name << " in file " << out_file << " is header keyword " <<
-              out_name << ", not " << ref_name << " as in reference file " << ref_file << std::endl;
-          }
-
-          // Compare keyword value.
-          // Note: Do not compare CHECKSUM, CREATOR, DATE, HISTORY, COMMENT, a blank name.
-          if (!ref_name.empty() && "CHECKSUM" != ref_name && "CREATOR" != ref_name && "DATE" != ref_name && "HISTORY" != ref_name &&
-              "COMMENT" != ref_name) {
-            std::string out_value = out_itor->getValue();
-            std::string ref_value = ref_itor->getValue();
-            if (out_value != ref_value) {
-              m_os.err() << "Header keyword " << out_name << " on card " << card_number << " of HDU " << ext_name << " in file " <<
-                out_file << " has value " << out_value << ", not " << ref_value << " as in reference file " << ref_file << std::endl;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-std::string PSearchTestApp::findFile(const std::string & file_name) {
-  using namespace facilities;
-  return commonUtilities::joinPath(commonUtilities::getDataPath("periodSearch"), file_name);
-}
-
-st_app::StAppFactory<PSearchTestApp> g_factory("test_periodSearch");
+st_app::StAppFactory<TestPeriodSearchApp> g_factory("test_periodSearch");
