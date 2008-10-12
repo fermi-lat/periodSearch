@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Sun Oct 12 16:10:18 PDT 2008
+periodSearch/data/outref
+
+Modified Files:
+	psrb0540-fourier.fits psrb0540-pdot-fourier.fits 
+Log Message:
+Introduce a common base class for a unit test of a pulsar tool package.
+    *
+------------------------------------------------------------
+User: hirayama  Sun Oct 12 16:10:18 PDT 2008
 periodSearch/src/test
 
 Modified Files:
