@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sun Oct 12 16:10:18 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Introduce a common base class for a unit test of a pulsar tool package.
+    *
+------------------------------------------------------------
 User: hirayama  Sat Oct 11 19:24:47 PDT 2008
 periodSearch/src
 
