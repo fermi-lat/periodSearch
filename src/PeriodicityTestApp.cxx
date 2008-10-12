@@ -12,6 +12,8 @@
 
 #include "facilities/commonUtilities.h"
 
+#include "hoops/hoops.h"
+
 #include "st_app/AppParGroup.h"
 
 #include "st_facilities/FileSys.h"
