@@ -43,10 +43,10 @@
 
 static const std::string s_cvs_id = "$Name:  $";
 
-class TestPeriodSearchApp : public timeSystem::PulsarTestApp {
+class PeriodSearchTestApp : public timeSystem::PulsarTestApp {
   public:
-    TestPeriodSearchApp();
-    virtual ~TestPeriodSearchApp() throw() {}
+    PeriodSearchTestApp();
+    virtual ~PeriodSearchTestApp() throw() {}
     virtual void run();
 
     void testPeriodSearch();
@@ -70,12 +70,12 @@ class TestPeriodSearchApp : public timeSystem::PulsarTestApp {
       const std::string & out_file, bool plot, double min_freq = -1., double max_freq = -1.);
 };
 
-TestPeriodSearchApp::TestPeriodSearchApp(): PulsarTestApp("periodSearch") {
+PeriodSearchTestApp::PeriodSearchTestApp(): PulsarTestApp("periodSearch") {
   setName("test_stpsearch");
   setVersion(s_cvs_id);
 }
 
-void TestPeriodSearchApp::run() {
+void PeriodSearchTestApp::run() {
   // Test PeriodSearch subclasses.
   testPeriodSearch();
 
@@ -92,7 +92,7 @@ void TestPeriodSearchApp::run() {
   reportStatus();
 }
 
-void TestPeriodSearchApp::testPeriodSearch() {
+void PeriodSearchTestApp::testPeriodSearch() {
   setMethod("testPeriodSearch");
 
   // Trick up some fake events.
@@ -206,7 +206,7 @@ void TestPeriodSearchApp::testPeriodSearch() {
     19.82, 19.85, plot);
 }
 
-void TestPeriodSearchApp::testChanceProb() {
+void PeriodSearchTestApp::testChanceProb() {
   setMethod("testChanceProb");
 
   // Vector to hold array of number of statistically independent trials to test chanceProb.
@@ -258,7 +258,7 @@ void TestPeriodSearchApp::testChanceProb() {
   }
 }
 
-void TestPeriodSearchApp::testChiSquaredTestArray() {
+void PeriodSearchTestApp::testChiSquaredTestArray() {
   setMethod("testChiSquaredTestArray");
 
   // Prepare a ChiSquaredTestArray object.
@@ -311,7 +311,7 @@ void TestPeriodSearchApp::testChiSquaredTestArray() {
   }
 }
 
-void TestPeriodSearchApp::testZ2nTestArray() {
+void PeriodSearchTestApp::testZ2nTestArray() {
   setMethod("testZ2nTestArray");
 
   // Prepare a Z2nTestArray object.
@@ -374,7 +374,7 @@ void TestPeriodSearchApp::testZ2nTestArray() {
   }
 }
 
-void TestPeriodSearchApp::testHTestArray() {
+void PeriodSearchTestApp::testHTestArray() {
   setMethod("testHTestArray");
 
   // Prepare a HTestArray object.
@@ -441,7 +441,7 @@ void TestPeriodSearchApp::testHTestArray() {
   }
 }
 
-void TestPeriodSearchApp::testRayleighTestArray() {
+void PeriodSearchTestApp::testRayleighTestArray() {
   setMethod("testRayleighTestArray");
 
   // Prepare a RayleighTestArray object.
@@ -496,7 +496,7 @@ void TestPeriodSearchApp::testRayleighTestArray() {
   }
 }
 
-void TestPeriodSearchApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
+void PeriodSearchTestApp::testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
   double center, double step, long num_trials, double epoch, int num_bins,
   double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot) {
   setMethod("testAllStats");
@@ -533,7 +533,7 @@ void TestPeriodSearchApp::testAllStats(const std::string & prefix, const std::ve
     fourier_min_freq, fourier_max_freq);
 }
 
-void TestPeriodSearchApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search, const std::string & plot_title,
+void PeriodSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search, const std::string & plot_title,
   const std::string & out_file, bool plot, double min_freq, double max_freq) {
   // Get the viewer.
   StatisticViewer & viewer = search.getViewer();
@@ -571,4 +571,4 @@ void TestPeriodSearchApp::testOneSearch(const std::vector<double> & events, Peri
   if (plot) viewer.plot();
 }
 
-st_app::StAppFactory<TestPeriodSearchApp> g_factory("test_periodSearch");
+st_app::StAppFactory<PeriodSearchTestApp> g_factory("test_periodSearch");
