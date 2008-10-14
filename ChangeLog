@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Mon Oct 13 18:23:24 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Change the name of the unit test application class (cosmetic).
+    *
+------------------------------------------------------------
 User: hirayama  Sun Oct 12 16:10:18 PDT 2008
 periodSearch/data/outref
 
