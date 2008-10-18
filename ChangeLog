@@ -1,5 +1,18 @@
 ------------------------------------------------------------
 User: hirayama  Fri Oct 17 23:54:54 PDT 2008
+periodSearch/data
+
+Added Files:
+	master_pulsardb_v2.fits my_pulsar_events_2gti.fits 
+	my_pulsar_events_phase_v3r1.fits my_pulsar_events_v3.fits 
+	my_pulsar_spacecraft_data_bogus.fits 
+	my_pulsar_spacecraft_data_v3r1.fits psrdb_binary.txt 
+	psrdb_remark.txt psrdb_spin.txt 
+Log Message:
+Add tests of applications.
+    *
+------------------------------------------------------------
+User: hirayama  Fri Oct 17 23:54:54 PDT 2008
 periodSearch/src/test
 
 Modified Files:
