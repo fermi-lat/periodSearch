@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Oct 17 19:09:30 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Adopt to changes in timeSystem package.
+    *
+------------------------------------------------------------
 User: hirayama  Mon Oct 13 18:23:24 PDT 2008
 periodSearch/src/test
 
