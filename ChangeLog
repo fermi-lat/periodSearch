@@ -1,4 +1,18 @@
 ------------------------------------------------------------
+User: hirayama  Fri Oct 17 23:54:55 PDT 2008
+periodSearch/data/outref
+
+Added Files:
+	testPeriodSearchApp_par1.fits testPeriodSearchApp_par1.log 
+	testPeriodSearchApp_par2.log testPeriodSearchApp_par3.log 
+	testPeriodSearchApp_par4.log testPeriodicityTestApp_par1.fits 
+	testPeriodicityTestApp_par1.log testPowerSpectrumApp_par1.fits 
+	testPowerSpectrumApp_par1.log testPowerSpectrumApp_par2.log 
+	testPowerSpectrumApp_par3.log testPowerSpectrumApp_par4.log 
+Log Message:
+Add tests of applications.
+    *
+------------------------------------------------------------
 User: hirayama  Fri Oct 17 23:54:54 PDT 2008
 periodSearch/data
 
