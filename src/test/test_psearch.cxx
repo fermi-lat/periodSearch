@@ -12,6 +12,10 @@
 
 #include "facilities/commonUtilities.h"
 
+#include "PeriodicityTestApp.h"
+#include "PeriodSearchApp.h"
+#include "PowerSpectrumApp.h"
+
 #include "pulsarDb/PdotCanceler.h"
 
 #include "st_app/AppParGroup.h"
@@ -60,6 +64,9 @@ class PeriodSearchTestApp : public timeSystem::PulsarTestApp {
     void testHTestArray();
 
     void testRayleighTestArray();
+
+  protected:
+    virtual st_app::StApp * createApplication(const std::string & app_name) const;
 
   private:
     void testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
@@ -493,6 +500,18 @@ void PeriodSearchTestApp::testRayleighTestArray() {
         || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
       err() << "Rayleigh statistic for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
     }
+  }
+}
+
+st_app::StApp * PeriodSearchTestApp::createApplication(const std::string & app_name) const {
+  if ("gtpsearch" == app_name) {
+    return new PeriodSearchApp();
+  } else if ("gtpspec" == app_name) {
+    return new PowerSpectrumApp();
+  } else if ("gtptest" == app_name) {
+    return new PeriodicityTestApp();
+  } else {
+    return 0;
   }
 }
 
