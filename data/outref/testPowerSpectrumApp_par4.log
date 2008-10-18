@@ -1,0 +1,9 @@
+gtpspec: INFO: ==========================
+gtpspec: INFO: Pulsar ephemerides are loaded and/or filtered as follows:
+gtpspec: INFO:    Load TEXTDB SPIN_PARAMETERS(FREQ) FILENAME='psrdb_spin.txt'
+gtpspec: INFO:    Load TEXTDB ORBITAL_PARAMETERS(DD) FILENAME='psrdb_binary.txt'
+gtpspec: INFO:    Load TEXTDB REMARKS FILENAME='psrdb_remark.txt'
+gtpspec: INFO:    Filter by pulsar name 'PSR J0540-6919'
+gtpspec: INFO:    Filter by solar system ephemeris 'JPL DE405'
+gtpspec: INFO: ==========================
+Caught St13runtime_error at the top level: PeriodSearch::findMax cannot find any trial frequency in range [0.01, -1]

@@ -1,0 +1,16 @@
+Type of test: Chi-squared Test, 10 phase bins
+Probability distribution: Chi-squared, 9 degrees of freedom
+Test Statistic: 595.080184286625
+Chance Probability Range: (0, 2.03757046903054e-99)
+Type of test: Rayleigh Test
+Probability distribution: Chi-squared, 2 degrees of freedom
+Test Statistic: 562.143217861576
+Chance Probability Range: (0, 2.00883927982452e-99)
+Type of test: Z2n Test, 3 harmonics
+Probability distribution: Chi-squared, 6 degrees of freedom
+Test Statistic: 603.896185254196
+Chance Probability Range: (0, 2.02558525747029e-99)
+Type of test: H Test, 5 maximum harmonics
+Probability distribution: H Test-specific
+Test Statistic: 612.121685340162
+Chance Probability Range: (0, 4e-08)
