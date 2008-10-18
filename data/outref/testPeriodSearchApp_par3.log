@@ -1,0 +1,2 @@
+Caught St11logic_error at the top level: ChiSquaredTestArray::computeStat was called with no events filled for test #0
+

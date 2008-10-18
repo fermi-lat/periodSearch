@@ -1,0 +1,10 @@
+Search Type: Folding Analysis
+Fourier Resolution: 1.3247e-05 Hz
+Sampling Frequency: 6.6235e-06 Hz
+Type of test: Chi-squared Test, 10 phase bins
+Probability distribution: Chi-squared, 9 degrees of freedom
+Search Range (Hz): [19.8329771230939, 19.8342951986917]
+Number of Trial Frequencies: 200
+Number of Independent Trials: 100
+Maximum Statistic: 574.667499877469 at 19.8336394726406 Hz
+Chance Probability Range: (0, 2.03757046903054e-97)

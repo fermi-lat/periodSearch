@@ -5,6 +5,8 @@
 */
 #include <cmath>
 #include <memory>
+#include <fstream>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -29,6 +31,8 @@
 #include "timeSystem/AbsoluteTime.h"
 #include "timeSystem/Duration.h"
 #include "timeSystem/ElapsedTime.h"
+#include "timeSystem/EventTimeHandler.h"
+#include "timeSystem/GlastTimeHandler.h"
 #include "timeSystem/PulsarTestApp.h"
 #include "timeSystem/TimeInterval.h"
 
@@ -40,8 +44,11 @@
 #include "FoldingAnalysis.h"
 #include "FourierAnalysis.h"
 #include "HTestArray.h"
+#include "PeriodicityTestApp.h"
 #include "PeriodicityTestArray.h"
 #include "PeriodSearch.h"
+#include "PeriodSearchApp.h"
+#include "PowerSpectrumApp.h"
 #include "RayleighTestArray.h"
 #include "Z2nTestArray.h"
 
@@ -64,6 +71,12 @@ class PeriodSearchTestApp : public timeSystem::PulsarTestApp {
     void testHTestArray();
 
     void testRayleighTestArray();
+
+    void testPeriodSearchApp();
+
+    void testPowerSpectrumApp();
+
+    void testPeriodicityTestApp();
 
   protected:
     virtual st_app::StApp * createApplication(const std::string & app_name) const;
@@ -94,6 +107,12 @@ void PeriodSearchTestApp::run() {
   testZ2nTestArray();
   testHTestArray();
   testRayleighTestArray();
+
+  // Test applications.
+  testPeriodSearchApp();
+  testPowerSpectrumApp();
+
+  testPeriodicityTestApp();
 
   // Check test status.
   reportStatus();
@@ -499,6 +518,480 @@ void PeriodSearchTestApp::testRayleighTestArray() {
     if ((expected == 0. && std::fabs(result) > epsilon)
         || (expected != 0. && std::fabs(result/expected - 1.) > epsilon)) {
       err() << "Rayleigh statistic for trial " << trial << " was " << result << ", not " << expected << "." << std::endl;
+    }
+  }
+}
+
+void PeriodSearchTestApp::testPeriodSearchApp() {
+  setMethod("testPeriodSearchApp");
+
+  // List supported event file format(s).
+  timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_sctime_handler;
+
+  // Prepare variables to create application objects.
+  std::list<std::string> test_name_cont;
+  test_name_cont.push_back("par1");
+  test_name_cont.push_back("par2");
+  test_name_cont.push_back("par3");
+  test_name_cont.push_back("par4");
+
+  // Prepare files to be used in the tests.
+  std::string ev_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_v3.fits");
+  std::string sc_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_spacecraft_data_v3r1.fits");
+  std::string master_pulsardb = facilities::commonUtilities::joinPath(getDataPath(), "master_pulsardb_v2.fits");
+  std::string ev_file_2gti = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_2gti.fits");
+  std::string sc_file_bogus = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_spacecraft_data_bogus.fits");
+
+  // Loop over parameter sets.
+  for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
+    const std::string & test_name = *test_itor;
+    std::string out_file(getMethod() + "_" + test_name + ".fits");
+
+    // Set default parameters.
+    std::string app_name("gtpsearch");
+    st_app::AppParGroup pars(app_name);
+    pars["evfile"] = "";
+    pars["scfile"] = "";
+    pars["psrdbfile"] = "";
+    pars["psrname"] = "ANY";
+    pars["outfile"] = "";
+    pars["algorithm"] = "CHI2";
+    pars["numphase"] = 10;
+    pars["numharm"] = 10;
+    pars["maxharm"] = 10;
+    pars["scanstep"] = 0.5;
+    pars["numtrials"] = 100;
+    pars["timeorigin"] = "MIDDLE";
+    pars["usertime"] = 0.;
+    pars["userformat"] = "FILE";
+    pars["usersys"] = "FILE";
+    pars["ephstyle"] = "DB";
+    pars["ephepoch"] = 0.;
+    pars["timeformat"] = "FILE";
+    pars["timesys"] = "FILE";
+    pars["ra"] = 0.;
+    pars["dec"] = 0.;
+    pars["f0"] = 1.;
+    pars["f1"] = 0.;
+    pars["f2"] = 0.;
+    pars["p0"] = 1.;
+    pars["p1"] = 0.;
+    pars["p2"] = 0.;
+    pars["tcorrect"] = "AUTO";
+    pars["solareph"] = "JPL DE405";
+    pars["matchsolareph"] = "ALL";
+    pars["angtol"] = 1.e-8;
+    pars["evtable"] = "EVENTS";
+    pars["timefield"] = "TIME";
+    pars["sctable"] = "SC_DATA";
+    pars["plot"] = "yes";
+    pars["title"] = "DEFAULT";
+    pars["leapsecfile"] = "DEFAULT";
+    pars["reportephstatus"] = "yes";
+    pars["chatter"] = 2;
+    pars["clobber"] = "yes";
+    pars["debug"] = "no";
+    pars["gui"] = "no";
+    pars["mode"] = "ql";
+
+    // Set test-specific parameters.
+    bool check_out_file = true;
+    if ("par1" == test_name) {
+      // Test standard computation with DB option.
+      pars["algorithm"] = "Chi2";
+      pars["evfile"] = ev_file;
+      pars["evtable"] = "EVENTS";
+      pars["scfile"] = sc_file;
+      pars["outfile"] = out_file;
+      pars["ephstyle"] = "DB";
+      pars["psrdbfile"] = master_pulsardb;
+      pars["psrname"] = "PSR B0540-69";
+      pars["scanstep"] = .5;
+      pars["tcorrect"] = "AutO";
+      pars["matchsolareph"] = "nONe";
+      pars["numtrials"] = 200;
+      pars["timeorigin"] = "uSer";
+      pars["usertime"] = 214380785.922;
+      pars["usersys"] = "tDb";
+      pars["userformat"] = "fIle";
+      pars["numphase"] = 10;
+      pars["timefield"] = "TIME";
+      pars["plot"] = "nO";
+      pars["title"] = "My statistical test";
+      pars["gui"] = "No";
+
+    } else if ("par2" == test_name) {
+      // Test ephemeris status reporting.
+      std::string summary_file("psrdb_summary.txt");
+      remove(summary_file.c_str());
+      std::ofstream ofs_summary(summary_file.c_str());
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary.close();
+      pars["algorithm"] = "Chi2";
+      pars["evfile"] = ev_file_2gti;
+      pars["evtable"] = "EVENTS";
+      pars["scfile"] = sc_file_bogus;
+      pars["outfile"] = out_file;
+      pars["ephstyle"] = "DB";
+      pars["psrdbfile"] = "@" + summary_file;
+      pars["psrname"] = "PSR J0540-6919";
+      pars["scanstep"] = .5;
+      pars["tcorrect"] = "AutO";
+      pars["matchsolareph"] = "nONe";
+      pars["numtrials"] = 200;
+      pars["timeorigin"] = "uSer";
+      pars["usertime"] = 214380785.922;
+      pars["usersys"] = "tDb";
+      pars["userformat"] = "fIle";
+      pars["numphase"] = 10;
+      pars["timefield"] = "TIME";
+      pars["plot"] = "nO";
+      pars["title"] = "My statistical test";
+      pars["gui"] = "No";
+      check_out_file = false;
+
+    } else if ("par3" == test_name) {
+      // Test no reporting of ephemeris status with reportephstatus=no.
+      std::string summary_file("psrdb_summary.txt");
+      remove(summary_file.c_str());
+      std::ofstream ofs_summary(summary_file.c_str());
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary.close();
+      pars["algorithm"] = "Chi2";
+      pars["evfile"] = ev_file_2gti;
+      pars["evtable"] = "EVENTS";
+      pars["scfile"] = sc_file_bogus;
+      pars["outfile"] = out_file;
+      pars["ephstyle"] = "DB";
+      pars["psrdbfile"] = "@" + summary_file;
+      pars["psrname"] = "PSR J0540-6919";
+      pars["scanstep"] = .5;
+      pars["tcorrect"] = "AutO";
+      pars["matchsolareph"] = "nONe";
+      pars["numtrials"] = 200;
+      pars["timeorigin"] = "uSer";
+      pars["usertime"] = 214380785.922;
+      pars["usersys"] = "tDb";
+      pars["userformat"] = "fIle";
+      pars["numphase"] = 10;
+      pars["timefield"] = "TIME";
+      pars["plot"] = "nO";
+      pars["title"] = "My statistical test";
+      pars["gui"] = "No";
+      pars["reportephstatus"] = "no";
+      check_out_file = false;
+
+    } else if ("par4" == test_name) {
+      // Test reporting of database creation history.
+      std::string summary_file("psrdb_summary.txt");
+      remove(summary_file.c_str());
+      std::ofstream ofs_summary(summary_file.c_str());
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary.close();
+      pars["algorithm"] = "Chi2";
+      pars["evfile"] = ev_file_2gti;
+      pars["evtable"] = "EVENTS";
+      pars["scfile"] = sc_file_bogus;
+      pars["outfile"] = out_file;
+      pars["ephstyle"] = "DB";
+      pars["psrdbfile"] = "@" + summary_file;
+      pars["psrname"] = "PSR J0540-6919";
+      pars["scanstep"] = .5;
+      pars["tcorrect"] = "AutO";
+      pars["matchsolareph"] = "nONe";
+      pars["numtrials"] = 200;
+      pars["timeorigin"] = "uSer";
+      pars["usertime"] = 214380785.922;
+      pars["usersys"] = "tDb";
+      pars["userformat"] = "fIle";
+      pars["numphase"] = 10;
+      pars["timefield"] = "TIME";
+      pars["plot"] = "nO";
+      pars["title"] = "My statistical test";
+      pars["gui"] = "No";
+      pars["reportephstatus"] = "no";
+      pars["chatter"] = 4;
+      check_out_file = false;
+
+    } else {
+      // Skip this iteration.
+      continue;
+    }
+
+    // Test the application.
+    std::string log_file(getMethod() + "_" + test_name + ".log");
+    if (check_out_file) {
+      testApplication(app_name, pars, log_file, out_file);
+    } else {
+      testApplication(app_name, pars, log_file, "", true);
+    }
+  }
+}
+
+void PeriodSearchTestApp::testPowerSpectrumApp() {
+  setMethod("testPowerSpectrumApp");
+
+  // List supported event file format(s).
+  timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_sctime_handler;
+
+  // Prepare variables to create application objects.
+  std::list<std::string> test_name_cont;
+  test_name_cont.push_back("par1");
+  test_name_cont.push_back("par2");
+  test_name_cont.push_back("par3");
+  test_name_cont.push_back("par4");
+
+  // Prepare files to be used in the tests.
+  std::string ev_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_v3.fits");
+  std::string sc_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_spacecraft_data_v3r1.fits");
+  std::string master_pulsardb = facilities::commonUtilities::joinPath(getDataPath(), "master_pulsardb_v2.fits");
+  std::string ev_file_2gti = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_2gti.fits");
+  std::string sc_file_bogus = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_spacecraft_data_bogus.fits");
+
+  // Loop over parameter sets.
+  for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
+    const std::string & test_name = *test_itor;
+    std::string out_file(getMethod() + "_" + test_name + ".fits");
+
+    // Set default parameters.
+    std::string app_name("gtpspec");
+    st_app::AppParGroup pars(app_name);
+    pars["evfile"] = "";
+    pars["scfile"] = "";
+    pars["psrdbfile"] = "";
+    pars["psrname"] = "ANY";
+    pars["outfile"] = "";
+    pars["binwidth"] = 1.e-2;
+    pars["numbins"] = 1000000;
+    pars["timeorigin"] = "MIDDLE";
+    pars["usertime"] = 0.;
+    pars["userformat"] = "FILE";
+    pars["usersys"] = "FILE";
+    pars["ra"] = 0.;
+    pars["dec"] = 0.;
+    pars["ephstyle"] = "FREQ";
+    pars["f1f0ratio"] = 0.;
+    pars["f2f0ratio"] = 0.;
+    pars["p1p0ratio"] = 0.;
+    pars["p2p0ratio"] = 0.;
+    pars["tcorrect"] = "AUTO";
+    pars["solareph"] = "JPL DE405";
+    pars["matchsolareph"] = "ALL";
+    pars["angtol"] = 1.e-8;
+    pars["evtable"] = "EVENTS";
+    pars["timefield"] = "TIME";
+    pars["sctable"] = "SC_DATA";
+    pars["lowfcut"] = .01;
+    pars["plot"] = "yes";
+    pars["title"] = "DEFAULT";
+    pars["leapsecfile"] = "DEFAULT";
+    pars["reportephstatus"] = "yes";
+    pars["chatter"] = 2;
+    pars["clobber"] = "yes";
+    pars["debug"] = "no";
+    pars["gui"] = "no";
+    pars["mode"] = "ql";
+
+    // Set test-specific parameters.
+    bool check_out_file = true;
+    if ("par1" == test_name) {
+      // Test standard computation with DB option.
+      pars["evfile"] = ev_file;
+      pars["evtable"] = "EVENTS";
+      pars["scfile"] = sc_file;
+      pars["outfile"] = out_file;
+      pars["ephstyle"] = "FREQ";
+      pars["ra"] = 85.0482;
+      pars["dec"] = -69.3319;
+      pars["f1f0ratio"] = 0.0;
+      pars["f2f0ratio"] = 0.0;
+      pars["timeorigin"] = "mIDdLe";
+      pars["psrdbfile"] = master_pulsardb;
+      pars["psrname"] = "PSR B0540-69";
+      pars["binwidth"] = 0.01;
+      pars["numbins"] = 1000000;
+      pars["tcorrect"] = "BaRY";
+      pars["timefield"] = "TIME";
+      pars["plot"] = "No";
+      pars["title"] = "My Fourier analysis";
+      pars["gui"] = "No";
+
+    } else if ("par2" == test_name) {
+      // Test ephemeris status reporting.
+      std::string summary_file("psrdb_summary.txt");
+      remove(summary_file.c_str());
+      std::ofstream ofs_summary(summary_file.c_str());
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_binary.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary.close();
+      pars["evfile"] = ev_file_2gti;
+      pars["evtable"] = "EVENTS";
+      pars["scfile"] = sc_file_bogus;
+      pars["outfile"] = out_file;
+      pars["ephstyle"] = "FREQ";
+      pars["ra"] = 85.0482;
+      pars["dec"] = -69.3319;
+      pars["f1f0ratio"] = 0.0;
+      pars["f2f0ratio"] = 0.0;
+      pars["timeorigin"] = "mIDdLe";
+      pars["psrdbfile"] = "@" + summary_file;
+      pars["psrname"] = "PSR J0540-6919";
+      pars["binwidth"] = 0.01;
+      pars["numbins"] = 1000000;
+      pars["tcorrect"] = "BaRY";
+      pars["timefield"] = "TIME";
+      pars["plot"] = "No";
+      pars["title"] = "My Fourier analysis";
+      pars["gui"] = "No";
+      check_out_file = false;
+
+    } else if ("par3" == test_name) {
+      // Test no reporting of ephemeris status with reportephstatus=no.
+      std::string summary_file("psrdb_summary.txt");
+      remove(summary_file.c_str());
+      std::ofstream ofs_summary(summary_file.c_str());
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_binary.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary.close();
+      pars["evfile"] = ev_file_2gti;
+      pars["evtable"] = "EVENTS";
+      pars["scfile"] = sc_file_bogus;
+      pars["outfile"] = out_file;
+      pars["ephstyle"] = "FREQ";
+      pars["ra"] = 85.0482;
+      pars["dec"] = -69.3319;
+      pars["f1f0ratio"] = 0.0;
+      pars["f2f0ratio"] = 0.0;
+      pars["timeorigin"] = "mIDdLe";
+      pars["psrdbfile"] = "@" + summary_file;
+      pars["psrname"] = "PSR J0540-6919";
+      pars["binwidth"] = 0.01;
+      pars["numbins"] = 1000000;
+      pars["tcorrect"] = "BaRY";
+      pars["timefield"] = "TIME";
+      pars["plot"] = "No";
+      pars["title"] = "My Fourier analysis";
+      pars["gui"] = "No";
+      pars["reportephstatus"] = "no";
+      check_out_file = false;
+
+    } else if ("par4" == test_name) {
+      // Test reporting of database creation history.
+      std::string summary_file("psrdb_summary.txt");
+      remove(summary_file.c_str());
+      std::ofstream ofs_summary(summary_file.c_str());
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_binary.txt") << std::endl;
+      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary.close();
+      pars["evfile"] = ev_file_2gti;
+      pars["evtable"] = "EVENTS";
+      pars["scfile"] = sc_file_bogus;
+      pars["outfile"] = out_file;
+      pars["ephstyle"] = "FREQ";
+      pars["ra"] = 85.0482;
+      pars["dec"] = -69.3319;
+      pars["f1f0ratio"] = 0.0;
+      pars["f2f0ratio"] = 0.0;
+      pars["timeorigin"] = "mIDdLe";
+      pars["psrdbfile"] = "@" + summary_file;
+      pars["psrname"] = "PSR J0540-6919";
+      pars["binwidth"] = 0.01;
+      pars["numbins"] = 1000000;
+      pars["tcorrect"] = "AuTO";
+      pars["timefield"] = "TIME";
+      pars["plot"] = "No";
+      pars["title"] = "My Fourier analysis";
+      pars["gui"] = "No";
+      pars["reportephstatus"] = "no";
+      pars["chatter"] = 4;
+      check_out_file = false;
+
+    } else {
+      // Skip this iteration.
+      continue;
+    }
+
+    // Test the application.
+    std::string log_file(getMethod() + "_" + test_name + ".log");
+    if (check_out_file) {
+      testApplication(app_name, pars, log_file, out_file);
+    } else {
+      testApplication(app_name, pars, log_file, "", true);
+    }
+  }
+}
+
+void PeriodSearchTestApp::testPeriodicityTestApp() {
+  setMethod("testPeriodicityTestApp");
+
+  // List supported event file format(s).
+  timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_sctime_handler;
+
+  // Prepare variables to create application objects.
+  std::list<std::string> test_name_cont;
+  test_name_cont.push_back("par1");
+  test_name_cont.push_back("par2");
+  test_name_cont.push_back("par3");
+  test_name_cont.push_back("par4");
+
+  // Prepare files to be used in the tests.
+  std::string ev_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_phase_v3r1.fits");
+
+  // Loop over parameter sets.
+  for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
+    const std::string & test_name = *test_itor;
+    std::string out_file(getMethod() + "_" + test_name + ".fits");
+
+    // Set default parameters.
+    std::string app_name("gtptest");
+    st_app::AppParGroup pars(app_name);
+    pars["evfile"] = "";
+    pars["outfile"] = "";
+    pars["numphase"] = 10;
+    pars["numharm"] = 10;
+    pars["maxharm"] = 10;
+    pars["evtable"] = "EVENTS";
+    pars["pphasefield"] = "PULSE_PHASE";
+    pars["plot"] = "yes";
+    pars["title"] = "DEFAULT";
+    pars["chatter"] = 2;
+    pars["clobber"] = "yes";
+    pars["debug"] = "no";
+    pars["gui"] = "no";
+    pars["mode"] = "ql";
+
+    // Set test-specific parameters.
+    bool check_out_file = true;
+    if ("par1" == test_name) {
+      // Test standard computation with DB option.
+      pars["evfile"] = ev_file;
+      pars["evtable"] = "EVENTS";
+      pars["pphasefield"] = "PULSE_PHASE";
+      pars["numphase"] = 10;
+      pars["numharm"] = 3;
+      pars["maxharm"] = 5;
+      pars["outfile"] = out_file;
+      pars["plot"] = "nO";
+      pars["title"] = "All statistical test results";
+      pars["gui"] = "No";
+
+    } else {
+      // Skip this iteration.
+      continue;
+    }
+
+    // Test the application.
+    std::string log_file(getMethod() + "_" + test_name + ".log");
+    if (check_out_file) {
+      testApplication(app_name, pars, log_file, out_file);
+    } else {
+      testApplication(app_name, pars, log_file, "", true);
     }
   }
 }

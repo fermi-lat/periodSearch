@@ -1,0 +1,10 @@
+Search Type: Fourier Analysis
+Fourier Resolution: 0.0001 Hz
+Sampling Frequency: 0.0001 Hz
+Data Binning: 0 segments with 1000000 time bins in each segment
+Probability Distribution: Chi Squared with 0 degrees of freedom
+Search Range (Hz): [0.01, 50]
+Number of Trial Frequencies: 499900
+Number of Independent Trials: 499900
+Maximum Statistic: 442.72226059427 at 19.834 Hz
+Chance Probability Range: (1.95030295620352e-78, 1.95049798491663e-78)
