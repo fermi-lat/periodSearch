@@ -81,11 +81,8 @@ PeriodSearchApp::PeriodSearchApp(): m_os("PeriodSearchApp", "", 2) {
 
 PeriodSearchApp::~PeriodSearchApp() throw() {}
 
-void PeriodSearchApp::run() {
-  // Clean up from any previous runs.
-  resetApp();
-
-  m_os.setMethod("run()");
+void PeriodSearchApp::runApp() {
+  m_os.setMethod("runApp()");
   st_app::AppParGroup & pars(getParGroup());
 
   // Prompt for all parameters and save them.
