@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sun Oct 19 14:22:15 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Enforce initialization of a unit test and its error reporting at the end.
+    *
+------------------------------------------------------------
 User: hirayama  Sun Oct 19 13:55:23 PDT 2008
 periodSearch/src
 
