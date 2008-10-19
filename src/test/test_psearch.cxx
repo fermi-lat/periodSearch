@@ -58,7 +58,7 @@ class PeriodSearchTestApp : public timeSystem::PulsarTestApp {
   public:
     PeriodSearchTestApp();
     virtual ~PeriodSearchTestApp() throw() {}
-    virtual void run();
+    virtual void runTest();
 
     void testPeriodSearch();
 
@@ -95,7 +95,7 @@ PeriodSearchTestApp::PeriodSearchTestApp(): PulsarTestApp("periodSearch") {
   setVersion(s_cvs_id);
 }
 
-void PeriodSearchTestApp::run() {
+void PeriodSearchTestApp::runTest() {
   // Test PeriodSearch subclasses.
   testPeriodSearch();
 
@@ -111,11 +111,7 @@ void PeriodSearchTestApp::run() {
   // Test applications.
   testPeriodSearchApp();
   testPowerSpectrumApp();
-
   testPeriodicityTestApp();
-
-  // Check test status.
-  reportStatus();
 }
 
 void PeriodSearchTestApp::testPeriodSearch() {
