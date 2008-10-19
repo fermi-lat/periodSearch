@@ -53,11 +53,8 @@ PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2) {
 
 PowerSpectrumApp::~PowerSpectrumApp() throw() {}
 
-void PowerSpectrumApp::run() {
-  // Clean up from any previous runs.
-  resetApp();
-
-  m_os.setMethod("run()");
+void PowerSpectrumApp::runApp() {
+  m_os.setMethod("runApp()");
   st_app::AppParGroup & pars(getParGroup());
 
   // Prompt for all parameters and save them.
