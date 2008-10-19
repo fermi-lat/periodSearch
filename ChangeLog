@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Sun Oct 19 13:55:23 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PeriodSearchApp.h PeriodSearchApp.cxx PowerSpectrumApp.h 
+	PowerSpectrumApp.cxx 
+Log Message:
+Fix a bug (JIRA PULS-48) with new PulsarToolApp class.
+    *
+------------------------------------------------------------
 User: hirayama  Fri Oct 17 23:54:55 PDT 2008
 periodSearch/data/outref
 
