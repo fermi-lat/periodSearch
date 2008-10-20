@@ -2,14 +2,26 @@
     \brief Implmementation for ChiSquaredProb class.
     \author Masaharu Hirayama, GSSC
 */
+#include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 #include "ChiSquaredProb.h"
 
 ChiSquaredProb::ChiSquaredProb(int dof, double min_pdf): m_dof(dof), m_dof_minus_2(dof-2), m_lognorm(0.0) {
-  // check if dof and min_pdf are positive or not
-  if (dof <= 0) throw std::logic_error("ChiSquaredProb::ChiSquaredProb: non-positive number of degrees of freedom");
-  if (min_pdf <= 0.) throw std::logic_error("ChiSquaredProb::ChiSquaredProb: non-positive minimum number of probability density function");
+  // Check the sign of dof argument.
+  if (dof <= 0) {
+    std::ostringstream os;
+    os << "Non-positive number is given for the degrees of freedom of a chi-squared distribution: " << dof;
+    throw std::logic_error(os.str());
+  }
+
+  // Check the sign of min_pdf argument.
+  if (min_pdf <= 0.) {
+    std::ostringstream os;
+    os << "Non-positive number is given for the minimum value of probability density function to compute: " << min_pdf;
+    throw std::logic_error(os.str());
+  }
 
   // pre-compute normalization
   double nterm;

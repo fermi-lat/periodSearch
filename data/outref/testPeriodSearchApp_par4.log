@@ -4,5 +4,5 @@ gtpsearch: INFO:    Load TEXTDB SPIN_PARAMETERS(FREQ) FILENAME='psrdb_spin.txt'
 gtpsearch: INFO:    Load TEXTDB REMARKS FILENAME='psrdb_remark.txt'
 gtpsearch: INFO:    Filter by pulsar name 'PSR J0540-6919'
 gtpsearch: INFO: ==========================
-Caught St11logic_error at the top level: ChiSquaredTestArray::computeStat was called with no events filled for test #0
+Caught St11logic_error at the top level: Error while computing an S-value of chi-squared test: No events filled for test #0
 

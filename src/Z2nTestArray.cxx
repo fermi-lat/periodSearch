@@ -18,7 +18,11 @@ Z2nTestArray::Z2nTestArray(size_type array_size, data_type::size_type num_harmon
   PeriodicityTestArray(2, num_harmonics), m_num_harm(num_harmonics), m_sine_cont(array_size, data_type(num_harmonics, 0.)),
   m_cosine_cont(array_size, data_type(num_harmonics, 0.)), m_num_events(array_size, 0) {
   // Check argument values.
-  if (0 >= num_harmonics) throw std::logic_error("Z2nTestArray constructor was passed a non-positive number of harmonics");
+  if (0 >= num_harmonics) {
+    std::ostringstream os;
+    os << "Non-positive number of harmonics given: " << num_harmonics;
+    throw std::logic_error(os.str());
+  }
 
   // Set description of this statistical test.
   std::ostringstream os_cond;
@@ -65,7 +69,7 @@ void Z2nTestArray::computePower(size_type array_index, data_type & power) const 
   long num_events = m_num_events.at(array_index);
   if (num_events == 0) {
     std::ostringstream os;
-    os << "Z2nTestArray::computePower was called with no events filled for test #" << array_index << std::endl;
+    os << "Error while computing the Fourier powers: No events filled for test #" << array_index << std::endl;
     throw std::logic_error(os.str());
   }
 

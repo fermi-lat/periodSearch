@@ -22,9 +22,27 @@ FourierAnalysis::FourierAnalysis(double t_start, double t_stop, double width, Pe
   const std::string & freq_unit, int /* num_events */):
   PeriodSearch(num_bins / 2 + 1, freq_unit), m_index(), m_t_start(t_start), m_t_stop(t_stop), m_width(width),
   m_fourier_res(0.), m_num_segments(0) , m_num_bins(num_bins) {
-  if (t_start > t_stop) throw std::runtime_error("FourierAnalysis: start time is > stop time");
-  if (0. >= width) throw std::runtime_error("FourierAnalysis: width is non-positive");
-  if (0  >= num_bins) throw std::runtime_error("FourierAnalysis: the number of bins is non-positive");
+  // Check time interval.
+  if (t_start > t_stop) {
+    std::ostringstream os;
+    os << "Bad time interval for Discrete Fast Fourier Transform (DFFT): [" << t_start << ", " << t_stop <<
+        "] (start time is later than stop time)";
+    throw std::runtime_error(os.str());
+  }
+
+  // Check width of time bin.
+  if (0. >= width) {
+    std::ostringstream os;
+    os << "Non-positive value is given for the width of time bin: " << width;
+    throw std::runtime_error(os.str());
+  }
+
+  // Check the number of time bins to be FFT'ed at a time.
+  if (0  >= num_bins) {
+    std::ostringstream os;
+    os << "Non-positive number is given for the number of time bins to be Fourier-transfered at a time: " << num_bins;
+    throw std::runtime_error(os.str());
+  }
   // m_index.reserve(num_events);
 
   // Set up frequency array.
@@ -75,7 +93,7 @@ void FourierAnalysis::computeStat() {
 
   // Allocate array for fftw input/output.
   in = (double *) fftw_malloc(sizeof(double) * num_dbl_elements);
-  if (0 == in) throw std::runtime_error("FourierAnalysis could not allocate array");
+  if (0 == in) throw std::runtime_error("Could not allocate a memory space for Discrete Fast Fourier Transform (DFFT)");
 
   // Perform transform in place.
   out = (fftw_complex *) in;
