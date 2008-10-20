@@ -1,5 +1,16 @@
 ------------------------------------------------------------
 User: hirayama  Sun Oct 19 22:38:13 PDT 2008
+periodSearch/src
+
+Modified Files:
+	ChiSquaredProb.cxx ChiSquaredTestArray.cxx FoldingAnalysis.cxx 
+	FourierAnalysis.cxx PeriodSearch.cxx PeriodSearchApp.cxx 
+	Z2nTestArray.cxx 
+Log Message:
+Improve error messages.
+    *
+------------------------------------------------------------
+User: hirayama  Sun Oct 19 22:38:13 PDT 2008
 periodSearch/data/outref
 
 Modified Files:
