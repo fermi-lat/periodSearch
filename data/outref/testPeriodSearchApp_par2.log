@@ -5,5 +5,5 @@ gtpsearch: WARNING: The following pulsar ephemeris status are reported.
 [4] Remarked "Test remark entry No.6" since 53990 MJD (TDB) until 54030 MJD (TDB)
 [5] Remarked "Test remark entry No.7" since 54030 MJD (TDB) until 54070 MJD (TDB)
 [6] Remarked "Test remark entry No.8" since 53990 MJD (TDB) until 54070 MJD (TDB)
-Caught St11logic_error at the top level: ChiSquaredTestArray::computeStat was called with no events filled for test #0
+Caught St11logic_error at the top level: Error while computing an S-value of chi-squared test: No events filled for test #0
 

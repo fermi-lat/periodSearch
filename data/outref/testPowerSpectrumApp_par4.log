@@ -6,4 +6,4 @@ gtpspec: INFO:    Load TEXTDB REMARKS FILENAME='psrdb_remark.txt'
 gtpspec: INFO:    Filter by pulsar name 'PSR J0540-6919'
 gtpspec: INFO:    Filter by solar system ephemeris 'JPL DE405'
 gtpspec: INFO: ==========================
-Caught St13runtime_error at the top level: PeriodSearch::findMax cannot find any trial frequency in range [0.01, -1]
+Caught St13runtime_error at the top level: Could not find the maximum statistic at any trial frequency in range [0.01, -1]

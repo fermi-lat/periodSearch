@@ -19,18 +19,38 @@ FoldingAnalysis::FoldingAnalysis(PeriodicityTestArray * test_array, double cente
   // Get the array size.
   size_type num_trials = test_array->size();
 
-  // Make certain there is no error in the input.
-  if (0. >= center) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive center");
-  if (0. >= m_step) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive step");
-  if (0  >= num_trials) throw std::logic_error("FoldingAnalysis constructor was passed a periodicity test array of a non-positive size");
-  if (0. >= duration) throw std::logic_error("FoldingAnalysis constructor was passed a non-positive duration");
+  // Check central frequency of the scan.
+  if (0. >= center) {
+    std::ostringstream os;
+    os << "Non-positive value is given for the central frequency of a periodicity search: " << center;
+    throw std::runtime_error(os.str());
+  }
+  if (0. >= m_step) {
+    std::ostringstream os;
+    os << "Non-positive value is given for the frequency step in a periodicity search: " << m_step;
+    throw std::runtime_error(os.str());
+  }
+  if (0  >= num_trials) {
+    std::ostringstream os;
+    os << "Non-positive number is given for the number of trial frequencies in a periodicity search: " << num_trials;
+    throw std::runtime_error(os.str());
+  }
+  if (0. >= duration) {
+    std::ostringstream os;
+    os << "Non-positive value is given for the time span of the observation for a periodicity search: " << duration;
+    throw std::runtime_error(os.str());
+  }
 
   // Create vector containing the trial frequencies.
   size_type ii_cent = num_trials / 2;
   double min = center - ii_cent * m_step;
 
   // Check whether the step was too big, leading to a negative frequency.
-  if (0. >= min) throw std::logic_error("FoldingAnalysis constructor computed a non-positive trial frequency");
+  if (0. >= min) {
+    std::ostringstream os;
+    os << "Trial frequencies for a periodicity search include a non-positive value such as " << min;
+    throw std::runtime_error(os.str());
+  }
 
   // Step from minimum frequency on up, populating internal arrays.
   StatisticViewer & viewer = getViewer();

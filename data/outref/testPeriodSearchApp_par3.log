@@ -1,2 +1,2 @@
-Caught St11logic_error at the top level: ChiSquaredTestArray::computeStat was called with no events filled for test #0
+Caught St11logic_error at the top level: Error while computing an S-value of chi-squared test: No events filled for test #0
 

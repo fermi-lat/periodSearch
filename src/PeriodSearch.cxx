@@ -92,7 +92,7 @@ std::pair<double, double> PeriodSearch::findMax(double min_freq, double max_freq
   // Make sure a valid maximum was found.
   if (!found_max) {
     std::ostringstream os;
-    os << "PeriodSearch::findMax cannot find any trial frequency in range [" << min_freq << ", " << max_freq << "]";
+    os << "Could not find the maximum statistic at any trial frequency in range [" << min_freq << ", " << max_freq << "]";
     throw std::runtime_error(os.str());
   }
   const StatisticViewer::data_type & freq = m_viewer.getData(0);

@@ -162,7 +162,7 @@ void PeriodSearchApp::runApp() {
     test_array.reset(new HTestArray(num_trials, max_harm));
     search.reset(new FoldingAnalysis(test_array.get(), f_center, f_step, origin, duration, "Hz"));
   } else {
-    throw std::runtime_error("PeriodSearchApp: invalid test algorithm " + algorithm);
+    throw std::runtime_error("Unknown test algorithm: " + algorithm);
   }
 
   for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
