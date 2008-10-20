@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: hirayama  Sun Oct 19 22:38:13 PDT 2008
+periodSearch/data/outref
+
+Modified Files:
+	testPeriodSearchApp_par2.log testPeriodSearchApp_par3.log 
+	testPeriodSearchApp_par4.log testPowerSpectrumApp_par2.log 
+	testPowerSpectrumApp_par3.log testPowerSpectrumApp_par4.log 
+Log Message:
+Improve error messages.
+    *
+------------------------------------------------------------
 User: hirayama  Sun Oct 19 14:22:15 PDT 2008
 periodSearch/src/test
 
