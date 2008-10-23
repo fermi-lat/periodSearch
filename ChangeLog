@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Wed Oct 22 18:17:59 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Add/improve Doxygen comments.
+    *
+------------------------------------------------------------
+User: hirayama  Wed Oct 22 18:17:59 PDT 2008
 periodSearch/src
 
 Modified Files:
