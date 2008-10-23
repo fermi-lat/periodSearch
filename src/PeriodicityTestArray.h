@@ -22,6 +22,7 @@ class PeriodicityTestArray {
   public:
     typedef std::size_t size_type;
 
+    /// \brief Destruct this PeriodicityTestArray object.
     virtual ~PeriodicityTestArray() {}
 
     /** \brief Fill a given pulse phase into a given element of the array of periodicity test.

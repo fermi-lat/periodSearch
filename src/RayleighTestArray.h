@@ -16,6 +16,9 @@
 */
 class RayleighTestArray : public Z2nTestArray {
   public:
+    /** \brief Construct an array object for the Rayleigh test.
+        \param array_size The size of this test array.
+    */
     RayleighTestArray(size_type array_size): Z2nTestArray(array_size, 1) {
       // Set description of this statistical test.
       std::ostringstream os_dist;

@@ -20,7 +20,8 @@ class PeriodicityTestArray;
 */
 class FoldingAnalysis : public PeriodSearch {
   public:
-    /** \brief Construct a periodicity search object using given search criteria and a statistical test object.
+    /** \brief Construct a FoldingAnalysis object, which performs periodicity search using given search criteria
+               and a statistical test object.
         \param center The central frequency to test.
         \param step The step size of frequency sampling.
         \param test_array The statistical test array object to be used for this periodicity search.
@@ -31,6 +32,7 @@ class FoldingAnalysis : public PeriodSearch {
     FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration,
       const std::string & freq_unit);
 
+    /// \brief Destruct this FoldingAnalysis object.
     virtual ~FoldingAnalysis() {}
 
     /** \brief Fill given time into periodicity test objects.

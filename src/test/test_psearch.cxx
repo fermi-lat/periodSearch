@@ -54,38 +54,82 @@
 
 static const std::string s_cvs_id = "$Name:  $";
 
+/** \class PeriodSearchTestApp
+    \brief Test periodSearch package and applications in it.
+*/
 class PeriodSearchTestApp : public timeSystem::PulsarTestApp {
   public:
+    /// \brief Construct a PeriodSearchTestApp object.
     PeriodSearchTestApp();
+
+    /// \brief Destruct this PeriodSearchTestApp object.
     virtual ~PeriodSearchTestApp() throw() {}
+
+    /// \brief Do all tests.
     virtual void runTest();
 
+    /// \brief Test PeriodSearch class.
     void testPeriodSearch();
 
+    /// \brief Test chance probability computations.
     void testChanceProb();
 
+    /// \brief Test ChiSquaredTestArray class.
     void testChiSquaredTestArray();
 
+    /// \brief Test Z2nTestArray class.
     void testZ2nTestArray();
 
+    /// \brief Test HTestArray class.
     void testHTestArray();
 
+    /// \brief Test RayleighTestArray class.
     void testRayleighTestArray();
 
+    /// \brief Test PeriodSearchApp class.
     void testPeriodSearchApp();
 
+    /// \brief Test PowerSpectrumApp class.
     void testPowerSpectrumApp();
 
+    /// \brief Test PeriodicityTestApp class.
     void testPeriodicityTestApp();
 
   protected:
+    /** \brief Create an application object to be tested.
+        \param app_name Name of application to be tested.
+    */
     virtual st_app::StApp * createApplication(const std::string & app_name) const;
 
   private:
+    /** \brief Helper method for testPeriodSearch, to test all types of test statistics.
+        \param prefix Character string to be used as a prefix of output file names.
+        \param events List of event times to be tested periodicity.
+        \param t_start Start time of the time series data.
+        \param t_stop Stop time of the time series data.
+        \param center Central frequency of a frequency scan in Hz.
+        \param step Frequency step size in Hz.
+        \param num_trials Number of trial frequencies.
+        \param epoch Reference epoch of the time series data.
+        \param num_bins The nmber of bins for the chi-squared test, the number of harmonics for the Z2n test,
+                        and the maximumn number of harmonics for the H test.
+        \param fourier_width Width of time bins for the Fourier transformation.
+        \param fourier_min_freq Minimum frequency to be computed by the Fourier transformation.
+        \param fourier_max_freq Maximum frequency to be computed by the Fourier transformation.
+        \param plot Set to true if the result should be plotted on screen. Set to false otherwise.
+    */
     void testAllStats(const std::string & prefix, const std::vector<double> & events, double t_start, double t_stop,
       double center, double step, long num_trials, double epoch, int num_bins,
       double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot);
 
+    /** \brief Helper method for testAllStats, to test one types of test statistics.
+        \param events List of event times to be tested periodicity.
+        \param search PeriodSearch object to be tested.
+        \param plot_title Title of a plot that displays a test result on screen.
+        \param out_file Name of an output file that stores a test result.
+        \param min_freq Minimum frequency to compute test statistics. Set to a negative value for not specifying the minimum.
+        \param max_freq Maximum frequency to compute test statistics. Set to a negative value for not specifying the maximum.
+    */
     void testOneSearch(const std::vector<double> & events, PeriodSearch & search, const std::string & plot_title,
       const std::string & out_file, bool plot, double min_freq = -1., double max_freq = -1.);
 };

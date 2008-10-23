@@ -10,10 +10,18 @@
 
 #include "st_stream/StreamFormatter.h"
 
+/** \class PeriodicityTestApp
+    \brief Main application class for various types of statistical test for periodicity.
+*/
 class PeriodicityTestApp : public st_app::StApp {
   public:
+    /// \brief Construct a PeriodicityTestApp object.
     PeriodicityTestApp();
+
+    /// \brief Destruct this PeriodicityTestApp object.
     virtual ~PeriodicityTestApp() throw();
+
+    /// \brief Run the application.
     virtual void run();
 
   private:
