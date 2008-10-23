@@ -22,12 +22,13 @@ class HTestArray : public Z2nTestArray {
     typedef std::vector<double> data_type;
     typedef std::vector<data_type> cont_type;
 
-    /** \brief Construct an array object of H test.
+    /** \brief Construct an array object for the H test.
         \param array_size The size of this test array.
         \param num_phase_bins The maximum number of harmonics for the H test.
     */
     HTestArray(size_type array_size, data_type::size_type max_harmonics);
 
+    /// \brief Destruct this array object for the H test.
     virtual ~HTestArray() {}
 
     /** \brief Compute an H-value of this H test for pulse phases currently filled in this object, and set

@@ -14,10 +14,12 @@
 #include "PeriodSearch.h"
 
 /** \class FourierAnalysis
+    \brief Class for pulsation search by computing a power spectrum of a given time series data using Fast Fourier
+           Transform (FFT) technique.
 */
 class FourierAnalysis : public PeriodSearch {
   public:
-    /** \brief Construct a FourierAnalysis.
+    /** \brief Construct a FourierAnalysis object, which computes a power spectrum of a given time series data using FFT.
         \param t_start Time lower boundary.
         \param t_stop Time upper boundary.
         \param width Width of one time bin in one data subset to be transformed.
@@ -27,6 +29,9 @@ class FourierAnalysis : public PeriodSearch {
         \param freq_unit The unit of frequency, or the inverse of the unit of times given to this period search.
     */
     FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, const std::string & freq_unit, int num_events = 0);
+
+    /// \brief Destruct this FourierAnalysis object.
+    virtual ~FourierAnalysis() {}
 
     /** \brief Fill given time into the internal storage of this object.
         \param evt_time The time of the event.

@@ -21,12 +21,13 @@ class Z2nTestArray : public PeriodicityTestArray {
     typedef std::vector<double> data_type;
     typedef std::vector<data_type> cont_type;
 
-    /** \brief Construct an array object of the Z2n test.
+    /** \brief Construct an array object for the Z2n test.
         \param array_size The size of this test array.
         \param num_phase_bins The number of harmonics to sum up for the Z2n test.
     */
     Z2nTestArray(size_type array_size, data_type::size_type num_harmonics);
 
+    /// \brief Destruct this array object for the Z2n test.
     virtual ~Z2nTestArray() {}
 
     /** \brief Fill a given pulse phase into this periodicity test object.

@@ -29,6 +29,7 @@ class PeriodSearch {
     */
     PeriodSearch(size_type num_bins, const std::string & freq_unit);
 
+    /// \brief Destruct this PeriodSearch object.
     virtual ~PeriodSearch() {}
 
     /** \brief Fill given time into histograms.
