@@ -2,9 +2,13 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.34 2008/09/30 21:31:15 peachey Exp $
+$Id: release.notes,v 1.35 2008/10/10 01:34:12 hirayama Exp $
 
 \verbatim
+
+24-oct-2008     v10r3 MH  Add tests of the application class to the unit test.
+                          Fix a bug reported as JIRA PULS-48. Revise mainpage.h.
+                          Improve application output messages and Doxygen comments.
 09-oct-2008   v10r2p1 MH  Separate StApp subclass from gtpsearch.cxx. Add necessary headers
                           and remove unnecessary headers. Make prompt methods of StApp
                           subclasses private.
