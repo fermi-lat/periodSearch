@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Oct 24 18:58:29 PDT 2008
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par gtpspec.par 
+Log Message:
+Improve prompts.
+    *
+------------------------------------------------------------
 TAG
 Tag name: v10r3, operation: add
 Package: periodSearch
