@@ -124,13 +124,16 @@ ephepoch = 0. [string]
     This parameter only has effect if ephstyle is FREQ or PER.
 
 timeformat = FILE [enumerated string (FILE|MJD|GLAST)]
-    String describing the representation used for the ephepoch.  If
-    FILE is chosen, the time format specified in the input event file
-    header will be used.
+    String describing the representation used for ephepoch parameter.
+    If FILE is chosen, the time format specified in the input event
+    file header will be used.
 
 timesys = FILE [enumerated string (FILE|TAI|TDB|TT|UTC)]
-    String describing the time system used for the ephepoch.  If FILE
-    is chosen, the time system specified in the input event file
+    String describing the time system used for ephepoch parameter and
+    the following ephemeris parameters: f0, f1, f2, p0, p1, and p2.
+    In other words, ephemeris computaions with those parameters will
+    be performed in the time system specified by this parameter.  If
+    FILE is chosen, the time system specified in the input event file
     header (TIMESYS keyword) will be used.
 
 ra [double]
@@ -144,32 +147,45 @@ dec [double]
     ephstyle is FREQ or PER.
 
 f0 = 1. [double]
-    Value of the frequency at the time given by the epoch parameter.
-    This parameter only has effect if ephstyle is FREQ.
+    Value of the frequency at the time given by the epoch parameter in
+    the units of s^(-1).  This parameter only has effect if ephstyle
+    is FREQ.  Note that ephemeris computations using this parameter as
+    will be performed in the time system specified by timesys
+    parameter.
 
 f1 = 0. [double]
     Value of the first time derivative of the frequency at the time
-    given by the epoch parameter.  This parameter only has effect if
-    ephstyle is FREQ.
+    given by the epoch parameter in the units of s^(-2).  This
+    parameter only has effect if ephstyle is FREQ.  Note that
+    ephemeris computations using this parameter will be performed in
+    the time system specified by timesys parameter.
 
 f2 = 0. [double]
     Value of the second time derivative of the frequency at the time
-    given by the epoch parameter.  This parameter only has effect if
-    ephstyle is FREQ.
+    given by the epoch parameter in the units of s^(-3).  This
+    parameter only has effect if ephstyle is FREQ.  Note that
+    ephemeris computations using this parameter will be performed in
+    the time system specified by timesys parameter.
 
 p0 = 1. [double]
-    Value of the period at the time given by the epoch parameter.
-    This parameter only has effect if ephstyle is PER.
+    Value of the period at the time given by the epoch parameter in
+    seconds.  This parameter only has effect if ephstyle is PER.  Note
+    that ephemeris computations using this parameter will be performed
+    in the time system specified by timesys parameter.
 
 p1 = 0. [double]
     Value of the first time derivative of the period at the time given
-    by the epoch parameter.  This parameter only has effect if
-    ephstyle is PER.
+    by the epoch parameter (dimension-less).  This parameter only has
+    effect if ephstyle is PER.  Note that ephemeris computations using
+    this parameter will be performed in the time system specified by
+    timesys parameter.
 
 p2 = 0. [double]
     Value of the second time derivative of the period at the time
-    given by the epoch parameter.  This parameter only has effect if
-    ephstyle is PER.
+    given by the epoch parameter in the units of s^(-1).  This
+    parameter only has effect if ephstyle is PER.  Note that ephemeris
+    computations using this parameter will be performed in the time
+    system specified by timesys parameter.
 
 (tcorrect = AUTO) [enumerated string (NONE|AUTO|BARY|BIN|PDOT|ALL)]
     Set of arrival time corrections to apply. If tcorrect is NONE, no
@@ -243,6 +259,12 @@ p2 = 0. [double]
     OGIP-compliant leap second table format. If leapsecfile is the
     string DEFAULT, the default leap-second file (leapsec.fits), which
     is distributed with the extFiles package, will be used.
+
+(reportephstatus = yes) [bool]
+    If reportephstatus is yes, the application will examine the input
+    pulsar ephemeris database, and report findings which may affect
+    the requested ephemeris computations. If reportephstatus is no, it
+    will not report any ephemeris status.
 \endverbatim
 
     \subsection gtpspec_parameters gtpspec Parameters
@@ -319,23 +341,31 @@ ephstyle = FREQ [enumerated string (FREQ|PER)]
 
 f1f0ratio = 0. [double]
     Ratio of frequency first time derivative to frequency at the time
-    given by the timeorigin parameter.  This parameter only has effect
-    if ephstyle is FREQ.
+    given by the timeorigin parameter in the units of s^(-1).  This
+    parameter only has effect if ephstyle is FREQ.  Note that pdot
+    cancellation will be performed in TDB time system unless tcorrect
+    is NONE.
 
 f2f0ratio = 0. [double]
     Ratio of frequency second time derivative to frequency at the time
-    given by the timeorigin parameter.  This parameter only has effect
-    if ephstyle is FREQ.
+    given by the timeorigin parameter in the units of s^(-2).  This
+    parameter only has effect if ephstyle is FREQ.  Note that pdot
+    cancellation will be performed in TDB time system unless tcorrect
+    is NONE.
 
 p1p0ratio = 0. [double]
     Ratio of period first time derivative to period at the time given
-    by the timeorigin parameter.  This parameter only has effect if
-    ephstyle is PER.
+    by the timeorigin parameter in the units of s^(-1).  This
+    parameter only has effect if ephstyle is PER.  Note that pdot
+    cancellation will be performed in TDB time system unless tcorrect
+    is NONE.
 
 p2p0ratio = 0. [double]
     Ratio of period second time derivative to period at the time given
-    by the timeorigin parameter.  This parameter only has effect if
-    ephstyle is PER.
+    by the timeorigin parameter in the units of s^(-2).  This
+    parameter only has effect if ephstyle is PER.  Note that pdot
+    cancellation will be performed in TDB time system unless tcorrect
+    is NONE.
 
 (tcorrect = AUTO) [enumerated string (NONE|AUTO|BARY|BIN|PDOT|ALL)]
     Set of arrival time corrections to apply. If tcorrect is NONE, no
@@ -415,6 +445,12 @@ p2p0ratio = 0. [double]
     OGIP-compliant leap second table format. If leapsecfile is the
     string DEFAULT, the default leap-second file (leapsec.fits), which
     is distributed with the extFiles package, will be used.
+
+(reportephstatus = yes) [bool]
+    If reportephstatus is yes, the application will examine the input
+    pulsar ephemeris database, and report findings which may affect
+    the requested ephemeris computations. If reportephstatus is no, it
+    will not report any ephemeris status.
 \endverbatim
 
     \subsection gtptest_parameters gtptest Parameters
