@@ -764,9 +764,9 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
     // Test the application.
     std::string log_file(getMethod() + "_" + test_name + ".log");
     if (check_out_file) {
-      testApplication(app_name, pars, log_file, out_file);
+      testApplication(app_name, pars, log_file, "", out_file);
     } else {
-      testApplication(app_name, pars, log_file, "", true);
+      testApplication(app_name, pars, log_file, "", "", true);
     }
   }
 }
@@ -960,9 +960,9 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
     // Test the application.
     std::string log_file(getMethod() + "_" + test_name + ".log");
     if (check_out_file) {
-      testApplication(app_name, pars, log_file, out_file);
+      testApplication(app_name, pars, log_file, "", out_file);
     } else {
-      testApplication(app_name, pars, log_file, "", true);
+      testApplication(app_name, pars, log_file, "", "", true);
     }
   }
 }
@@ -1029,9 +1029,9 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
     // Test the application.
     std::string log_file(getMethod() + "_" + test_name + ".log");
     if (check_out_file) {
-      testApplication(app_name, pars, log_file, out_file);
+      testApplication(app_name, pars, log_file, "", out_file);
     } else {
-      testApplication(app_name, pars, log_file, "", true);
+      testApplication(app_name, pars, log_file, "", "", true);
     }
   }
 }
