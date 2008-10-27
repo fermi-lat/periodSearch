@@ -7,6 +7,7 @@
 #include <memory>
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -586,6 +587,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
     const std::string & test_name = *test_itor;
     std::string out_file(getMethod() + "_" + test_name + ".fits");
+    std::set<std::string> col_name;
 
     // Set default parameters.
     std::string app_name("gtpsearch");
@@ -764,9 +766,9 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
     // Test the application.
     std::string log_file(getMethod() + "_" + test_name + ".log");
     if (check_out_file) {
-      testApplication(app_name, pars, log_file, "", out_file);
+      testApplication(app_name, pars, log_file, "", out_file, col_name);
     } else {
-      testApplication(app_name, pars, log_file, "", "", true);
+      testApplication(app_name, pars, log_file, "", "", col_name, true);
     }
   }
 }
@@ -795,6 +797,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
     const std::string & test_name = *test_itor;
     std::string out_file(getMethod() + "_" + test_name + ".fits");
+    std::set<std::string> col_name;
 
     // Set default parameters.
     std::string app_name("gtpspec");
@@ -960,9 +963,9 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
     // Test the application.
     std::string log_file(getMethod() + "_" + test_name + ".log");
     if (check_out_file) {
-      testApplication(app_name, pars, log_file, "", out_file);
+      testApplication(app_name, pars, log_file, "", out_file, col_name);
     } else {
-      testApplication(app_name, pars, log_file, "", "", true);
+      testApplication(app_name, pars, log_file, "", "", col_name, true);
     }
   }
 }
@@ -987,6 +990,7 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
     const std::string & test_name = *test_itor;
     std::string out_file(getMethod() + "_" + test_name + ".fits");
+    std::set<std::string> col_name;
 
     // Set default parameters.
     std::string app_name("gtptest");
@@ -1029,9 +1033,9 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
     // Test the application.
     std::string log_file(getMethod() + "_" + test_name + ".log");
     if (check_out_file) {
-      testApplication(app_name, pars, log_file, "", out_file);
+      testApplication(app_name, pars, log_file, "", out_file, col_name);
     } else {
-      testApplication(app_name, pars, log_file, "", "", true);
+      testApplication(app_name, pars, log_file, "", "", col_name, true);
     }
   }
 }
