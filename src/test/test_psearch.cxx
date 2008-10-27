@@ -1115,7 +1115,7 @@ void PeriodSearchTestApp::testOneSearch(const std::vector<double> & events, Peri
   delete out_table;
 
   // Check the result against its reference file in data/outref/ directory.
-  checkOutputFits(out_file, true);
+  checkOutputFits(out_file);
 
   // Plot if requested.
   viewer.setTitle(plot_title);
