@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Mon Oct 27 16:56:21 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Changes for detailed comparison of FITS outputs.
+    *
+------------------------------------------------------------
 User: hirayama  Sun Oct 26 22:56:04 PDT 2008
 periodSearch/src/test
 
