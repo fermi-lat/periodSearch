@@ -2,10 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.35 2008/10/10 01:34:12 hirayama Exp $
+$Id: release.notes,v 1.36 2008/10/25 01:37:27 hirayama Exp $
 
 \verbatim
-
+27-oct-2008     v10r4 MH  Improve the unit test for robustness. Improve prompts.
 24-oct-2008     v10r3 MH  Add tests of the application class to the unit test.
                           Fix a bug reported as JIRA PULS-48. Revise mainpage.h.
                           Improve application output messages and Doxygen comments.
