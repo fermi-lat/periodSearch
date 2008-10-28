@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: peachey  Tue Oct 28 12:52:42 PDT 2008
+periodSearch/cmt
+
+Modified Files:
+	requirements 
+Log Message:
+Remove pedantic warnings.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-10-04-00, operation: add
 Package: periodSearch
