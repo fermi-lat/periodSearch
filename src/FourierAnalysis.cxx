@@ -57,9 +57,10 @@ FourierAnalysis::FourierAnalysis(double t_start, double t_stop, double width, Pe
   viewer.setTitle("Fourier Analysis: Power Spectrum");
 
   // Set description of this period search.
+  // Note: Description changes with events being filled, as the number of segments grows with events.
+  //       Give generic information here, and update with more information at FFT computation.
   std::ostringstream os;
-  os << "Data Binning: " << m_num_segments << " segments with " << m_num_bins << " time bins in each segment" << std::endl
-     << "Probability Distribution: Chi Squared with " << 2 * m_num_segments << " degrees of freedom";
+  os << "Data Binning: " << m_num_bins << " time bins to be Fourier-transfered at a time";
   setDescription("Fourier Analysis", m_fourier_res, m_fourier_res, os.str());
 }
 
@@ -74,17 +75,25 @@ void FourierAnalysis::fill(double evt_time) {
 
     // Keep track of the last segment seen.
     m_num_segments = std::max(m_num_segments, segment_idx + 1);
-
     // Track the segment and bin index in the m_index member.
     m_index.insert(std::make_pair(segment_idx, bin_idx));
   }
 }
 
 void FourierAnalysis::computeStat() {
+  // Set description of this period search.
+  // Note: This is the only place to correctly display the number of segments because it grows with events.
+  std::ostringstream os;
+  os << "Data Binning: " << m_num_segments << " segments with " << m_num_bins << " time bins in each segment" << std::endl
+     << "Probability Distribution: Chi Squared with " << 2 * m_num_segments << " degrees of freedom";
+  setDescription("Fourier Analysis", m_fourier_res, m_fourier_res, os.str());
+
+  // Prepare statistic viewer.
   StatisticViewer & viewer = getViewer();
   const StatisticViewer::data_type & freq = viewer.getData(0);
   StatisticViewer::data_type & spec = viewer.getData(1);
 
+  // Prepare variables for FFTW.
   double * in = 0;
   fftw_complex * out = 0;
   fftw_plan p = 0;
