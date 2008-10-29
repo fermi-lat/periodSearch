@@ -115,6 +115,7 @@ class PeriodSearchTestApp : public timeSystem::PulsarTestApp {
         \param num_bins The nmber of bins for the chi-squared test, the number of harmonics for the Z2n test,
                         and the maximumn number of harmonics for the H test.
         \param fourier_width Width of time bins for the Fourier transformation.
+        \param fourier_num_bins Number of time bins for the Fourier transformation.
         \param fourier_min_freq Minimum frequency to be computed by the Fourier transformation.
         \param fourier_max_freq Maximum frequency to be computed by the Fourier transformation.
         \param plot Set to true if the result should be plotted on screen. Set to false otherwise.
@@ -183,7 +184,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
 
   // First do simple test with this highly artificial data.
   // Note for Fourier test: width of .1 s -> Nyquist = 1/.2s = 5 Hz.
-  testAllStats("artificial", fake_evts, 0., duration, central, step, num_pds, epoch, num_bins, .1, 10000, .9, 1.1, plot);
+  testAllStats("artificial", fake_evts, 0., duration, central, step, num_pds, epoch, num_bins, .1, 10000, .9001, 1.1001, plot);
 
   // Data taken from M. Hirayama's work with modified ASCA data.
   // http://glast.gsfc.nasa.gov/ssc/dev/psr_tools/existing.html#tryout003
@@ -238,7 +239,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
 
   // Repeat simple test with this somewhat less artificial data.
   // Note for Fourier test: width of .01 s -> Nyquist = 1/.02s = 50 Hz.
-  testAllStats("psrb0540", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000, 19.82, 19.85, plot);
+  testAllStats("psrb0540", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000, 19.82001, 19.85001, plot);
 
   // Now test pdot correction.
   timeSystem::AbsoluteTime glast_origin("TDB", 51910, 0.);
@@ -270,7 +271,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
 
   // Repeat test with the pdot corrected data.
   testAllStats("psrb0540-pdot", fake_evts, tstart, tstop, central, step, num_pds, epoch, num_bins, .01, 1000000,
-    19.82, 19.85, plot);
+    19.82001, 19.85001, plot);
 }
 
 void PeriodSearchTestApp::testChanceProb() {
@@ -894,6 +895,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["numbins"] = 1000000;
       pars["tcorrect"] = "BaRY";
       pars["timefield"] = "TIME";
+      pars["lowfcut"] = 0.01001;
       pars["plot"] = "No";
       pars["title"] = "My Fourier analysis";
       pars["gui"] = "No";
