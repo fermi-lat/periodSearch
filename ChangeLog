@@ -1,4 +1,15 @@
 ------------------------------------------------------------
+User: hirayama  Tue Oct 28 17:34:41 PDT 2008
+periodSearch/data/outref
+
+Removed Files:
+	testPeriodSearchApp_par2.log testPeriodSearchApp_par3.log 
+	testPowerSpectrumApp_par2.log testPowerSpectrumApp_par3.log 
+	testPowerSpectrumApp_par4.log 
+Log Message:
+Remove unnecessary reference files.
+    *
+------------------------------------------------------------
 User: hirayama  Tue Oct 28 17:33:26 PDT 2008
 periodSearch/src/test
 
