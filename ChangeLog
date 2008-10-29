@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Tue Oct 28 17:33:26 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Create reference files dinamically to fake text representation of standard exceptions.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-10-04-01, operation: add
 Package: periodSearch
