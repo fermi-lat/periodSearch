@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Wed Oct 29 15:11:35 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Add report of chosen time correction modes for chatter=3 and higher.
+    *
+------------------------------------------------------------
+User: hirayama  Wed Oct 29 15:11:35 PDT 2008
 periodSearch/src
 
 Modified Files:
