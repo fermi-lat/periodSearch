@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Oct 29 10:57:36 PDT 2008
+periodSearch/src
+
+Modified Files:
+	FourierAnalysis.cxx 
+Log Message:
+Fix a bug reporting 0 (zero) degrees of feredom of chi-squared distribution (JIRA PULS-50).
+    *
+------------------------------------------------------------
 User: hirayama  Wed Oct 29 10:39:03 PDT 2008
 periodSearch/data/outref
 
