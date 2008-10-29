@@ -1,5 +1,16 @@
 ------------------------------------------------------------
 User: hirayama  Wed Oct 29 10:39:03 PDT 2008
+periodSearch/data/outref
+
+Modified Files:
+	artificial-fourier.fits psrb0540-fourier.fits 
+	psrb0540-pdot-fourier.fits testPowerSpectrumApp_par1.fits 
+	testPowerSpectrumApp_par1.log 
+Log Message:
+Move frequency boundaries off the Fourier sampling frequencies to avoid rounding errors causing the unit test to fail.
+    *
+------------------------------------------------------------
+User: hirayama  Wed Oct 29 10:39:03 PDT 2008
 periodSearch/src/test
 
 Modified Files:
