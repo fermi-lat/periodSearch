@@ -587,6 +587,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
     const std::string & test_name = *test_itor;
     std::string out_file(getMethod() + "_" + test_name + ".fits");
+    std::string ref_file(getMethod() + "_" + test_name + ".ref");
     std::set<std::string> col_name;
 
     // Set default parameters.
@@ -693,6 +694,20 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       pars["gui"] = "No";
       check_out_file = false;
 
+      remove(ref_file.c_str());
+      std::ofstream ofs(ref_file.c_str());
+      ofs << "gtpsearch: WARNING: The following pulsar ephemeris status are reported." << std::endl;
+      ofs << "[1] Remarked \"Test remark entry No.2\" since 53990 MJD (TDB) until 54010 MJD (TDB)" << std::endl;
+      ofs << "[2] Remarked \"Test remark entry No.3\" since 54025 MJD (TDB) until 54035 MJD (TDB)" << std::endl;
+      ofs << "[3] Remarked \"Test remark entry No.4\" since 54050 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[4] Remarked \"Test remark entry No.6\" since 53990 MJD (TDB) until 54030 MJD (TDB)" << std::endl;
+      ofs << "[5] Remarked \"Test remark entry No.7\" since 54030 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[6] Remarked \"Test remark entry No.8\" since 53990 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
+      writeException(ofs, error);
+      ofs << std::endl;
+      ofs.close();
+
     } else if ("par3" == test_name) {
       // Test no reporting of ephemeris status with reportephstatus=no.
       std::string summary_file("psrdb_summary.txt");
@@ -724,6 +739,13 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       pars["gui"] = "No";
       pars["reportephstatus"] = "no";
       check_out_file = false;
+
+      remove(ref_file.c_str());
+      std::ofstream ofs(ref_file.c_str());
+      std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
+      writeException(ofs, error);
+      ofs << std::endl;
+      ofs.close();
 
     } else if ("par4" == test_name) {
       // Test reporting of database creation history.
@@ -758,6 +780,19 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       pars["chatter"] = 4;
       check_out_file = false;
 
+      remove(ref_file.c_str());
+      std::ofstream ofs(ref_file.c_str());
+      ofs << "gtpsearch: INFO: ==========================" << std::endl;
+      ofs << "gtpsearch: INFO: Pulsar ephemerides are loaded and/or filtered as follows:" << std::endl;
+      ofs << "gtpsearch: INFO:    Load TEXTDB SPIN_PARAMETERS(FREQ) FILENAME='psrdb_spin.txt'" << std::endl;
+      ofs << "gtpsearch: INFO:    Load TEXTDB REMARKS FILENAME='psrdb_remark.txt'" << std::endl;
+      ofs << "gtpsearch: INFO:    Filter by pulsar name 'PSR J0540-6919'" << std::endl;
+      ofs << "gtpsearch: INFO: ==========================" << std::endl;
+      std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
+      writeException(ofs, error);
+      ofs << std::endl;
+      ofs.close();
+
     } else {
       // Skip this iteration.
       continue;
@@ -768,7 +803,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
     if (check_out_file) {
       testApplication(app_name, pars, log_file, "", out_file, col_name);
     } else {
-      testApplication(app_name, pars, log_file, "", "", col_name, true);
+      testApplication(app_name, pars, log_file, ref_file, "", col_name, true);
     }
   }
 }
@@ -797,6 +832,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
     const std::string & test_name = *test_itor;
     std::string out_file(getMethod() + "_" + test_name + ".fits");
+    std::string ref_file(getMethod() + "_" + test_name + ".ref");
     std::set<std::string> col_name;
 
     // Set default parameters.
@@ -892,6 +928,19 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["gui"] = "No";
       check_out_file = false;
 
+      remove(ref_file.c_str());
+      std::ofstream ofs(ref_file.c_str());
+      ofs << "gtpspec: WARNING: The following pulsar ephemeris status are reported." << std::endl;
+      ofs << "[1] Remarked \"Test remark entry No.2\" since 53990 MJD (TDB) until 54010 MJD (TDB)" << std::endl;
+      ofs << "[2] Remarked \"Test remark entry No.3\" since 54025 MJD (TDB) until 54035 MJD (TDB)" << std::endl;
+      ofs << "[3] Remarked \"Test remark entry No.4\" since 54050 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[4] Remarked \"Test remark entry No.6\" since 53990 MJD (TDB) until 54030 MJD (TDB)" << std::endl;
+      ofs << "[5] Remarked \"Test remark entry No.7\" since 54030 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[6] Remarked \"Test remark entry No.8\" since 53990 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
+      writeException(ofs, error);
+      ofs.close();
+
     } else if ("par3" == test_name) {
       // Test no reporting of ephemeris status with reportephstatus=no.
       std::string summary_file("psrdb_summary.txt");
@@ -922,6 +971,12 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["gui"] = "No";
       pars["reportephstatus"] = "no";
       check_out_file = false;
+
+      remove(ref_file.c_str());
+      std::ofstream ofs(ref_file.c_str());
+      std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
+      writeException(ofs, error);
+      ofs.close();
 
     } else if ("par4" == test_name) {
       // Test reporting of database creation history.
@@ -955,6 +1010,20 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["chatter"] = 4;
       check_out_file = false;
 
+      remove(ref_file.c_str());
+      std::ofstream ofs(ref_file.c_str());
+      ofs << "gtpspec: INFO: ==========================" << std::endl;
+      ofs << "gtpspec: INFO: Pulsar ephemerides are loaded and/or filtered as follows:" << std::endl;
+      ofs << "gtpspec: INFO:    Load TEXTDB SPIN_PARAMETERS(FREQ) FILENAME='psrdb_spin.txt'" << std::endl;
+      ofs << "gtpspec: INFO:    Load TEXTDB ORBITAL_PARAMETERS(DD) FILENAME='psrdb_binary.txt'" << std::endl;
+      ofs << "gtpspec: INFO:    Load TEXTDB REMARKS FILENAME='psrdb_remark.txt'" << std::endl;
+      ofs << "gtpspec: INFO:    Filter by pulsar name 'PSR J0540-6919'" << std::endl;
+      ofs << "gtpspec: INFO:    Filter by solar system ephemeris 'JPL DE405'" << std::endl;
+      ofs << "gtpspec: INFO: ==========================" << std::endl;
+      std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
+      writeException(ofs, error);
+      ofs.close();
+
     } else {
       // Skip this iteration.
       continue;
@@ -965,7 +1034,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
     if (check_out_file) {
       testApplication(app_name, pars, log_file, "", out_file, col_name);
     } else {
-      testApplication(app_name, pars, log_file, "", "", col_name, true);
+      testApplication(app_name, pars, log_file, ref_file, "", col_name, true);
     }
   }
 }
