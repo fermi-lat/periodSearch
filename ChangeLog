@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Oct 29 15:11:35 PDT 2008
+periodSearch/src
+
+Modified Files:
+	PeriodSearchApp.cxx PowerSpectrumApp.cxx 
+Log Message:
+Add report of chosen time correction modes for chatter=3 and higher.
+    *
+------------------------------------------------------------
 TAG
 Tag name: v10r4p2, operation: add
 Package: periodSearch
