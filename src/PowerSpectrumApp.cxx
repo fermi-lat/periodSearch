@@ -91,7 +91,7 @@ void PowerSpectrumApp::runApp() {
   // Use user input (parameters) together with computer to determine corrections to apply.
   bool vary_ra_dec = false;
   bool guess_pdot = false;
-  initTimeCorrection(pars, vary_ra_dec, guess_pdot);
+  initTimeCorrection(pars, vary_ra_dec, guess_pdot, m_os.info(3));
 
   // Report ephemeris status.
   std::set<pulsarDb::EphStatusCodeType> code_to_report;

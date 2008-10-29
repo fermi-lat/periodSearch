@@ -789,6 +789,12 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       ofs << "gtpsearch: INFO:    Load TEXTDB REMARKS FILENAME='psrdb_remark.txt'" << std::endl;
       ofs << "gtpsearch: INFO:    Filter by pulsar name 'PSR J0540-6919'" << std::endl;
       ofs << "gtpsearch: INFO: ==========================" << std::endl;
+      ofs << "gtpsearch: INFO: --------------------------" << std::endl;
+      ofs << "gtpsearch: INFO: Arrival time corrections are applied as follows:" << std::endl;
+      ofs << "gtpsearch: INFO:    Barycentric correction: Applied if necessary" << std::endl;
+      ofs << "gtpsearch: INFO:    Binary demodulation: Not applied" << std::endl;
+      ofs << "gtpsearch: INFO:    Pdot cancellation: Applied" << std::endl;
+      ofs << "gtpsearch: INFO: --------------------------" << std::endl;
       std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
       writeException(ofs, error);
       ofs << std::endl;
@@ -1022,6 +1028,12 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       ofs << "gtpspec: INFO:    Filter by pulsar name 'PSR J0540-6919'" << std::endl;
       ofs << "gtpspec: INFO:    Filter by solar system ephemeris 'JPL DE405'" << std::endl;
       ofs << "gtpspec: INFO: ==========================" << std::endl;
+      ofs << "gtpspec: INFO: --------------------------" << std::endl;
+      ofs << "gtpspec: INFO: Arrival time corrections are applied as follows:" << std::endl;
+      ofs << "gtpspec: INFO:    Barycentric correction: Applied if necessary" << std::endl;
+      ofs << "gtpspec: INFO:    Binary demodulation: Not applied" << std::endl;
+      ofs << "gtpspec: INFO:    Pdot cancellation: Applied" << std::endl;
+      ofs << "gtpspec: INFO: --------------------------" << std::endl;
       std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
       writeException(ofs, error);
       ofs.close();
