@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Oct 29 10:39:03 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Move frequency boundaries off the Fourier sampling frequencies to avoid rounding errors causing the unit test to fail.
+    *
+------------------------------------------------------------
 User: hirayama  Tue Oct 28 17:36:32 PDT 2008
 periodSearch/data/outref
 
