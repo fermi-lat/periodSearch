@@ -794,6 +794,11 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       ofs << "gtpsearch: INFO:    Barycentric correction: Applied if necessary" << std::endl;
       ofs << "gtpsearch: INFO:    Binary demodulation: Not applied" << std::endl;
       ofs << "gtpsearch: INFO:    Pdot cancellation: Applied" << std::endl;
+      ofs << "gtpsearch: INFO: Following time system(s) are listed for this task:" << std::endl;
+      ofs << "gtpsearch: INFO:    Spin ephemeri(de)s are defined in: TDB(5)" << std::endl;
+      ofs << "gtpsearch: INFO:    Orbital ephemeri(de)s are defined in: None" << std::endl;
+      ofs << "gtpsearch: INFO:    Pdot cancellation will be performed in: TDB" << std::endl;
+      ofs << "gtpsearch: INFO:    Time series analysis will be performed in: TDB" << std::endl;
       ofs << "gtpsearch: INFO: --------------------------" << std::endl;
       std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
       writeException(ofs, error);
@@ -1033,6 +1038,11 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       ofs << "gtpspec: INFO:    Barycentric correction: Applied if necessary" << std::endl;
       ofs << "gtpspec: INFO:    Binary demodulation: Not applied" << std::endl;
       ofs << "gtpspec: INFO:    Pdot cancellation: Applied" << std::endl;
+      ofs << "gtpspec: INFO: Following time system(s) are listed for this task:" << std::endl;
+      ofs << "gtpspec: INFO:    Spin ephemeri(de)s are defined in: None" << std::endl;
+      ofs << "gtpspec: INFO:    Orbital ephemeri(de)s are defined in: None" << std::endl;
+      ofs << "gtpspec: INFO:    Pdot cancellation will be performed in: TDB" << std::endl;
+      ofs << "gtpspec: INFO:    Time series analysis will be performed in: TDB" << std::endl;
       ofs << "gtpspec: INFO: --------------------------" << std::endl;
       std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
       writeException(ofs, error);
@@ -1062,9 +1072,6 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
   // Prepare variables to create application objects.
   std::list<std::string> test_name_cont;
   test_name_cont.push_back("par1");
-  test_name_cont.push_back("par2");
-  test_name_cont.push_back("par3");
-  test_name_cont.push_back("par4");
 
   // Prepare files to be used in the tests.
   std::string ev_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_phase_v3r1.fits");
