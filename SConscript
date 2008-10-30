@@ -1,7 +1,7 @@
 # -*- python -*-
-# $Id: SConscript,v 1.13 2008/10/28 00:31:15 glastrm Exp $
+# $Id: SConscript,v 1.14 2008/10/28 20:30:44 glastrm Exp $
 # Authors: James Peachey <James.Peachey-1@nasa.gov>
-# Version: periodSearch-10-04-01
+# Version: periodSearch-10-05-00
 Import('baseEnv')
 Import('listFiles')
 progEnv = baseEnv.Clone()
