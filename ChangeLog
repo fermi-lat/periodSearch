@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Oct 29 17:42:40 PDT 2008
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Add report on time system usage.
+    *
+------------------------------------------------------------
 User: hirayama  Wed Oct 29 15:11:35 PDT 2008
 periodSearch/src/test
 
