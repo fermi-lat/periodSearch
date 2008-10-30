@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.38 2008/10/28 19:53:37 peachey Exp $
+$Id: release.notes,v 1.39 2008/10/29 18:21:22 hirayama Exp $
 
 \verbatim
+29-oct-2008     v10r5 MH  Print time correction modes and time system usage if chatter is 3 or higher.
 29-oct-2008   v10r4p2 MH  Modify unit test to be tolerate larger rounding errors
                           and platform-dependent error messages. Fix a bug (JIRA PULS-50).
 28-oct-2008   v10r4p1 JP  Remove extra warning flags.
