@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Oct 31 14:38:41 PDT 2008
+periodSearch/src
+
+Modified Files:
+	mainpage.h 
+Log Message:
+Improve description of angtol parameter.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-10-05-00, operation: add
 Package: periodSearch
