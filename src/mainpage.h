@@ -232,7 +232,9 @@ p2 = 0. [double]
     been applied to an input event data file.  If the two source
     positions are separate from each other by this amount or less,
     then they will be considered to be the same position.  Otherwise
-    an error will be generated.
+    an error will be generated.  The sign of the parameter value is
+    ignored.  For example, setting angtol=-1.0 results in giving
+    angular tolerance of 1 degree.
 
 (evtable = EVENTS) [string]
     Name of the FITS table containing the event data.
@@ -412,7 +414,9 @@ p2p0ratio = 0. [double]
     been applied to an input event data file.  If the two source
     positions are separate from each other by this amount or less,
     then they will be considered to be the same position.  Otherwise
-    an error will be generated.
+    an error will be generated.  The sign of the parameter value is
+    ignored.  For example, setting angtol=-1.0 results in giving
+    angular tolerance of 1 degree.
 
 (evtable = EVENTS) [string]
     Name of the FITS table containing the event data.
