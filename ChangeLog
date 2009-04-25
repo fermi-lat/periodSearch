@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Fri Apr 24 19:04:49 PDT 2009
+periodSearch/src
+
+Modified Files:
+	PeriodSearchApp.cxx PeriodicityTestApp.cxx 
+	PowerSpectrumApp.cxx 
+Log Message:
+Raise chatness level for data output to 5 (was 3).
+    *
+------------------------------------------------------------
 User: hirayama  Fri Apr 24 19:03:49 PDT 2009
 periodSearch/src
 
