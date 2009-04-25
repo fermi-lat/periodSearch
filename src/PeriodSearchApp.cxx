@@ -234,8 +234,8 @@ void PeriodSearchApp::runApp() {
     }
   }
 
-  // Write the stats to the screen.
-  viewer.write(m_os);
+  // Write the search results to the screen.
+  viewer.write(m_os, 2, 5);
 
   // Display a plot, if desired.
   if (plot) {

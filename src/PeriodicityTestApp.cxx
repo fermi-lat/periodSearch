@@ -190,7 +190,7 @@ void PeriodicityTestApp::run() {
   // Compute the statistical test results and write them to the screen.
   for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
     PeriodicityTestArray & test_array = **itor;
-    test_array.getViewer().write(m_os);
+    test_array.getViewer().write(m_os, 2, 5);
   }
 
   // Display a plot, if desired.
