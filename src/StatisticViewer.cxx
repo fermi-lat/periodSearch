@@ -108,34 +108,34 @@ void StatisticViewer::plot(index_type x_axis_index, index_type y_axis_index) con
   }
 }
 
-st_stream::StreamFormatter & StatisticViewer::write(st_stream::StreamFormatter & os) const {
+st_stream::StreamFormatter & StatisticViewer::write(st_stream::StreamFormatter & os, int chat_caption, int chat_data) const {
   // Write out the caption.
-  os.info(eIncludeCaption) << m_caption << std::endl;
+  os.info(chat_caption) << m_caption << std::endl;
 
   // Write out axis labels and units.
   for (index_type axis_index = 0; axis_index < m_num_axis; ++axis_index) {
-    if (axis_index != 0) os.info(eIncludeData) << "\t";
-    os.info(eIncludeData) << m_label_cont[axis_index];
+    if (axis_index != 0) os.info(chat_data) << "\t";
+    os.info(chat_data) << m_label_cont[axis_index];
     const std::string & unit_string = m_unit_cont[axis_index];
-    if (!unit_string.empty()) os.info(eIncludeData) << "(" << unit_string << ")";
+    if (!unit_string.empty()) os.info(chat_data) << "(" << unit_string << ")";
   }
-  os.info(eIncludeData) << std::endl;
+  os.info(chat_data) << std::endl;
 
   // Save current precision, and set desired precision in this method.
-  int save_precision = os.info(eIncludeData).precision();
-  os.info(eIncludeData).precision(std::numeric_limits<double>::digits10);
+  int save_precision = os.info(chat_data).precision();
+  os.info(chat_data).precision(std::numeric_limits<double>::digits10);
 
   // Write out the statistics.
   for (data_type::size_type elem_index = m_begin_index; elem_index < m_end_index; ++elem_index) {
     for (index_type axis_index = 0; axis_index < m_num_axis; ++axis_index) {
-      if (axis_index != 0) os.info(eIncludeData) << "\t";
-      os.info(eIncludeData) << m_data_cont[axis_index][elem_index];
+      if (axis_index != 0) os.info(chat_data) << "\t";
+      os.info(chat_data) << m_data_cont[axis_index][elem_index];
     }
-    os.info(eIncludeData) << std::endl;
+    os.info(chat_data) << std::endl;
   }
 
   // Restore original precision.
-  os.info(eIncludeData).precision(save_precision);
+  os.info(chat_data).precision(save_precision);
 
   // Return the stream.
   return os;

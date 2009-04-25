@@ -73,10 +73,12 @@ class StatisticViewer {
     */
     void plot(index_type x_axis_index = 0, index_type y_axis_index = 1) const;
 
-    /** \brief Write a text output to an output stream. The output will be controlled by chatness level automatically.
+    /** \brief Write a text output to an output stream. The output will be controlled by chatness levels given.
         \param os StreamFormatter object, to which the text output is to be forwarded.
+        \param chat_caption Minimum chatness level to write the caption.
+        \param chat_data Minimum chatness level to write the data contents.
     */
-    st_stream::StreamFormatter & write(st_stream::StreamFormatter & os) const;
+    st_stream::StreamFormatter & write(st_stream::StreamFormatter & os, int chat_caption = 2, int chat_data = 3) const;
 
     /** \brief Write a text data (title, caption, etc.) into a FITS header and numerical data into a FITS table.
         \param table FITS table, which the data are wirtten into.
@@ -93,8 +95,6 @@ class StatisticViewer {
     std::vector<std::string> m_unit_cont;
     std::string m_title;
     std::string m_caption;
-
-    enum ChatLevel { eIncludeCaption = 2, eIncludeData = 3 };
 };
 
 #endif
