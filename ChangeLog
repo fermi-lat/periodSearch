@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Sun Apr 26 20:24:28 PDT 2009
+periodSearch/src
+
+Modified Files:
+	PeriodSearchApp.cxx PowerSpectrumApp.cxx 
+	PeriodicityTestApp.cxx 
+Log Message:
+Use UTC time for DATE keyword value, instead of local time.
+    *
+------------------------------------------------------------
 User: hirayama  Fri Apr 24 19:04:49 PDT 2009
 periodSearch/src
 
