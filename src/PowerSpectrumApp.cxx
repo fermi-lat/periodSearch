@@ -146,6 +146,11 @@ void PowerSpectrumApp::runApp() {
     // Create output file.
     tip::IFileSvc::instance().createFile(out_file, template_file, clobber);
 
+    // Create a header line for HISTORY records.
+    std::string creator_name = getName() + " " + getVersion();
+    std::string file_creation_time(createUtcTimeString());
+    std::string header_line("File created by " + creator_name + " on " + file_creation_time);
+
     // Open output file.
     std::auto_ptr<tip::Table> out_table(tip::IFileSvc::instance().editTable(out_file, "POWER_SPECTRUM"));
 
@@ -156,28 +161,17 @@ void PowerSpectrumApp::runApp() {
     std::string psr_name = pars["psrname"];
     for (std::string::iterator itor = psr_name.begin(); itor != psr_name.end(); ++itor) *itor = std::toupper(*itor);
 
-    // Prepare values for CREATOR and DATE keywords.
-    const std::string creator_value = getName() + " " + getVersion();
-    const time_t modification_time = time(0);
-
     // Update header keywords.
     tip::Header & header(out_table->getHeader());
     tip::Header::KeyValCont_t keywords;
-    const std::string date_value = header.formatTime(modification_time);
-    keywords.push_back(tip::Header::KeyValPair_t("DATE", date_value));
-    keywords.push_back(tip::Header::KeyValPair_t("CREATOR", creator_value));
+    keywords.push_back(tip::Header::KeyValPair_t("DATE", file_creation_time));
+    keywords.push_back(tip::Header::KeyValPair_t("CREATOR", creator_name));
     keywords.push_back(tip::Header::KeyValPair_t("OBJECT", psr_name));
     keywords.push_back(tip::Header::KeyValPair_t("DATASUM", "-1")); // Force update of DATASUM keyword.
     header.update(keywords);
 
     // Write out all the parameters into HISTORY keywords.
-    header.addHistory("File created by " + creator_value + " on " + date_value);
-    const st_app::AppParGroup & const_pars(pars);
-    for (hoops::ConstGenParItor par_itor = const_pars.begin(); par_itor != const_pars.end(); ++par_itor) {
-      std::ostringstream oss_par;
-      oss_par << getName() << ".par: " << **par_itor;
-      header.addHistory(oss_par.str());
-    }
+    writeParameter(pars, header_line, header);
   }
 
   // Write the search results to the screen.
