@@ -152,9 +152,17 @@ void PeriodicityTestApp::run() {
     // Create output file.
     tip::IFileSvc::instance().createFile(out_file, template_file, clobber);
 
-    // Prepare values for CREATOR and DATE keywords.
-    const std::string creator_value = getName() + " " + getVersion();
-    const time_t modification_time = time(0);
+    // Construct a character string representing file creation time in UTC.
+    // Note: UTC is the default time system for DATE header keyword in the FITS standard.
+    std::time_t current_time = std::time(0);
+    struct std::tm * gm_time_struct = std::gmtime(&current_time);
+    char gm_time_char[] = "YYYY-MM-DDThh:mm:ss";
+    std::strftime(gm_time_char, sizeof(gm_time_char), "%Y-%m-%dT%H:%M:%S", gm_time_struct);
+
+    // Create a header line for HISTORY records.
+    std::string creator_name = getName() + " " + getVersion();
+    std::string file_creation_time(gm_time_char);
+    std::string header_line("File created by " + creator_name + " on " + file_creation_time);
 
     // Loop over periodicity tests.
     for (test_list_type::iterator itor = test_list.begin(); itor != test_list.end(); ++itor) {
@@ -170,14 +178,13 @@ void PeriodicityTestApp::run() {
       // Update header keywords.
       tip::Header & header(out_table->getHeader());
       tip::Header::KeyValCont_t keywords;
-      const std::string date_value = header.formatTime(modification_time);
-      keywords.push_back(tip::Header::KeyValPair_t("DATE", date_value));
-      keywords.push_back(tip::Header::KeyValPair_t("CREATOR", creator_value));
+      keywords.push_back(tip::Header::KeyValPair_t("DATE", file_creation_time));
+      keywords.push_back(tip::Header::KeyValPair_t("CREATOR", creator_name));
       keywords.push_back(tip::Header::KeyValPair_t("DATASUM", "-1")); // Force update of DATASUM keyword.
       header.update(keywords);
 
       // Write out all the parameters into HISTORY keywords.
-      header.addHistory("File created by " + creator_value + " on " + date_value);
+      header.addHistory(header_line);
       const st_app::AppParGroup & const_pars(pars);
       for (hoops::ConstGenParItor par_itor = const_pars.begin(); par_itor != const_pars.end(); ++par_itor) {
         std::ostringstream oss_par;
