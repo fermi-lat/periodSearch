@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+TAG
+Tag name: v10r6, operation: mov
+Package: periodSearch
+User: glastrm  Tue Apr 28 16:31:16 2009
+Files:
+  periodSearch/SConscript  1.16
+
+    *
+------------------------------------------------------------
 User: glastrm  Tue Apr 28 16:31:10 PDT 2009
 periodSearch
 
