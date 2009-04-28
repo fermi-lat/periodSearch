@@ -2,9 +2,14 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.39 2008/10/29 18:21:22 hirayama Exp $
+$Id: release.notes,v 1.40 2008/10/30 01:04:22 hirayama Exp $
 
 \verbatim
+28-apr-2009     v10r6 MH  Remove text output of plot data (JIRA PULS-51).  Report file creation time
+                          in UT (JIRA PULS-52). Improve Doxygen documents.
+
+
+
 29-oct-2008     v10r5 MH  Print time correction modes and time system usage if chatter is 3 or higher.
 29-oct-2008   v10r4p2 MH  Modify unit test to be tolerate larger rounding errors
                           and platform-dependent error messages. Fix a bug (JIRA PULS-50).
