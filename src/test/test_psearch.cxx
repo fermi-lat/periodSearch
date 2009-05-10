@@ -13,8 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "facilities/commonUtilities.h"
-
 #include "PeriodicityTestApp.h"
 #include "PeriodSearchApp.h"
 #include "PowerSpectrumApp.h"
@@ -54,6 +52,75 @@
 #include "Z2nTestArray.h"
 
 static const std::string s_cvs_id = "$Name:  $";
+
+/** \class PeriodSearchAppTester
+    \brief Test PeriodSearchApp application (gtpsearch).
+*/
+class PeriodSearchAppTester: public timeSystem::PulsarApplicationTester {
+  public:
+  /** \brief Construct a PeriodSearchAppTester object.
+      \param test_app Unit test appliction of pulsar tool package, under which this application tester is to run.
+  */
+  PeriodSearchAppTester(timeSystem::PulsarTestApp & test_app);
+
+  /// \brief Destruct this PeriodSearchAppTester object.
+  virtual ~PeriodSearchAppTester() throw() {}
+
+  /// \brief Returns an application object to be tested.
+  virtual st_app::StApp * createApplication() const;
+};
+
+PeriodSearchAppTester::PeriodSearchAppTester(timeSystem::PulsarTestApp & test_app): PulsarApplicationTester("gtpsearch", test_app) {}
+
+st_app::StApp * PeriodSearchAppTester::createApplication() const {
+  return new PeriodSearchApp();
+}
+
+/** \class PowerSpectrumAppTester
+    \brief Test PowerSpectrumApp application (gtpspec).
+*/
+class PowerSpectrumAppTester: public timeSystem::PulsarApplicationTester {
+  public:
+  /** \brief Construct a PowerSpectrumAppTester object.
+      \param test_app Unit test appliction of pulsar tool package, under which this application tester is to run.
+  */
+  PowerSpectrumAppTester(timeSystem::PulsarTestApp & test_app);
+
+  /// \brief Destruct this PowerSpectrumAppTester object.
+  virtual ~PowerSpectrumAppTester() throw() {}
+
+  /// \brief Returns an application object to be tested.
+  virtual st_app::StApp * createApplication() const;
+};
+
+PowerSpectrumAppTester::PowerSpectrumAppTester(timeSystem::PulsarTestApp & test_app): PulsarApplicationTester("gtpspec", test_app) {}
+
+st_app::StApp * PowerSpectrumAppTester::createApplication() const {
+  return new PowerSpectrumApp();
+}
+
+/** \class PeriodicityTestAppTester
+    \brief Test PeriodicityTestApp application (gtptest).
+*/
+class PeriodicityTestAppTester: public timeSystem::PulsarApplicationTester {
+  public:
+  /** \brief Construct a PeriodicityTestAppTester object.
+      \param test_app Unit test appliction of pulsar tool package, under which this application tester is to run.
+  */
+  PeriodicityTestAppTester(timeSystem::PulsarTestApp & test_app);
+
+  /// \brief Destruct this PeriodicityTestAppTester object.
+  virtual ~PeriodicityTestAppTester() throw() {}
+
+  /// \brief Returns an application object to be tested.
+  virtual st_app::StApp * createApplication() const;
+};
+
+PeriodicityTestAppTester::PeriodicityTestAppTester(timeSystem::PulsarTestApp & test_app): PulsarApplicationTester("gtptest", test_app) {}
+
+st_app::StApp * PeriodicityTestAppTester::createApplication() const {
+  return new PeriodicityTestApp();
+}
 
 /** \class PeriodSearchTestApp
     \brief Test periodSearch package and applications in it.
@@ -96,12 +163,6 @@ class PeriodSearchTestApp : public timeSystem::PulsarTestApp {
     /// \brief Test PeriodicityTestApp class.
     void testPeriodicityTestApp();
 
-  protected:
-    /** \brief Create an application object to be tested.
-        \param app_name Name of application to be tested.
-    */
-    virtual st_app::StApp * createApplication(const std::string & app_name) const;
-
   private:
     /** \brief Helper method for testPeriodSearch, to test all types of test statistics.
         \param prefix Character string to be used as a prefix of output file names.
@@ -124,7 +185,7 @@ class PeriodSearchTestApp : public timeSystem::PulsarTestApp {
       double center, double step, long num_trials, double epoch, int num_bins,
       double fourier_width, int fourier_num_bins, double fourier_min_freq, double fourier_max_freq, bool plot);
 
-    /** \brief Helper method for testAllStats, to test one types of test statistics.
+    /** \brief Helper method for testAllStats, to test one type of test statistics.
         \param events List of event times to be tested periodicity.
         \param search PeriodSearch object to be tested.
         \param plot_title Title of a plot that displays a test result on screen.
@@ -198,7 +259,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
   fake_evts.clear();
 
   // Read some real data.
-  std::string event_file = facilities::commonUtilities::joinPath(getDataPath(), "step-01.fits");
+  std::string event_file = prependDataPath("step-01.fits");
   std::auto_ptr<const tip::Table> evt_table(tip::IFileSvc::instance().readTable(event_file, "EVENTS"));
 
   // Get gti_table.
@@ -567,6 +628,9 @@ void PeriodSearchTestApp::testRayleighTestArray() {
 void PeriodSearchTestApp::testPeriodSearchApp() {
   setMethod("testPeriodSearchApp");
 
+  // Create an application tester object.
+  PeriodSearchAppTester app_tester(*this);
+
   // List supported event file format(s).
   timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_sctime_handler;
 
@@ -578,22 +642,24 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
   test_name_cont.push_back("par4");
 
   // Prepare files to be used in the tests.
-  std::string ev_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_v3.fits");
-  std::string sc_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_spacecraft_data_v3r1.fits");
-  std::string master_pulsardb = facilities::commonUtilities::joinPath(getDataPath(), "master_pulsardb_v2.fits");
-  std::string ev_file_2gti = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_2gti.fits");
-  std::string sc_file_bogus = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_spacecraft_data_bogus.fits");
+  std::string ev_file = prependDataPath("my_pulsar_events_v3.fits");
+  std::string sc_file = prependDataPath("my_pulsar_spacecraft_data_v3r1.fits");
+  std::string master_pulsardb = prependDataPath("master_pulsardb_v2.fits");
+  std::string ev_file_2gti = prependDataPath("my_pulsar_events_2gti.fits");
+  std::string sc_file_bogus = prependDataPath("my_pulsar_spacecraft_data_bogus.fits");
 
   // Loop over parameter sets.
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
     const std::string & test_name = *test_itor;
+    std::string log_file(getMethod() + "_" + test_name + ".log");
+    std::string log_file_ref(getMethod() + "_" + test_name + ".ref");
     std::string out_file(getMethod() + "_" + test_name + ".fits");
-    std::string ref_file(getMethod() + "_" + test_name + ".ref");
+    std::string out_file_ref(prependOutrefPath(out_file));
     std::set<std::string> col_name;
+    bool ignore_exception(false);
 
     // Set default parameters.
-    std::string app_name("gtpsearch");
-    st_app::AppParGroup pars(app_name);
+    st_app::AppParGroup pars(app_tester.getName());
     pars["evfile"] = "";
     pars["scfile"] = "";
     pars["psrdbfile"] = "";
@@ -639,7 +705,6 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
     pars["mode"] = "ql";
 
     // Set test-specific parameters.
-    bool check_out_file = true;
     if ("par1" == test_name) {
       // Test standard computation with DB option.
       pars["algorithm"] = "Chi2";
@@ -663,14 +728,15 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       pars["plot"] = "nO";
       pars["title"] = "My statistical test";
       pars["gui"] = "No";
+      log_file_ref = prependOutrefPath(log_file);
 
     } else if ("par2" == test_name) {
       // Test ephemeris status reporting.
       std::string summary_file("psrdb_summary.txt");
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["algorithm"] = "Chi2";
       pars["evfile"] = ev_file_2gti;
@@ -693,10 +759,9 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       pars["plot"] = "nO";
       pars["title"] = "My statistical test";
       pars["gui"] = "No";
-      check_out_file = false;
 
-      remove(ref_file.c_str());
-      std::ofstream ofs(ref_file.c_str());
+      remove(log_file_ref.c_str());
+      std::ofstream ofs(log_file_ref.c_str());
       ofs << "gtpsearch: WARNING: The following pulsar ephemeris status are reported." << std::endl;
       ofs << "[1] Remarked \"Test remark entry No.2\" since 53990 MJD (TDB) until 54010 MJD (TDB)" << std::endl;
       ofs << "[2] Remarked \"Test remark entry No.3\" since 54025 MJD (TDB) until 54035 MJD (TDB)" << std::endl;
@@ -705,17 +770,21 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       ofs << "[5] Remarked \"Test remark entry No.7\" since 54030 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
       ofs << "[6] Remarked \"Test remark entry No.8\" since 53990 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
       std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
-      writeException(ofs, error);
+      app_tester.writeException(ofs, error);
       ofs << std::endl;
       ofs.close();
+
+      out_file.erase();
+      out_file_ref.erase();
+      ignore_exception = true;
 
     } else if ("par3" == test_name) {
       // Test no reporting of ephemeris status with reportephstatus=no.
       std::string summary_file("psrdb_summary.txt");
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["algorithm"] = "Chi2";
       pars["evfile"] = ev_file_2gti;
@@ -739,22 +808,25 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       pars["title"] = "My statistical test";
       pars["gui"] = "No";
       pars["reportephstatus"] = "no";
-      check_out_file = false;
 
-      remove(ref_file.c_str());
-      std::ofstream ofs(ref_file.c_str());
+      remove(log_file_ref.c_str());
+      std::ofstream ofs(log_file_ref.c_str());
       std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
-      writeException(ofs, error);
+      app_tester.writeException(ofs, error);
       ofs << std::endl;
       ofs.close();
+
+      out_file.erase();
+      out_file_ref.erase();
+      ignore_exception = true;
 
     } else if ("par4" == test_name) {
       // Test reporting of database creation history.
       std::string summary_file("psrdb_summary.txt");
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["algorithm"] = "Chi2";
       pars["evfile"] = ev_file_2gti;
@@ -779,10 +851,9 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       pars["gui"] = "No";
       pars["reportephstatus"] = "no";
       pars["chatter"] = 4;
-      check_out_file = false;
 
-      remove(ref_file.c_str());
-      std::ofstream ofs(ref_file.c_str());
+      remove(log_file_ref.c_str());
+      std::ofstream ofs(log_file_ref.c_str());
       ofs << "gtpsearch: INFO: ==========================" << std::endl;
       ofs << "gtpsearch: INFO: Pulsar ephemerides are loaded and/or filtered as follows:" << std::endl;
       ofs << "gtpsearch: INFO:    Load TEXTDB SPIN_PARAMETERS(FREQ) FILENAME='psrdb_spin.txt'" << std::endl;
@@ -801,9 +872,13 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       ofs << "gtpsearch: INFO:    Time series analysis will be performed in: TDB" << std::endl;
       ofs << "gtpsearch: INFO: --------------------------" << std::endl;
       std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
-      writeException(ofs, error);
+      app_tester.writeException(ofs, error);
       ofs << std::endl;
       ofs.close();
+
+      out_file.erase();
+      out_file_ref.erase();
+      ignore_exception = true;
 
     } else {
       // Skip this iteration.
@@ -811,17 +886,15 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
     }
 
     // Test the application.
-    std::string log_file(getMethod() + "_" + test_name + ".log");
-    if (check_out_file) {
-      testApplication(app_name, pars, log_file, "", out_file, col_name);
-    } else {
-      testApplication(app_name, pars, log_file, ref_file, "", col_name, true);
-    }
+    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, col_name, ignore_exception);
   }
 }
 
 void PeriodSearchTestApp::testPowerSpectrumApp() {
   setMethod("testPowerSpectrumApp");
+
+  // Create an application tester object.
+  PowerSpectrumAppTester app_tester(*this);
 
   // List supported event file format(s).
   timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_sctime_handler;
@@ -834,22 +907,24 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
   test_name_cont.push_back("par4");
 
   // Prepare files to be used in the tests.
-  std::string ev_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_v3.fits");
-  std::string sc_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_spacecraft_data_v3r1.fits");
-  std::string master_pulsardb = facilities::commonUtilities::joinPath(getDataPath(), "master_pulsardb_v2.fits");
-  std::string ev_file_2gti = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_2gti.fits");
-  std::string sc_file_bogus = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_spacecraft_data_bogus.fits");
+  std::string ev_file = prependDataPath("my_pulsar_events_v3.fits");
+  std::string sc_file = prependDataPath("my_pulsar_spacecraft_data_v3r1.fits");
+  std::string master_pulsardb = prependDataPath("master_pulsardb_v2.fits");
+  std::string ev_file_2gti = prependDataPath("my_pulsar_events_2gti.fits");
+  std::string sc_file_bogus = prependDataPath("my_pulsar_spacecraft_data_bogus.fits");
 
   // Loop over parameter sets.
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
     const std::string & test_name = *test_itor;
+    std::string log_file(getMethod() + "_" + test_name + ".log");
+    std::string log_file_ref(getMethod() + "_" + test_name + ".ref");
     std::string out_file(getMethod() + "_" + test_name + ".fits");
-    std::string ref_file(getMethod() + "_" + test_name + ".ref");
+    std::string out_file_ref(prependOutrefPath(out_file));
     std::set<std::string> col_name;
+    bool ignore_exception(false);
 
     // Set default parameters.
-    std::string app_name("gtpspec");
-    st_app::AppParGroup pars(app_name);
+    st_app::AppParGroup pars(app_tester.getName());
     pars["evfile"] = "";
     pars["scfile"] = "";
     pars["psrdbfile"] = "";
@@ -887,7 +962,6 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
     pars["mode"] = "ql";
 
     // Set test-specific parameters.
-    bool check_out_file = true;
     if ("par1" == test_name) {
       // Test standard computation with DB option.
       pars["evfile"] = ev_file;
@@ -910,15 +984,16 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["plot"] = "No";
       pars["title"] = "My Fourier analysis";
       pars["gui"] = "No";
+      log_file_ref = prependOutrefPath(log_file);
 
     } else if ("par2" == test_name) {
       // Test ephemeris status reporting.
       std::string summary_file("psrdb_summary.txt");
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_binary.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_binary.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["evfile"] = ev_file_2gti;
       pars["evtable"] = "EVENTS";
@@ -939,10 +1014,9 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["plot"] = "No";
       pars["title"] = "My Fourier analysis";
       pars["gui"] = "No";
-      check_out_file = false;
 
-      remove(ref_file.c_str());
-      std::ofstream ofs(ref_file.c_str());
+      remove(log_file_ref.c_str());
+      std::ofstream ofs(log_file_ref.c_str());
       ofs << "gtpspec: WARNING: The following pulsar ephemeris status are reported." << std::endl;
       ofs << "[1] Remarked \"Test remark entry No.2\" since 53990 MJD (TDB) until 54010 MJD (TDB)" << std::endl;
       ofs << "[2] Remarked \"Test remark entry No.3\" since 54025 MJD (TDB) until 54035 MJD (TDB)" << std::endl;
@@ -951,17 +1025,21 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       ofs << "[5] Remarked \"Test remark entry No.7\" since 54030 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
       ofs << "[6] Remarked \"Test remark entry No.8\" since 53990 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
       std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
-      writeException(ofs, error);
+      app_tester.writeException(ofs, error);
       ofs.close();
+
+      out_file.erase();
+      out_file_ref.erase();
+      ignore_exception = true;
 
     } else if ("par3" == test_name) {
       // Test no reporting of ephemeris status with reportephstatus=no.
       std::string summary_file("psrdb_summary.txt");
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_binary.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_binary.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["evfile"] = ev_file_2gti;
       pars["evtable"] = "EVENTS";
@@ -983,22 +1061,25 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["title"] = "My Fourier analysis";
       pars["gui"] = "No";
       pars["reportephstatus"] = "no";
-      check_out_file = false;
 
-      remove(ref_file.c_str());
-      std::ofstream ofs(ref_file.c_str());
+      remove(log_file_ref.c_str());
+      std::ofstream ofs(log_file_ref.c_str());
       std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
-      writeException(ofs, error);
+      app_tester.writeException(ofs, error);
       ofs.close();
+
+      out_file.erase();
+      out_file_ref.erase();
+      ignore_exception = true;
 
     } else if ("par4" == test_name) {
       // Test reporting of database creation history.
       std::string summary_file("psrdb_summary.txt");
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_spin.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_binary.txt") << std::endl;
-      ofs_summary << facilities::commonUtilities::joinPath(getDataPath(), "psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_binary.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["evfile"] = ev_file_2gti;
       pars["evtable"] = "EVENTS";
@@ -1021,10 +1102,9 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["gui"] = "No";
       pars["reportephstatus"] = "no";
       pars["chatter"] = 4;
-      check_out_file = false;
 
-      remove(ref_file.c_str());
-      std::ofstream ofs(ref_file.c_str());
+      remove(log_file_ref.c_str());
+      std::ofstream ofs(log_file_ref.c_str());
       ofs << "gtpspec: INFO: ==========================" << std::endl;
       ofs << "gtpspec: INFO: Pulsar ephemerides are loaded and/or filtered as follows:" << std::endl;
       ofs << "gtpspec: INFO:    Load TEXTDB SPIN_PARAMETERS(FREQ) FILENAME='psrdb_spin.txt'" << std::endl;
@@ -1045,8 +1125,12 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       ofs << "gtpspec: INFO:    Time series analysis will be performed in: TDB" << std::endl;
       ofs << "gtpspec: INFO: --------------------------" << std::endl;
       std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
-      writeException(ofs, error);
+      app_tester.writeException(ofs, error);
       ofs.close();
+
+      out_file.erase();
+      out_file_ref.erase();
+      ignore_exception = true;
 
     } else {
       // Skip this iteration.
@@ -1054,17 +1138,15 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
     }
 
     // Test the application.
-    std::string log_file(getMethod() + "_" + test_name + ".log");
-    if (check_out_file) {
-      testApplication(app_name, pars, log_file, "", out_file, col_name);
-    } else {
-      testApplication(app_name, pars, log_file, ref_file, "", col_name, true);
-    }
+    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, col_name, ignore_exception);
   }
 }
 
 void PeriodSearchTestApp::testPeriodicityTestApp() {
   setMethod("testPeriodicityTestApp");
+
+  // Create an application tester object.
+  PeriodicityTestAppTester app_tester(*this);
 
   // List supported event file format(s).
   timeSystem::EventTimeHandlerFactory<timeSystem::GlastScTimeHandler> glast_sctime_handler;
@@ -1074,17 +1156,20 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
   test_name_cont.push_back("par1");
 
   // Prepare files to be used in the tests.
-  std::string ev_file = facilities::commonUtilities::joinPath(getDataPath(), "my_pulsar_events_phase_v3r1.fits");
+  std::string ev_file = prependDataPath("my_pulsar_events_phase_v3r1.fits");
 
   // Loop over parameter sets.
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
     const std::string & test_name = *test_itor;
+    std::string log_file(getMethod() + "_" + test_name + ".log");
+    std::string log_file_ref(getMethod() + "_" + test_name + ".ref");
     std::string out_file(getMethod() + "_" + test_name + ".fits");
+    std::string out_file_ref(prependOutrefPath(out_file));
     std::set<std::string> col_name;
+    bool ignore_exception(false);
 
     // Set default parameters.
-    std::string app_name("gtptest");
-    st_app::AppParGroup pars(app_name);
+    st_app::AppParGroup pars(app_tester.getName());
     pars["evfile"] = "";
     pars["outfile"] = "";
     pars["numphase"] = 10;
@@ -1101,7 +1186,6 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
     pars["mode"] = "ql";
 
     // Set test-specific parameters.
-    bool check_out_file = true;
     if ("par1" == test_name) {
       // Test standard computation with DB option.
       pars["evfile"] = ev_file;
@@ -1114,6 +1198,7 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
       pars["plot"] = "nO";
       pars["title"] = "All statistical test results";
       pars["gui"] = "No";
+      log_file_ref = prependOutrefPath(log_file);
 
     } else {
       // Skip this iteration.
@@ -1121,24 +1206,7 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
     }
 
     // Test the application.
-    std::string log_file(getMethod() + "_" + test_name + ".log");
-    if (check_out_file) {
-      testApplication(app_name, pars, log_file, "", out_file, col_name);
-    } else {
-      testApplication(app_name, pars, log_file, "", "", col_name, true);
-    }
-  }
-}
-
-st_app::StApp * PeriodSearchTestApp::createApplication(const std::string & app_name) const {
-  if ("gtpsearch" == app_name) {
-    return new PeriodSearchApp();
-  } else if ("gtpspec" == app_name) {
-    return new PowerSpectrumApp();
-  } else if ("gtptest" == app_name) {
-    return new PeriodicityTestApp();
-  } else {
-    return 0;
+    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, col_name, ignore_exception);
   }
 }
 
@@ -1181,6 +1249,9 @@ void PeriodSearchTestApp::testAllStats(const std::string & prefix, const std::ve
 
 void PeriodSearchTestApp::testOneSearch(const std::vector<double> & events, PeriodSearch & search, const std::string & plot_title,
   const std::string & out_file, bool plot, double min_freq, double max_freq) {
+  // Create an application tester object.
+  PeriodSearchAppTester tester(*this);
+
   // Get the viewer.
   StatisticViewer & viewer = search.getViewer();
 
@@ -1194,7 +1265,7 @@ void PeriodSearchTestApp::testOneSearch(const std::vector<double> & events, Peri
   search.updateViewer(min_freq, max_freq);
 
   // Find the template file.
-  std::string template_file = facilities::commonUtilities::joinPath(getDataPath(), "period-search-out.tpl");
+  std::string template_file = prependDataPath("period-search-out.tpl");
 
   // Create output file.
   tip::IFileSvc::instance().createFile(out_file, template_file, true);
@@ -1209,7 +1280,7 @@ void PeriodSearchTestApp::testOneSearch(const std::vector<double> & events, Peri
   delete out_table;
 
   // Check the result against its reference file in data/outref/ directory.
-  checkOutputFits(out_file);
+  tester.checkOutputFits(out_file, prependOutrefPath(out_file));
 
   // Plot if requested.
   viewer.setTitle(plot_title);
