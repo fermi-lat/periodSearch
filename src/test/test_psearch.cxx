@@ -655,7 +655,6 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
     std::string log_file_ref(getMethod() + "_" + test_name + ".ref");
     std::string out_file(getMethod() + "_" + test_name + ".fits");
     std::string out_file_ref(prependOutrefPath(out_file));
-    std::set<std::string> col_name;
     bool ignore_exception(false);
 
     // Set default parameters.
@@ -886,7 +885,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
     }
 
     // Test the application.
-    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, col_name, ignore_exception);
+    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, ignore_exception);
   }
 }
 
@@ -920,7 +919,6 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
     std::string log_file_ref(getMethod() + "_" + test_name + ".ref");
     std::string out_file(getMethod() + "_" + test_name + ".fits");
     std::string out_file_ref(prependOutrefPath(out_file));
-    std::set<std::string> col_name;
     bool ignore_exception(false);
 
     // Set default parameters.
@@ -1138,7 +1136,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
     }
 
     // Test the application.
-    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, col_name, ignore_exception);
+    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, ignore_exception);
   }
 }
 
@@ -1165,7 +1163,6 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
     std::string log_file_ref(getMethod() + "_" + test_name + ".ref");
     std::string out_file(getMethod() + "_" + test_name + ".fits");
     std::string out_file_ref(prependOutrefPath(out_file));
-    std::set<std::string> col_name;
     bool ignore_exception(false);
 
     // Set default parameters.
@@ -1206,7 +1203,7 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
     }
 
     // Test the application.
-    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, col_name, ignore_exception);
+    app_tester.test(pars, log_file, log_file_ref, out_file, out_file_ref, ignore_exception);
   }
 }
 
