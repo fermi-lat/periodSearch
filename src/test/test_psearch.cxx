@@ -178,9 +178,18 @@ bool PeriodSearchAppTester::verify(const std::string & out_string, const std::st
         std::endl << "[OUT] " << out_string << std::endl << "[REF] " << ref_string;
     }
 
+  } else if (ref_string.find("Maximum Statistic") != std::string::npos) {
+    // Require them be close enough as floating-point numbers of type double whose value is of the order of unity.
+    double abs_tol = 1.e-6;
+    verified = equivalent(out_string, ref_string, abs_tol, 0.);
+    if (!verified) {
+      error_stream << "Maximum Statistic not equivalent to reference with absolute tolerance of " << abs_tol << "." <<
+        std::endl << "[OUT] " << out_string << std::endl << "[REF] " << ref_string;
+    }
+
+
   } else if (ref_string.find("Fourier Resolution") != std::string::npos || ref_string.find("Sampling Frequency") != std::string::npos ||
-    ref_string.find("Search Range") != std::string::npos || ref_string.find("Maximum Statistic") != std::string::npos ||
-    ref_string.find("Chance Probability Range") != std::string::npos) {
+    ref_string.find("Search Range") != std::string::npos || ref_string.find("Chance Probability Range") != std::string::npos) {
     // Compare as floating-point numbers.
     verified = equivalent(out_string, ref_string);
     if (!verified) {
@@ -322,9 +331,17 @@ bool PowerSpectrumAppTester::verify(const std::string & out_string, const std::s
         std::endl << "[OUT] " << out_string << std::endl << "[REF] " << ref_string;
     }
 
+  } else if (ref_string.find("Maximum Statistic") != std::string::npos) {
+    // Require them be close enough as floating-point numbers of type double whose value is of the order of unity.
+    double abs_tol = 1.e-6;
+    verified = equivalent(out_string, ref_string, abs_tol, 0.);
+    if (!verified) {
+      error_stream << "Maximum Statistic not equivalent to reference with absolute tolerance of " << abs_tol << "." <<
+        std::endl << "[OUT] " << out_string << std::endl << "[REF] " << ref_string;
+    }
+
   } else if (ref_string.find("Fourier Resolution") != std::string::npos || ref_string.find("Sampling Frequency") != std::string::npos ||
-    ref_string.find("Search Range") != std::string::npos || ref_string.find("Maximum Statistic") != std::string::npos ||
-    ref_string.find("Chance Probability Range") != std::string::npos) {
+    ref_string.find("Search Range") != std::string::npos || ref_string.find("Chance Probability Range") != std::string::npos) {
     // Compare as floating-point numbers.
     verified = equivalent(out_string, ref_string);
     if (!verified) {
@@ -459,8 +476,16 @@ bool PeriodicityTestAppTester::verify(const std::string & out_string, const std:
   // Initialize return value.
   bool verified = false;
 
-  if (ref_string.find("Test Statistic") != std::string::npos ||
-    ref_string.find("Chance Probability Range") != std::string::npos) {
+  if (ref_string.find("Test Statistic") != std::string::npos) {
+    // Require them be close enough as floating-point numbers of type double whose value is of the order of unity.
+    double abs_tol = 1.e-6;
+    verified = equivalent(out_string, ref_string, abs_tol, 0.);
+    if (!verified) {
+      error_stream << "Test Statistic not equivalent to reference with absolute tolerance of " << abs_tol << "." <<
+        std::endl << "[OUT] " << out_string << std::endl << "[REF] " << ref_string;
+    }
+
+  } else if (ref_string.find("Chance Probability Range") != std::string::npos) {
     // Compare as floating-point numbers.
     verified = equivalent(out_string, ref_string);
     if (!verified) {
