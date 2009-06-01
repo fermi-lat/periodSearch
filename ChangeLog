@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sun May 31 19:57:40 PDT 2009
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par gtpspec.par 
+Log Message:
+Accept timeformat/userformat=FERMI in addition to GLAST.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-10-06-02, operation: add
 Package: periodSearch
