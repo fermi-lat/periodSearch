@@ -51,8 +51,8 @@ scfile [file name]
     Name of input spacecraft data file, FT2 format or equivalent.
 
 psrdbfile [file name]
-    Name of pulsar ephemerides database file, in GLAST D4
-    FITS format.
+    Name of pulsar ephemerides database file, in Fermi (formerly
+    GLAST) D4 FITS format.
 
 psrname = ANY [string]
     Name of the pulsar, used to select only ephemerides valid for a
@@ -101,7 +101,7 @@ usertime = 0. [string]
     User-specified time origin for the periodicity test, used only
     if timeorigin parameter is USER.
 
-userformat = FILE [enumerated string (FILE|MJD|GLAST)]
+userformat = FILE [enumerated string (FILE|MJD|FERMI|GLAST)]
     String describing the representation used for the usertime.  If
     FILE is chosen, the time format specified in the input event file
     header will be used. Used only if timeorigin parameter is USER.
@@ -114,16 +114,16 @@ usersys = FILE [enumerated string (FILE|TAI|TDB|TT|UTC)]
 
 ephstyle = DB [enumerated string (DB|FREQ|PER)]
     Method to specify how the ephemerides will be supplied. If
-    ephstyle is DB, a pulsar database file (GLAST D4 FITS format) will
-    be used. If ephstyle is FREQ (PER), the user will supply values
-    for the frequency (period) and its derivatives at the time given
-    by the epoch parameter.
+    ephstyle is DB, a pulsar database file in Fermi (formerly GLAST)
+    D4 FITS format will be used. If ephstyle is FREQ (PER), the user
+    will supply values for the frequency (period) and its derivatives
+    at the time given by the epoch parameter.
 
 ephepoch = 0. [string]
     Reference epoch of the ephemeris that will be manually specified.
     This parameter only has effect if ephstyle is FREQ or PER.
 
-timeformat = FILE [enumerated string (FILE|MJD|GLAST)]
+timeformat = FILE [enumerated string (FILE|MJD|FERMI|GLAST)]
     String describing the representation used for ephepoch parameter.
     If FILE is chosen, the time format specified in the input event
     file header will be used.
@@ -279,8 +279,8 @@ scfile [file name]
     Name of input spacecraft data file, FT2 format or equivalent.
 
 psrdbfile [file name]
-    Name of pulsar ephemerides database file, in GLAST D4
-    FITS format.
+    Name of pulsar ephemerides database file, in Fermi (formerly
+    GLAST) D4 FITS format.
 
 psrname = ANY [string]
     Name of the pulsar, used to select only ephemerides valid for a
@@ -314,7 +314,7 @@ usertime = 0. [string]
     User-specified time origin for the periodicity test, used only
     if timeorigin parameter is USER.
 
-userformat = FILE [enumerated string (FILE|MJD|GLAST)]
+userformat = FILE [enumerated string (FILE|MJD|FERMI|GLAST)]
     String describing the representation used for the usertime.  If
     FILE is chosen, the time format specified in the input event file
     header will be used. Used only if timeorigin parameter is USER.
