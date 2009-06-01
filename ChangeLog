@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sun May 31 19:58:01 PDT 2009
+periodSearch/src
+
+Modified Files:
+	mainpage.h 
+Log Message:
+Change GLAST to Fermi in Doxygen comments.
+    *
+------------------------------------------------------------
 User: hirayama  Sun May 31 19:57:40 PDT 2009
 periodSearch/pfiles
 
