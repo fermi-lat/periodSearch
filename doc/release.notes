@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.42 2009/05/22 00:05:07 hirayama Exp $
+$Id: release.notes,v 1.43 2009/05/26 03:27:52 hirayama Exp $
 
 \verbatim
+02-jun-2009     v10r7 MH  Adopt to the mission name change (GLAST -> FERMI).
 25-may-2009   v10r6p2 MH  Fine-tune tolerances in the unit test for application classes.
 21-may-2009   v10r6p1 MH  Improve the unit test for application classes.
 28-apr-2009     v10r6 MH  Remove text output of plot data (JIRA PULS-51).  Report file creation time
