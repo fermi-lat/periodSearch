@@ -615,7 +615,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
   setPrecision(16);
 
   for (int ii = 0; ii < num_evts; ++ii)
-    fake_evts[ii] = ii + 1;
+    fake_evts[ii] = ii + 0.5;
 
   // Set up search parameters.
   double central = 1.;
