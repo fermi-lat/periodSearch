@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Tue Jun 16 14:04:52 PDT 2009
+periodSearch/data/outref
+
+Modified Files:
+	artificial-chi-sq.fits artificial-fourier.fits 
+	artificial-h.fits artificial-rayleigh.fits artificial-z2n.fits 
+Log Message:
+Make tests with artificial data robust against rounding errors.
+    *
+------------------------------------------------------------
 User: hirayama  Tue Jun 16 14:04:51 PDT 2009
 periodSearch/src/test
 
