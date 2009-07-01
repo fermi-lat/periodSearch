@@ -2,9 +2,10 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.44 2009/06/02 22:54:21 hirayama Exp $
+$Id: release.notes,v 1.45 2009/06/19 21:34:19 hirayama Exp $
 
 \verbatim
+* EOH *
 19-jun-2009   v10r7p1 MH  Improve the unit test for robustness against rounding errors.
 02-jun-2009     v10r7 MH  Adopt to the mission name change (GLAST -> FERMI).
 25-may-2009   v10r6p2 MH  Fine-tune tolerances in the unit test for application classes.
