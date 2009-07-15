@@ -1,5 +1,5 @@
 # -*- python -*-
-# $Id: SConscript,v 1.19 2009/06/02 23:31:20 glastrm Exp $
+# $Id: SConscript,v 1.20 2009/06/19 22:30:55 glastrm Exp $
 # Authors: James Peachey <James.Peachey-1@nasa.gov>
 # Version: periodSearch-10-07-01
 Import('baseEnv')
@@ -16,6 +16,11 @@ gtpspecBin = progEnv.Program('gtpspec', listFiles(['src/gtpspec/*.cxx']))
 gtptestBin = progEnv.Program('gtptest', listFiles(['src/gtptest/*.cxx']))
 test_periodSearchBin = progEnv.Program('test_periodSearch', listFiles(['src/test/*.cxx']))
 
-progEnv.Tool('registerObjects', package = 'periodSearch', libraries = [periodSearchLib], binaries = [gtpsearchBin, gtpspecBin, gtptestBin],
-             testApps = [test_periodSearchBin], includes = listFiles(['periodSearch/*.h']), pfiles = listFiles(['pfiles/*.par']),
+progEnv.Tool('registerTargets', package = 'periodSearch',
+             staticLibraryCxts = [[periodSearchLib, libEnv]],
+             binaryCxts = [[gtpsearchBin,progEnv], [gtpspecBin,progEnv],
+                           [gtptestBin,progEnv]],
+             testAppCxts = [[test_periodSearchBin, progEnv]],
+             includes = listFiles(['periodSearch/*.h']),
+             pfiles = listFiles(['pfiles/*.par']),
              data = listFiles(['data/*'], recursive = True))
