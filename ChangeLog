@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+TAG
+Tag name: v10r7p2, operation: mov
+Package: periodSearch
+User: glastrm  Wed Jul 15 11:34:44 2009
+Files:
+  periodSearch/SConscript  1.22
+
+    *
+------------------------------------------------------------
 User: glastrm  Wed Jul 15 11:34:38 PDT 2009
 periodSearch
 
