@@ -621,7 +621,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
   double central = 1.;
   double step = .5e-3;
   int num_pds = 61;
-  double epoch = .2;
+  double epoch = .25;
   int num_bins = 10;
   double duration = 1000.;
 
