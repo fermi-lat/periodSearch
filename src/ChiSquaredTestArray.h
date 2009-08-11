@@ -64,7 +64,7 @@ class ChiSquaredTestArray : public PeriodicityTestArray {
     cont_type m_curve_cont;
 
     // The number of events filled for each element of this test array.
-    std::vector<long> m_num_events;
+    data_type m_num_events;
 };
 
 #endif
