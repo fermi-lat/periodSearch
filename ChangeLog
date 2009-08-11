@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Tue Aug 11 16:20:20 PDT 2009
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Make the unit test robust by keeping events from falling on a phase bin boundary.
+    *
+------------------------------------------------------------
 User: hirayama  Tue Aug 11 16:17:50 PDT 2009
 periodSearch/src
 
