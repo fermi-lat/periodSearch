@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Aug 14 18:11:07 PDT 2009
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Make the unit test even more robust by keeping events from falling on a phase bin boundary for all trial frequencies.
+    *
+------------------------------------------------------------
 User: hirayama  Tue Aug 11 16:21:05 PDT 2009
 periodSearch/data/outref
 
