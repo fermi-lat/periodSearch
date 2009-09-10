@@ -70,7 +70,7 @@ double ChiSquaredTestArray::computeStat(size_type array_index) const {
   }
 
   // Compute average count rate.
-  double avg = double(num_events) / m_num_phase_bins;
+  double avg = static_cast<double>(num_events) / m_num_phase_bins;
 
   // Compute S-value.
   double S_value = 0.;

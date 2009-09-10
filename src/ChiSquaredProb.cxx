@@ -33,7 +33,7 @@ ChiSquaredProb::ChiSquaredProb(int dof, double min_pdf): m_dof(dof), m_dof_minus
     nterm = dof / 2 - 2;
   }
   for (int ii=1; ii<=nterm; ii++) {
-    m_lognorm -= log(m_dof / 2.0 - double(ii));
+    m_lognorm -= log(m_dof / 2.0 - static_cast<double>(ii));
   }
   m_lognorm -= m_dof / 2.0 * M_LN2;
 
