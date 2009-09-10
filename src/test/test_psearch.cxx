@@ -688,7 +688,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
 
   // Now test pdot correction.
   timeSystem::AbsoluteTime glast_origin("TDB", 51910, 0.);
-  timeSystem::AbsoluteTime abs_epoch = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, epoch));
+  timeSystem::AbsoluteTime abs_epoch = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(epoch, "Sec"));
   double pdot = 4.7967744e-13;
   std::vector<double> fdot_ratio(1, -pdot * central);
   pulsarDb::PdotCanceler canceler("TDB", abs_epoch, fdot_ratio);
@@ -696,21 +696,21 @@ void PeriodSearchTestApp::testPeriodSearch() {
   // Correct the data.
   timeSystem::AbsoluteTime evt_time("TDB", 0, 0.);
   for (std::vector<double>::iterator itor = fake_evts.begin(); itor != fake_evts.end(); ++itor) {
-    evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, *itor));
+    evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(*itor, "Sec"));
     canceler.cancelPdot(evt_time);
     *itor = (evt_time - glast_origin).computeDuration("TDB", "Sec");
   }
 
   // Cancel pdot in tstart, tstop and epoch to be consistent.
-  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, tstart));
+  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(tstart, "Sec"));
   canceler.cancelPdot(evt_time);
   tstart = (evt_time - glast_origin).computeDuration("TDB", "Sec");
 
-  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, tstop));
+  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(tstop, "Sec"));
   canceler.cancelPdot(evt_time);
   tstop = (evt_time - glast_origin).computeDuration("TDB", "Sec");
 
-  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(0, epoch));
+  evt_time = glast_origin + timeSystem::ElapsedTime("TDB", timeSystem::Duration(epoch, "Sec"));
   canceler.cancelPdot(evt_time);
   epoch = (evt_time - glast_origin).computeDuration("TDB", "Sec");
 
@@ -736,7 +736,7 @@ void PeriodSearchTestApp::testChanceProb() {
   std::vector<double>::size_type prob_size = 201;
   std::vector<double> prob_one_trial(prob_size, 0.);
   for (std::vector<double>::size_type idx = 1; idx != prob_size; ++idx) {
-    prob_one_trial[idx] = std::pow(.9, double(prob_size - (idx + 1)));
+    prob_one_trial[idx] = std::pow(.9, static_cast<double>(prob_size - (idx + 1)));
   }
 
   // Populate array with approximate answers using a standard math library call. Note that this is
@@ -744,7 +744,7 @@ void PeriodSearchTestApp::testChanceProb() {
   std::vector<std::vector<double> > approx_chance_prob(trial_size, std::vector<double>(prob_size, 0.));
   for (std::vector<PeriodSearch::size_type>::size_type ii = 0; ii != trial_size; ++ii) {
     for (std::vector<double>::size_type jj = 0; jj != prob_size; ++jj) {
-      approx_chance_prob[ii][jj] = 1. - std::pow(1. - prob_one_trial[jj], double(num_indep_trial[ii]));
+      approx_chance_prob[ii][jj] = 1. - std::pow(1. - prob_one_trial[jj], static_cast<double>(num_indep_trial[ii]));
     }
   }
 
