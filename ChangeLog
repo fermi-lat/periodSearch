@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep  9 22:59:05 PDT 2009
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Use static_cast instead of the old-style cast such as long(value). Use human-friendly constructor of Duration.
+    *
+------------------------------------------------------------
 User: hirayama  Wed Sep  9 22:58:55 PDT 2009
 periodSearch/src
 
