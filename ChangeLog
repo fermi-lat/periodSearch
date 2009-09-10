@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep  9 22:58:55 PDT 2009
+periodSearch/src
+
+Modified Files:
+	ChiSquaredProb.cxx ChiSquaredTestArray.cxx 
+Log Message:
+Use static_cast instead of the old-style cast such as long(value).
+    *
+------------------------------------------------------------
 TAG
 Tag name: ScienceTools-15-01-02, operation: del
 Package: periodSearch
