@@ -1243,6 +1243,18 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       ofs << "gtpsearch: INFO:    Load TEXTDB REMARKS FILENAME='psrdb_remark.txt'" << std::endl;
       ofs << "gtpsearch: INFO:    Filter by pulsar name 'PSR J0540-6919'" << std::endl;
       ofs << "gtpsearch: INFO: ==========================" << std::endl;
+      ofs << "gtpsearch: INFO: Spin ephemerides in the database are summarized as follows:" << std::endl;
+      ofs << "gtpsearch: INFO:    5 spin ephemeri(de)s in total" << std::endl;
+      ofs << "gtpsearch: INFO:    5 spin ephemeri(de)s for pulsar \"PSR J0540-6919\"" << std::endl;
+      ofs << "gtpsearch: INFO:    (Sub-selection by solar system ephemeris not requested)" << std::endl;
+      ofs << "gtpsearch: INFO:    5 spin ephemeri(de)s loaded into memory" << std::endl;
+      ofs << "gtpsearch: INFO: ==========================" << std::endl;
+      ofs << "gtpsearch: INFO: Orbital ephemerides in the database are summarized as follows:" << std::endl;
+      ofs << "gtpsearch: INFO:    0 orbital ephemeri(de)s in total" << std::endl;
+      ofs << "gtpsearch: INFO:    0 orbital ephemeri(de)s for pulsar \"PSR J0540-6919\"" << std::endl;
+      ofs << "gtpsearch: INFO:    (Sub-selection by solar system ephemeris not requested)" << std::endl;
+      ofs << "gtpsearch: INFO:    0 orbital ephemeri(de)s loaded into memory" << std::endl;
+      ofs << "gtpsearch: INFO: ==========================" << std::endl;
       ofs << "gtpsearch: INFO: --------------------------" << std::endl;
       ofs << "gtpsearch: INFO: Arrival time corrections are applied as follows:" << std::endl;
       ofs << "gtpsearch: INFO:    Barycentric correction: Applied if necessary" << std::endl;
@@ -1361,6 +1373,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["binwidth"] = 0.01;
       pars["numbins"] = 1000000;
       pars["tcorrect"] = "BaRY";
+      pars["matchsolareph"] = "nONe";
       pars["timefield"] = "TIME";
       pars["lowfcut"] = 0.01001;
       pars["plot"] = "No";
@@ -1374,7 +1387,6 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
       ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
-      ofs_summary << prependDataPath("psrdb_binary.txt") << std::endl;
       ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["evfile"] = ev_file_2gti;
@@ -1392,6 +1404,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["binwidth"] = 0.01;
       pars["numbins"] = 1000000;
       pars["tcorrect"] = "BaRY";
+      pars["matchsolareph"] = "nONe";
       pars["timefield"] = "TIME";
       pars["plot"] = "No";
       pars["title"] = "My Fourier analysis";
@@ -1420,7 +1433,6 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
       ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
-      ofs_summary << prependDataPath("psrdb_binary.txt") << std::endl;
       ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["evfile"] = ev_file_2gti;
@@ -1438,6 +1450,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["binwidth"] = 0.01;
       pars["numbins"] = 1000000;
       pars["tcorrect"] = "BaRY";
+      pars["matchsolareph"] = "nONe";
       pars["timefield"] = "TIME";
       pars["plot"] = "No";
       pars["title"] = "My Fourier analysis";
@@ -1460,7 +1473,6 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       remove(summary_file.c_str());
       std::ofstream ofs_summary(summary_file.c_str());
       ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
-      ofs_summary << prependDataPath("psrdb_binary.txt") << std::endl;
       ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
       ofs_summary.close();
       pars["evfile"] = ev_file_2gti;
@@ -1478,6 +1490,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["binwidth"] = 0.01;
       pars["numbins"] = 1000000;
       pars["tcorrect"] = "AuTO";
+      pars["matchsolareph"] = "nONe";
       pars["timefield"] = "TIME";
       pars["plot"] = "No";
       pars["title"] = "My Fourier analysis";
@@ -1490,10 +1503,14 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       ofs << "gtpspec: INFO: ==========================" << std::endl;
       ofs << "gtpspec: INFO: Pulsar ephemerides are loaded and/or filtered as follows:" << std::endl;
       ofs << "gtpspec: INFO:    Load TEXTDB SPIN_PARAMETERS(FREQ) FILENAME='psrdb_spin.txt'" << std::endl;
-      ofs << "gtpspec: INFO:    Load TEXTDB ORBITAL_PARAMETERS(DD) FILENAME='psrdb_binary.txt'" << std::endl;
       ofs << "gtpspec: INFO:    Load TEXTDB REMARKS FILENAME='psrdb_remark.txt'" << std::endl;
       ofs << "gtpspec: INFO:    Filter by pulsar name 'PSR J0540-6919'" << std::endl;
-      ofs << "gtpspec: INFO:    Filter by solar system ephemeris 'JPL DE405'" << std::endl;
+      ofs << "gtpspec: INFO: ==========================" << std::endl;
+      ofs << "gtpspec: INFO: Orbital ephemerides in the database are summarized as follows:" << std::endl;
+      ofs << "gtpspec: INFO:    0 orbital ephemeri(de)s in total" << std::endl;
+      ofs << "gtpspec: INFO:    0 orbital ephemeri(de)s for pulsar \"PSR J0540-6919\"" << std::endl;
+      ofs << "gtpspec: INFO:    (Sub-selection by solar system ephemeris not requested)" << std::endl;
+      ofs << "gtpspec: INFO:    0 orbital ephemeri(de)s loaded into memory" << std::endl;
       ofs << "gtpspec: INFO: ==========================" << std::endl;
       ofs << "gtpspec: INFO: --------------------------" << std::endl;
       ofs << "gtpspec: INFO: Arrival time corrections are applied as follows:" << std::endl;
