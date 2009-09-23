@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Wed Sep 23 16:23:42 PDT 2009
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Adopt to improved errors and warnings in ephemeris sub-selection.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-10-07-03, operation: add
 Package: periodSearch
