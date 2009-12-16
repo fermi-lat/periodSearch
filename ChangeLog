@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: elwinter  Wed Dec 16 15:24:47 PST 2009
+periodSearch/src
+
+Modified Files:
+	PeriodicityTestApp.cxx 
+Log Message:
+Added <memory> header needed by gcc4.
+
+    *
+------------------------------------------------------------
 User: elwinter  Wed Dec 16 15:23:37 PST 2009
 periodSearch/src
 
