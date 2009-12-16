@@ -8,6 +8,7 @@
 #include <ctime>
 #include <limits>
 #include <list>
+#include <memory>
 #include <stdexcept>
 
 #include "facilities/commonUtilities.h"
@@ -34,7 +35,7 @@
 #include "RayleighTestArray.h"
 #include "Z2nTestArray.h"
 
-static const std::string s_cvs_id = "$Name:  $";
+static const std::string s_cvs_id = "$Name: v10r7p2 $";
 
 PeriodicityTestApp::PeriodicityTestApp(): m_os("PeriodicityTestApp", "", 2) {
   setName("gtptest");
