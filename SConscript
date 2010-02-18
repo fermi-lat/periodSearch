@@ -1,5 +1,5 @@
 # -*- python -*-
-# $Id: SConscript,v 1.24 2009/10/23 22:49:33 hirayama Exp $
+# $Id: SConscript,v 1.25 2009/10/27 21:19:32 hirayama Exp $
 # Authors: James Peachey <James.Peachey-1@nasa.gov>
 # Version: periodSearch-10-08-01
 Import('baseEnv')
@@ -7,7 +7,6 @@ Import('listFiles')
 progEnv = baseEnv.Clone()
 libEnv = baseEnv.Clone()
 
-libEnv.Tool('periodSearchLib', depsOnly = 1)
 periodSearchLib = libEnv.StaticLibrary('periodSearch', listFiles(['src/*.cxx']))
 
 progEnv.Tool('periodSearchLib')
