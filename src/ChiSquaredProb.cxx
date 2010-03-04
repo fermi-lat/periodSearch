@@ -23,7 +23,7 @@ ChiSquaredProb::ChiSquaredProb(int dof, double min_pdf): m_dof(dof), m_dof_minus
     throw std::logic_error(os.str());
   }
 
-  // pre-compute normalization
+  // Pre-compute normalization.
   double nterm;
   if (dof % 2) {
     m_lognorm = - 0.5 * log(M_PI);
@@ -37,7 +37,7 @@ ChiSquaredProb::ChiSquaredProb(int dof, double min_pdf): m_dof(dof), m_dof_minus
   }
   m_lognorm -= m_dof / 2.0 * M_LN2;
 
-  // find the maximum chi-squared value to compute
+  // Find the maximum chi-squared value to compute.
   // NOTE: in the following search for m_max_chisq, the initial value
   // of x_cur must be > m_dof_minus_2 and > 0.
   double x_cur = m_dof + 1.0;
@@ -56,10 +56,10 @@ ChiSquaredProb::ChiSquaredProb(int dof, double min_pdf): m_dof(dof), m_dof_minus
 }
 
 std::pair<double,double> ChiSquaredProb::operator() (double chisq, double precision, int max_iteration) const {
-  // return 1.0 in trivial cases
+  // Return 1.0 in trivial cases.
   if (chisq <= 0.0) return std::make_pair(1.0, 1.0);
 
-  // return the maximum residual if chisq >= m_max_chisq
+  // Return the maximum residual if chisq >= m_max_chisq.
   if (chisq >= m_max_chisq) {
     if (m_max_chisq > m_dof) {
       double max_residual = 2.0 * m_max_chisq * pdf(m_max_chisq)
@@ -70,31 +70,31 @@ std::pair<double,double> ChiSquaredProb::operator() (double chisq, double precis
     }
   }
 
-  // prepare for computing step size
+  // Prepare for computing step size.
   double p_value = precision / 2.0;
   double x_offset = 0.0;
   if (m_dof > 2.1) {
     x_offset = 2.0 * p_value + sqrt(2.0 * p_value * m_dof_minus_2);
   }
 
-  // set initial values for numerical integration
+  // Set initial values for numerical integration.
   double x_cur = chisq;
   double f_cur = pdf(x_cur);
   double Qmin = 0.0;
   double Qmax = 0.0;
   double Rn = 1.0;
 
-  // helper variables for numerical integration
+  // Prepare Helper variables for numerical integration.
   double x_step, x_next, f_next;
   int num_iter = 0;
 
-  // integration where pdf(x) increases with x
+  // Integration where pdf(x) increases with x.
   if (m_dof > 2.1) {
     for (; (num_iter < max_iteration) && (x_cur < m_dof_minus_2)
 	   && (x_cur < m_max_chisq);
 	 num_iter++, x_cur = x_next, f_cur = f_next) {
 
-      // next sampling point
+      // Set next sampling point.
       x_step = p_value * fabs(eta(x_cur));
       x_next = x_cur + x_step;
       if (x_next > m_dof_minus_2) {
@@ -103,16 +103,16 @@ std::pair<double,double> ChiSquaredProb::operator() (double chisq, double precis
       }
       f_next = pdf(x_next);
 
-      // accumulate estimators
+      // Accumulate estimators.
       Qmax += f_next * x_step;
       Qmin += f_cur  * x_step;
     }
   }
 
-  // integration where pdf(x) decreases with x
+  // Integration where pdf(x) decreases with x.
   for (; (num_iter < max_iteration) && (x_cur < m_max_chisq);
        num_iter++, x_cur = x_next, f_cur = f_next) {
-    // next sampling point
+    // Set next sampling point.
     x_step = p_value * fabs(eta(x_cur + x_offset));
     x_next = x_cur + x_step;
     if (x_next > m_max_chisq) {
@@ -121,23 +121,23 @@ std::pair<double,double> ChiSquaredProb::operator() (double chisq, double precis
     }
     f_next = pdf(x_next);
 
-    // accumulate estimators
+    // Accumulate estimators.
     Qmax += f_cur  * x_step;
     Qmin += f_next * x_step;
 
     if (x_next > m_dof) {
-      // compute residual
+      // Compute residual.
       Rn = 2.0 * x_next * f_next / (x_next - m_dof);
 
-      // terminate numerical integration
+      // Terminate numerical integration.
       if (Rn <= Qmin* p_value) break;
     }
   }
 
-  // add residual (upper limit)
+  // Add residual (upper limit).
   Qmax += Rn;
   Qmax = (Qmax < 1.0 ? Qmax : 1.0);
 
-  // return integration and upper limit for residual
+  // Return integration and upper limit for residual.
   return std::make_pair(Qmin, Qmax);
 }
