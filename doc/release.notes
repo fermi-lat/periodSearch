@@ -2,11 +2,12 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.51 2009/10/27 21:19:32 hirayama Exp $
+$Id: release.notes,v 1.52 2010/02/22 20:54:45 jrb Exp $
 
 \verbatim
 * EOH *
 
+ periodSearch-10-08-03 16-Mar-2010 hirayama Minor improvements only.
  periodSearch-10-08-02 22-Feb-2010    jrb correct use of xxLib for libEnv
  periodSearch-10-08-01 27-Oct-2009 hirayama Add an explanation of psrdbfile=NONE to mainpage.h.
  periodSearch-10-08-00 23-Oct-2009 hirayama Improve errors and warnings in ephemeris sub-selection. Introduce psrdbfile=NONE.
