@@ -1026,7 +1026,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
   test_name_cont.push_back("par4");
 
   // Prepare files to be used in the tests.
-  std::string ev_file = prependDataPath("my_pulsar_events_v3.fits");
+  std::string ev_file = prependDataPath("my_pulsar_events_v3r1.fits");
   std::string sc_file = prependDataPath("my_pulsar_spacecraft_data_v3r1.fits");
   std::string master_pulsardb = prependDataPath("master_pulsardb_v2.fits");
   std::string ev_file_2gti = prependDataPath("my_pulsar_events_2gti.fits");
@@ -1302,7 +1302,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
   test_name_cont.push_back("par4");
 
   // Prepare files to be used in the tests.
-  std::string ev_file = prependDataPath("my_pulsar_events_v3.fits");
+  std::string ev_file = prependDataPath("my_pulsar_events_v3r1.fits");
   std::string sc_file = prependDataPath("my_pulsar_spacecraft_data_v3r1.fits");
   std::string master_pulsardb = prependDataPath("master_pulsardb_v2.fits");
   std::string ev_file_2gti = prependDataPath("my_pulsar_events_2gti.fits");
@@ -1555,7 +1555,7 @@ void PeriodSearchTestApp::testPeriodicityTestApp() {
   test_name_cont.push_back("par1");
 
   // Prepare files to be used in the tests.
-  std::string ev_file = prependDataPath("my_pulsar_events_phase_v3r1.fits");
+  std::string ev_file = prependDataPath("my_pulsar_events_phase_v3r2.fits");
 
   // Loop over parameter sets.
   for (std::list<std::string>::const_iterator test_itor = test_name_cont.begin(); test_itor != test_name_cont.end(); ++test_itor) {
