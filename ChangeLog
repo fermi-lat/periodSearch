@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Tue Apr 13 18:47:44 PDT 2010
+periodSearch/src
+
+Modified Files:
+	FoldingAnalysis.h FourierAnalysis.h PeriodSearch.h 
+Log Message:
+Improve Doxygen comments.
+    *
+------------------------------------------------------------
 TAG
 Tag name: periodSearch-10-08-04, operation: add
 Package: periodSearch
