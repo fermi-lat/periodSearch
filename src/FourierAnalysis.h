@@ -16,6 +16,11 @@
 /** \class FourierAnalysis
     \brief Class for pulsation search by computing a power spectrum of a given time series data using Fast Fourier
            Transform (FFT) technique.
+
+           Note on the units of time and frequency: This class does not assume a specific time unit. Instead, all
+           times (both time series data and time durations) given to an object of this class must be in the same time
+           units throughout the lifetime of the object, and all frequencies given to it must be in the units of the
+           inverse of the time unit. All results from the object will be in the same units of time or frequency.
 */
 class FourierAnalysis : public PeriodSearch {
   public:
@@ -26,7 +31,8 @@ class FourierAnalysis : public PeriodSearch {
         \param num_bins The number of bins used in each FFT. Depending on the specific test, this
                         may be an upper limit on the actual number of bins used.
         \param num_events Hint giving the anticipated number of events to be filled.
-        \param freq_unit The unit of frequency, or the inverse of the unit of times given to this period search.
+        \param freq_unit Character string representing the unit of frequency, or the inverse of the unit of times given
+               to this period search.
     */
     FourierAnalysis(double t_start, double t_stop, double width, size_type num_bins, const std::string & freq_unit, int num_events = 0);
 

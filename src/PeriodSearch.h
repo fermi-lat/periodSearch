@@ -17,6 +17,11 @@
 /** \class PeriodSearch
     \brief Base class for various statistical tests used to determine frequency of pulsation
            when an approximate frequency is known.
+
+           Note on the units of time and frequency: This class does not assume a specific time unit. Instead, all
+           times (both time series data and time durations) given to an object of this class must be in the same time
+           units throughout the lifetime of the object, and all frequencies given to it must be in the units of the
+           inverse of the time unit. All results from the object will be in the same units of time or frequency.
 */
 class PeriodSearch {
   public:
@@ -25,7 +30,8 @@ class PeriodSearch {
 
     /** \brief Construct a PeriodSearch object.
         \param num_bins The number of frequency bins.
-        \param freq_unit The unit of frequency, or the inverse of the unit of times given to this period search.
+        \param freq_unit Character string representing the unit of frequency, or the inverse of the unit of times given
+               to this period search.
     */
     PeriodSearch(size_type num_bins, const std::string & freq_unit);
 
