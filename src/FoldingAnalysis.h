@@ -16,7 +16,12 @@ class PeriodicityTestArray;
 
 /** \class FoldingAnalysis
     \brief Class for periodicity search based on various statistical tests used to determine frequency of pulsation
-           when an approximate frequency is known, using the epoch-folding technique.
+           when an approximate frequency is known, using the epoch-folding technique. 
+
+           Note on the units of time and frequency: This class does not assume a specific time unit. Instead, all
+           times (both time series data and time durations) given to an object of this class must be in the same time
+           units throughout the lifetime of the object, and all frequencies given to it must be in the units of the
+           inverse of the time unit. All results from the object will be in the same units of time or frequency.
 */
 class FoldingAnalysis : public PeriodSearch {
   public:
@@ -27,7 +32,8 @@ class FoldingAnalysis : public PeriodSearch {
         \param test_array The statistical test array object to be used for this periodicity search.
         \param epoch The global time offset defining the origin for purposes of this computation.
         \param duration The total time duration (only used if chance probability will be computed).
-        \param freq_unit The unit of frequency, or the inverse of the unit of times given to this period search.
+        \param freq_unit Character string representing the unit of frequency, or the inverse of the unit of times given
+               to this period search.
     */
     FoldingAnalysis(PeriodicityTestArray * test_array, double center, double step, double epoch, double duration,
       const std::string & freq_unit);
