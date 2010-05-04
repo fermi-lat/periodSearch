@@ -2,11 +2,12 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.53 2010/03/16 21:53:35 hirayama Exp $
+$Id: release.notes,v 1.54 2010/04/09 16:25:18 hirayama Exp $
 
 \verbatim
 * EOH *
 
+ periodSearch-10-08-05 04-May-2010 hirayama Improve Doxygen comments.
  periodSearch-10-08-04 09-Apr-2010 hirayama Use non-time-ordered event files for the unit tests.
  periodSearch-10-08-03 16-Mar-2010 hirayama Minor improvements only.
  periodSearch-10-08-02 22-Feb-2010    jrb correct use of xxLib for libEnv

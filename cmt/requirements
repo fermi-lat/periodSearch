@@ -1,10 +1,10 @@
 package periodSearch
 
-version v10r8p4
+version v10r8p5
 
 author James Peachey <James.Peachey-1@nasa.gov>
 
-# $Id: requirements,v 1.12 2010/03/16 21:53:35 hirayama Exp $
+# $Id: requirements,v 1.13 2010/04/09 16:25:18 hirayama Exp $
 
 use STpolicy *
 use pulsarDb *
