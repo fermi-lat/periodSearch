@@ -35,8 +35,6 @@
 #include "PeriodSearch.h"
 #include "StatisticViewer.h"
 
-using namespace timeSystem;
-
 static const std::string s_cvs_id = "$Name:  $";
 
 PowerSpectrumApp::PowerSpectrumApp(): m_os("PowerSpectrumApp", "", 2) {
@@ -110,7 +108,7 @@ void PowerSpectrumApp::runApp() {
 
   for (setFirstEvent(); !isEndOfEventList(); setNextEvent()) {
     // Get event time as AbsoluteTime.
-    AbsoluteTime abs_evt_time(getEventTime());
+    timeSystem::AbsoluteTime abs_evt_time(getEventTime());
 
     // Convert event time to target time representation.
     double target_evt_time = computeElapsedSecond(abs_evt_time);
