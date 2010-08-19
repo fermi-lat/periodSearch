@@ -610,10 +610,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
 
   // Trick up some fake events.
   int num_evts = 1000;
-
   std::vector<double> fake_evts(num_evts);
-  setPrecision(16);
-
   for (int ii = 0; ii < num_evts; ++ii)
     fake_evts[ii] = ii + 0.5;
 
