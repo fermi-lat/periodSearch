@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Thu Aug 19 18:32:33 PDT 2010
+periodSearch/src
+
+Modified Files:
+	ChiSquaredProb.h ChiSquaredProb.cxx 
+Log Message:
+Add std qualifier for log function (cosmetic).
+    *
+------------------------------------------------------------
 User: hirayama  Thu Aug 19 17:58:08 PDT 2010
 periodSearch/src
 
