@@ -39,7 +39,7 @@ class ChiSquaredProb {
 
     // Chi-squared probability distribution function.
     inline double pdf(double x) const {
-      return exp(m_lognorm + (m_dof_minus_2 * log(x) - x) / 2.0);
+      return exp(m_lognorm + (m_dof_minus_2 * std::log(x) - x) / 2.0);
     }
 
     // Function for computing step size.

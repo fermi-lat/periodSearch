@@ -26,14 +26,14 @@ ChiSquaredProb::ChiSquaredProb(int dof, double min_pdf): m_dof(dof), m_dof_minus
   // Pre-compute normalization.
   double nterm;
   if (dof % 2) {
-    m_lognorm = - 0.5 * log(M_PI);
+    m_lognorm = - 0.5 * std::log(M_PI);
     nterm = dof / 2;
   } else {
     m_lognorm = 0.0;
     nterm = dof / 2 - 2;
   }
   for (int ii=1; ii<=nterm; ii++) {
-    m_lognorm -= log(m_dof / 2.0 - static_cast<double>(ii));
+    m_lognorm -= std::log(m_dof / 2.0 - static_cast<double>(ii));
   }
   m_lognorm -= m_dof / 2.0 * M_LN2;
 
@@ -42,12 +42,12 @@ ChiSquaredProb::ChiSquaredProb(int dof, double min_pdf): m_dof(dof), m_dof_minus
   // of x_cur must be > m_dof_minus_2 and > 0.
   double x_cur = m_dof + 1.0;
   if (pdf(x_cur) > min_pdf) {
-    double log_min_pdf = (log(min_pdf) - m_lognorm) * 2.0;
+    double log_min_pdf = (std::log(min_pdf) - m_lognorm) * 2.0;
     const double MY_EPSILON = 1.0e-10;
-    const double min_diff = 2.0 * log(1.0 + MY_EPSILON);
+    const double min_diff = 2.0 * std::log(1.0 + MY_EPSILON);
     double log_diff;
     while (1) {
-      log_diff = m_dof_minus_2 * log(x_cur) - x_cur - log_min_pdf;
+      log_diff = m_dof_minus_2 * std::log(x_cur) - x_cur - log_min_pdf;
       if (fabs(log_diff) > min_diff) x_cur += log_diff;
       else break;
     }
