@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Thu Aug 19 17:58:08 PDT 2010
+periodSearch/src
+
+Modified Files:
+	ChiSquaredProb.cxx 
+Log Message:
+Add std qualifier for sqrt (cosmetic).
+    *
+------------------------------------------------------------
 User: hirayama  Thu Aug 19 16:05:42 PDT 2010
 periodSearch/src/test
 
