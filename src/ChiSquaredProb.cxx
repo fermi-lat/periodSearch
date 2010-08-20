@@ -74,7 +74,7 @@ std::pair<double,double> ChiSquaredProb::operator() (double chisq, double precis
   double p_value = precision / 2.0;
   double x_offset = 0.0;
   if (m_dof > 2.1) {
-    x_offset = 2.0 * p_value + sqrt(2.0 * p_value * m_dof_minus_2);
+    x_offset = 2.0 * p_value + std::sqrt(2.0 * p_value * m_dof_minus_2);
   }
 
   // Set initial values for numerical integration.
