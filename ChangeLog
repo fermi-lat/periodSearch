@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Tue Aug 31 17:24:19 PDT 2010
+periodSearch/src
+
+Modified Files:
+	FourierAnalysis.cxx 
+Log Message:
+Add std qualifier in front of size_t for clarity.
+    *
+------------------------------------------------------------
 TAG
 Tag name: ScienceTools-09-18-03, operation: add
 Package: periodSearch
