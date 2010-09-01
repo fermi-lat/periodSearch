@@ -50,7 +50,7 @@ FourierAnalysis::FourierAnalysis(double t_start, double t_stop, double width, Pe
   StatisticViewer & viewer = getViewer();
   StatisticViewer::data_type & freq = viewer.getData(0);
   m_fourier_res = 1. / (m_width * m_num_bins);
-  for (size_t ii = 0; ii < freq.size(); ++ii) {
+  for (std::size_t ii = 0; ii < freq.size(); ++ii) {
     freq[ii] = ii * m_fourier_res;
   }
 
@@ -98,8 +98,8 @@ void FourierAnalysis::computeStat() {
   double * in = 0;
   fftw_complex * out = 0;
   fftw_plan p = 0;
-  size_t num_cpx_elements = freq.size();
-  size_t num_dbl_elements = 2 * num_cpx_elements;
+  std::size_t num_cpx_elements = freq.size();
+  std::size_t num_dbl_elements = 2 * num_cpx_elements;
 
   // Allocate array for fftw input/output.
   in = (double *) fftw_malloc(sizeof(double) * num_dbl_elements);
@@ -113,7 +113,7 @@ void FourierAnalysis::computeStat() {
   p = fftw_plan_dft_r2c_1d(m_num_bins, in, out, FFTW_ESTIMATE);
 
   // Iterate over segments.
-  for (size_t seg_idx = 0; seg_idx < m_num_segments; ++seg_idx) {
+  for (std::size_t seg_idx = 0; seg_idx < m_num_segments; ++seg_idx) {
     // Initialize array to be all zero.
     std::memset(in, '\0', sizeof(double) * num_dbl_elements);
 
@@ -128,12 +128,12 @@ void FourierAnalysis::computeStat() {
 
     if (num_events == 0) {
       // Pack zeros into the array holding the power density.
-      for (size_t ii = 0; ii < num_cpx_elements; ++ii) spec[ii] = 0.;
+      for (std::size_t ii = 0; ii < num_cpx_elements; ++ii) spec[ii] = 0.;
 
     } else {
       // Shift origin by the average number of events per bin.
       double events_per_bin = num_events / m_num_bins;
-      for (size_t ii = 0; ii < m_num_bins; ++ii) {
+      for (std::size_t ii = 0; ii < m_num_bins; ++ii) {
         //in[ii][0] -= events_per_bin;
         in[ii] -= events_per_bin;
       }
@@ -142,7 +142,7 @@ void FourierAnalysis::computeStat() {
       fftw_execute(p);
 
       // Pack results into the array holding the power density.
-      for (size_t ii = 0; ii < num_cpx_elements; ++ii) {
+      for (std::size_t ii = 0; ii < num_cpx_elements; ++ii) {
         const double & real = out[ii][0];
         const double & imag = out[ii][1];
         spec[ii] += (real * real + imag * imag) * 2. / num_events;
