@@ -1301,7 +1301,6 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
   // Prepare files to be used in the tests.
   std::string ev_file = prependDataPath("my_pulsar_events_v3r1.fits");
   std::string sc_file = prependDataPath("my_pulsar_spacecraft_data_v3r1.fits");
-  std::string master_pulsardb = prependDataPath("master_pulsardb_v2.fits");
   std::string ev_file_2gti = prependDataPath("my_pulsar_events_2gti.fits");
   std::string sc_file_bogus = prependDataPath("my_pulsar_spacecraft_data_bogus.fits");
 
@@ -1354,7 +1353,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
 
     // Set test-specific parameters.
     if ("par1" == test_name) {
-      // Test standard computation with DB option.
+      // Test standard computation with FREQ option.
       pars["evfile"] = ev_file;
       pars["evtable"] = "EVENTS";
       pars["scfile"] = sc_file;
@@ -1365,7 +1364,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       pars["f1f0ratio"] = 0.0;
       pars["f2f0ratio"] = 0.0;
       pars["timeorigin"] = "mIDdLe";
-      pars["psrdbfile"] = master_pulsardb;
+      pars["psrdbfile"] = "NonE";
       pars["psrname"] = "PSR B0540-69";
       pars["binwidth"] = 0.01;
       pars["numbins"] = 1000000;
