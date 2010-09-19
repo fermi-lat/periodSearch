@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Sat Sep 18 21:10:55 PDT 2010
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Use psrdbfile=NONE when appropriate. Correct a comment.
+    *
+------------------------------------------------------------
 User: hirayama  Tue Aug 31 17:24:19 PDT 2010
 periodSearch/src
 
