@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Sep 24 18:53:47 PDT 2010
+periodSearch/data
+
+Added Files:
+	testpsrdb_ephcomp.fits 
+Log Message:
+Replace pulsar database file for application tests.
+    *
+------------------------------------------------------------
 User: hirayama  Fri Sep 24 18:53:46 PDT 2010
 periodSearch/src/test
 
