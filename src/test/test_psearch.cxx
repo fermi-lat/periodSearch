@@ -1025,7 +1025,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
   // Prepare files to be used in the tests.
   std::string ev_file = prependDataPath("my_pulsar_events_v3r1.fits");
   std::string sc_file = prependDataPath("my_pulsar_spacecraft_data_v3r1.fits");
-  std::string master_pulsardb = prependDataPath("master_pulsardb_v2.fits");
+  std::string test_pulsardb = prependDataPath("testpsrdb_ephcomp.fits");
   std::string ev_file_2gti = prependDataPath("my_pulsar_events_2gti.fits");
   std::string sc_file_bogus = prependDataPath("my_pulsar_spacecraft_data_bogus.fits");
 
@@ -1093,7 +1093,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       pars["scfile"] = sc_file;
       pars["outfile"] = out_file;
       pars["ephstyle"] = "DB";
-      pars["psrdbfile"] = master_pulsardb;
+      pars["psrdbfile"] = test_pulsardb;
       pars["psrname"] = "PSR B0540-69";
       pars["scanstep"] = .5;
       pars["tcorrect"] = "AutO";
