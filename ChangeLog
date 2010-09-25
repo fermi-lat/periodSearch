@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Sep 24 18:53:46 PDT 2010
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Replace pulsar database file for application tests.
+    *
+------------------------------------------------------------
 User: hirayama  Sat Sep 18 21:10:55 PDT 2010
 periodSearch/src/test
 
