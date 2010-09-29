@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Tue Sep 28 18:35:29 PDT 2010
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Test the glitch reporting mechanism.
+    *
+------------------------------------------------------------
 TAG
 Tag name: ScienceTools-09-18-04, operation: add
 Package: periodSearch
