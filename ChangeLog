@@ -1,5 +1,14 @@
 ------------------------------------------------------------
 User: hirayama  Tue Sep 28 18:35:29 PDT 2010
+periodSearch/data
+
+Added Files:
+	psrdb_glitch.txt 
+Log Message:
+Test the glitch reporting mechanism.
+    *
+------------------------------------------------------------
+User: hirayama  Tue Sep 28 18:35:29 PDT 2010
 periodSearch/src/test
 
 Modified Files:
