@@ -1117,6 +1117,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       std::ofstream ofs_summary(summary_file.c_str());
       ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
       ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_glitch.txt") << std::endl;
       ofs_summary.close();
       pars["algorithm"] = "Chi2";
       pars["evfile"] = ev_file_2gti;
@@ -1149,6 +1150,12 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       ofs << "[4] Remarked \"Test remark entry No.6\" since 53990 MJD (TDB) until 54030 MJD (TDB)" << std::endl;
       ofs << "[5] Remarked \"Test remark entry No.7\" since 54030 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
       ofs << "[6] Remarked \"Test remark entry No.8\" since 53990 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[7] Remarked \"A glitch observed at 53990 MJD (TDB)\" since 53990 MJD (TDB) until 54010 MJD (TDB)" << std::endl;
+      ofs << "[8] Remarked \"A glitch observed at 54025 MJD (TDB)\" since 54025 MJD (TDB) until 54035 MJD (TDB)" << std::endl;
+      ofs << "[9] Remarked \"A glitch observed at 54050 MJD (TDB)\" since 54050 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[10] Remarked \"A glitch observed at 53990 MJD (TDB)\" since 53990 MJD (TDB) until 54030 MJD (TDB)" << std::endl;
+      ofs << "[11] Remarked \"A glitch observed at 54030 MJD (TDB)\" since 54030 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[12] Remarked \"A glitch observed at 53990 MJD (TDB)\" since 53990 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
       std::logic_error error("Error while computing an S-value of chi-squared test: No events filled for test #0");
       app_tester.writeException(ofs, error);
       ofs << std::endl;
@@ -1165,6 +1172,7 @@ void PeriodSearchTestApp::testPeriodSearchApp() {
       std::ofstream ofs_summary(summary_file.c_str());
       ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
       ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_glitch.txt") << std::endl;
       ofs_summary.close();
       pars["algorithm"] = "Chi2";
       pars["evfile"] = ev_file_2gti;
@@ -1384,6 +1392,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       std::ofstream ofs_summary(summary_file.c_str());
       ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
       ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_glitch.txt") << std::endl;
       ofs_summary.close();
       pars["evfile"] = ev_file_2gti;
       pars["evtable"] = "EVENTS";
@@ -1415,6 +1424,12 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       ofs << "[4] Remarked \"Test remark entry No.6\" since 53990 MJD (TDB) until 54030 MJD (TDB)" << std::endl;
       ofs << "[5] Remarked \"Test remark entry No.7\" since 54030 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
       ofs << "[6] Remarked \"Test remark entry No.8\" since 53990 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[7] Remarked \"A glitch observed at 53990 MJD (TDB)\" since 53990 MJD (TDB) until 54010 MJD (TDB)" << std::endl;
+      ofs << "[8] Remarked \"A glitch observed at 54025 MJD (TDB)\" since 54025 MJD (TDB) until 54035 MJD (TDB)" << std::endl;
+      ofs << "[9] Remarked \"A glitch observed at 54050 MJD (TDB)\" since 54050 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[10] Remarked \"A glitch observed at 53990 MJD (TDB)\" since 53990 MJD (TDB) until 54030 MJD (TDB)" << std::endl;
+      ofs << "[11] Remarked \"A glitch observed at 54030 MJD (TDB)\" since 54030 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
+      ofs << "[12] Remarked \"A glitch observed at 53990 MJD (TDB)\" since 53990 MJD (TDB) until 54070 MJD (TDB)" << std::endl;
       std::runtime_error error("Could not find the maximum statistic at any trial frequency in range [0.01, -1]");
       app_tester.writeException(ofs, error);
       ofs.close();
@@ -1430,6 +1445,7 @@ void PeriodSearchTestApp::testPowerSpectrumApp() {
       std::ofstream ofs_summary(summary_file.c_str());
       ofs_summary << prependDataPath("psrdb_spin.txt") << std::endl;
       ofs_summary << prependDataPath("psrdb_remark.txt") << std::endl;
+      ofs_summary << prependDataPath("psrdb_glitch.txt") << std::endl;
       ofs_summary.close();
       pars["evfile"] = ev_file_2gti;
       pars["evtable"] = "EVENTS";
