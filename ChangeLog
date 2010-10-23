@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Fri Oct 22 17:46:10 PDT 2010
+periodSearch/data
+
+Modified Files:
+	testpsrdb_ephcomp.fits 
+Log Message:
+Change the unit of WAVE_OMEGA from rad/s to rad/d.
+    *
+------------------------------------------------------------
 TAG
 Tag name: ScienceTools-09-18-06, operation: add
 Package: periodSearch
