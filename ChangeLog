@@ -1,4 +1,23 @@
 ------------------------------------------------------------
+User: hirayama  Tue Dec  7 19:03:46 PST 2010
+periodSearch/data
+
+Added Files:
+	testevdata_1day_2gti.fits testevdata_1day_unordered.fits 
+	testevdata_1day_unordered_phase.fits testscdata_1day.fits 
+	testscdata_bogus.fits 
+Removed Files:
+	ft1tiny.fits groD4-dc2v3.fits groD4-dc2v4.fits 
+	master_pulsardb_v2.fits my_pulsar_events_2gti.fits 
+	my_pulsar_events_phase_v3r1.fits 
+	my_pulsar_events_phase_v3r2.fits my_pulsar_events_v3.fits 
+	my_pulsar_events_v3r1.fits 
+	my_pulsar_spacecraft_data_bogus.fits 
+	my_pulsar_spacecraft_data_v3r1.fits psrdb_binary.txt 
+Log Message:
+Downsize test data files, and rename them for clarity.
+    *
+------------------------------------------------------------
 User: hirayama  Tue Dec  7 19:03:44 PST 2010
 periodSearch/src/test
 
