@@ -640,7 +640,7 @@ void PeriodSearchTestApp::testPeriodSearch() {
   fake_evts.clear();
 
   // Read some real data.
-  std::string event_file = prependDataPath("step-01.fits");
+  std::string event_file = prependDataPath("testevdata_1day_psearch.fits");
   std::auto_ptr<const tip::Table> evt_table(tip::IFileSvc::instance().readTable(event_file, "EVENTS"));
 
   // Get gti_table.
