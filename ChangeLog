@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Tue Dec  7 19:03:44 PST 2010
+periodSearch/src/test
+
+Modified Files:
+	test_psearch.cxx 
+Log Message:
+Downsize test data files, and rename them for clarity.
+    *
+------------------------------------------------------------
 TAG
 Tag name: ScienceTools-09-19-00, operation: add
 Package: periodSearch
