@@ -1,4 +1,14 @@
 ------------------------------------------------------------
+User: hirayama  Tue Dec  7 19:52:17 PST 2010
+periodSearch/data
+
+Modified Files:
+	testevdata_1day_2gti.fits testevdata_1day_psearch.fits 
+	testevdata_1day_unordered.fits 
+Log Message:
+Remove unnecessary PULSE_PHASE column.
+    *
+------------------------------------------------------------
 User: hirayama  Tue Dec  7 19:14:33 PST 2010
 periodSearch/data
 
