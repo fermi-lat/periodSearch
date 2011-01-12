@@ -23,7 +23,7 @@ f0,             r, a, 1., 0., , "Pulse frequency at the epoch of the spin epheme
 f1,             r, a, 0., , , "First time derivative of the pulse frequency at the epoch of the spin ephemeris (Hz/s)"
 f2,             r, a, 0., , , "Second time derivative of the pulse frequency at the epoch of the spin ephemeris (Hz/s/s)"
 p0,             r, a, 1., 0., , "Pulse period at the epoch of the spin ephemeris (seconds)"
-p1,             r, a, 0., , , "First time derivative of the pulse period at the epoch of the spin ephemeris (dimension-less)"
+p1,             r, a, 0., , , "First time derivative of the pulse period at the epoch of the spin ephemeris (dimensionless)"
 p2,             r, a, 0., , , "Second time derivative of the pulse period at the epoch of the spin ephemeris (Hz)"
 tcorrect,       s, h, AUTO, NONE|AUTO|BARY|BIN|PDOT|ALL, , "Set of arrival time correction(s) to apply"
 solareph,       s, h, JPL DE405, JPL DE200|JPL DE405, , "Solar system ephemeris for barycentric correction"
