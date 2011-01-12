@@ -1,4 +1,13 @@
 ------------------------------------------------------------
+User: hirayama  Tue Jan 11 18:41:02 PST 2011
+periodSearch/pfiles
+
+Modified Files:
+	gtpsearch.par 
+Log Message:
+Correct comments (cosmetic).
+    *
+------------------------------------------------------------
 TAG
 Tag name: ScienceTools-09-20-00, operation: add
 Package: periodSearch
