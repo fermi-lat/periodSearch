@@ -178,7 +178,7 @@ p0 = 1. [double]
 
 p1 = 0. [double]
     Value of the first time derivative of the period at the time given
-    by the epoch parameter (dimension-less).  This parameter only has
+    by the epoch parameter (dimensionless).  This parameter only has
     effect if ephstyle is PER.  Note that ephemeris computations using
     this parameter will be performed in the time system specified by
     timesys parameter.
