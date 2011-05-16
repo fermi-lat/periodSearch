@@ -2,11 +2,12 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.55 2010/05/04 21:45:23 hirayama Exp $
+$Id: release.notes,v 1.56 2011/02/14 23:28:01 hirayama Exp $
 
 \verbatim
 * EOH *
 
+ periodSearch-10-08-07 16-May-2011 hirayama Update Masa's E-mail address in mainpage.h
  periodSearch-10-08-06 14-Feb-2011 hirayama Add tests of glitch reporting mechanism. Clean up the code for minor improvements.
  periodSearch-10-08-05 04-May-2010 hirayama Improve Doxygen comments.
  periodSearch-10-08-04 09-Apr-2010 hirayama Use non-time-ordered event files for the unit tests.
