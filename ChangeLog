@@ -1,5 +1,85 @@
 ------------------------------------------------------------
 TAG
+Tag name: ScienceTools-09-32-05, operation: add
+Package: periodSearch
+User: jchiang  Fri Jul 26 21:22:02 2013
+Files:
+  periodSearch/.cvsignore  1.1
+  periodSearch/periodSearchLib.py  1.2
+  periodSearch/ChangeLog  1.779
+  periodSearch/SConscript  1.32
+  periodSearch/cmt/requirements  1.16
+  periodSearch/data/psrdb_spin.txt  1.1
+  periodSearch/data/testevdata_1day_2gti.fits  1.2
+  periodSearch/data/psrdb_remark.txt  1.1
+  periodSearch/data/testevdata_1day_unordered.fits  1.2
+  periodSearch/data/testscdata_bogus.fits  1.1
+  periodSearch/data/periodicity-test-out.tpl  1.4
+  periodSearch/data/testevdata_1day_psearch.fits  1.2
+  periodSearch/data/testpsrdb_ephcomp.fits  1.3
+  periodSearch/data/period-search-out.tpl  1.3
+  periodSearch/data/psrdb_glitch.txt  1.1
+  periodSearch/data/testevdata_1day_unordered_phase.fits  1.1
+  periodSearch/data/testscdata_1day.fits  1.1
+  periodSearch/data/outref/testPeriodicityTestApp_par1.log  1.1
+  periodSearch/data/outref/artificial-fourier.fits  1.5
+  periodSearch/data/outref/testPeriodicityTestApp_par1.fits  1.1
+  periodSearch/data/outref/psrb0540-fourier.fits  1.5
+  periodSearch/data/outref/artificial-chi-sq.fits  1.6
+  periodSearch/data/outref/artificial-h.fits  1.7
+  periodSearch/data/outref/psrb0540-z2n.fits  1.3
+  periodSearch/data/outref/testPowerSpectrumApp_par1.log  1.2
+  periodSearch/data/outref/psrb0540-rayleigh.fits  1.3
+  periodSearch/data/outref/psrb0540-pdot-fourier.fits  1.5
+  periodSearch/data/outref/psrb0540-chi-sq.fits  1.3
+  periodSearch/data/outref/psrb0540-h.fits  1.3
+  periodSearch/data/outref/psrb0540-pdot-z2n.fits  1.3
+  periodSearch/data/outref/psrb0540-pdot-h.fits  1.3
+  periodSearch/data/outref/artificial-rayleigh.fits  1.7
+  periodSearch/data/outref/testPeriodSearchApp_par1.fits  1.1
+  periodSearch/data/outref/psrb0540-pdot-chi-sq.fits  1.3
+  periodSearch/data/outref/artificial-z2n.fits  1.7
+  periodSearch/data/outref/psrb0540-pdot-rayleigh.fits  1.3
+  periodSearch/data/outref/testPowerSpectrumApp_par1.fits  1.2
+  periodSearch/data/outref/testPeriodSearchApp_par1.log  1.1
+  periodSearch/doc/release.notes  1.57
+  periodSearch/pfiles/gtpspec.par  1.17
+  periodSearch/pfiles/gtpsearch.par  1.34
+  periodSearch/pfiles/test_periodSearch.par  1.1
+  periodSearch/pfiles/gtptest.par  1.1
+  periodSearch/src/ChiSquaredTestArray.h  1.19
+  periodSearch/src/PeriodicityTestApp.cxx  1.20
+  periodSearch/src/HTestArray.cxx  1.19
+  periodSearch/src/StatisticViewer.h  1.7
+  periodSearch/src/PeriodicityTestApp.h  1.5
+  periodSearch/src/PeriodSearch.h  1.3
+  periodSearch/src/FoldingAnalysis.h  1.14
+  periodSearch/src/PeriodSearchApp.h  1.3
+  periodSearch/src/FoldingAnalysis.cxx  1.19
+  periodSearch/src/mainpage.h  1.17
+  periodSearch/src/Z2nTestArray.cxx  1.22
+  periodSearch/src/ChiSquaredProb.cxx  1.9
+  periodSearch/src/PowerSpectrumApp.cxx  1.55
+  periodSearch/src/FourierAnalysis.h  1.20
+  periodSearch/src/HTestArray.h  1.17
+  periodSearch/src/ChiSquaredTestArray.cxx  1.23
+  periodSearch/src/PeriodSearch.cxx  1.27
+  periodSearch/src/PeriodSearchApp.cxx  1.7
+  periodSearch/src/PeriodicityTestArray.h  1.19
+  periodSearch/src/Z2nTestArray.h  1.18
+  periodSearch/src/StatisticViewer.cxx  1.13
+  periodSearch/src/RayleighTestArray.h  1.5
+  periodSearch/src/FourierAnalysis.cxx  1.24
+  periodSearch/src/ChiSquaredProb.h  1.3
+  periodSearch/src/PowerSpectrumApp.h  1.7
+  periodSearch/src/gtpsearch/gtpsearch.cxx  1.130
+  periodSearch/src/gtpspec/gtpspec.cxx  1.4
+  periodSearch/src/gtptest/gtptest.cxx  1.1
+  periodSearch/src/test/test_psearch.cxx  1.80
+
+    *
+------------------------------------------------------------
+TAG
 Tag name: ScienceTools-09-32-04, operation: add
 Package: periodSearch
 User: jchiang  Sat Jun 15 21:36:05 2013
