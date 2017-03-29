@@ -2,7 +2,8 @@
     \brief periodSearch package
     \authors Masaharu Hirayama, GSSC,
             James Peachey, HEASARC/GSSC
-$Id: release.notes,v 1.56 2011/02/14 23:28:01 hirayama Exp $
+            Joe Asercion, FSSC/GSFC
+$Id: release.notes,v 1.57 2011/05/16 21:02:20 hirayama Exp $
 
 \verbatim
 * EOH *
