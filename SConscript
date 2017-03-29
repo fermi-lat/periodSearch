@@ -1,6 +1,6 @@
 # -*- python -*-
-# $Id: SConscript,v 1.31 2011/02/14 23:28:01 hirayama Exp $
-# Authors: James Peachey <James.Peachey-1@nasa.gov>
+# $Id: SConscript,v 1.32 2011/05/16 21:02:19 hirayama Exp $
+# Authors: James Peachey <James.Peachey-1@nasa.gov>, Joe Asercion <joseph.a.asercion@nasa.gov>
 # Version: periodSearch-10-08-07
 Import('baseEnv')
 Import('listFiles')
