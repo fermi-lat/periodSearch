@@ -17,7 +17,11 @@
 #include "FourierAnalysis.h"
 #include "StatisticViewer.h"
 
+#ifndef CONDA_FFTW
 #include "fftw/fftw3.h"
+#else
+#include "fftw3.h"
+#endif
 
 FourierAnalysis::FourierAnalysis(double t_start, double t_stop, double width, PeriodSearch::size_type num_bins,
   const std::string & freq_unit, int /* num_events */):
